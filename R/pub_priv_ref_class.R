@@ -27,7 +27,7 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' class5 <- new_class("class5",
+#' class5 <- new_pub_priv_ref_class("class5",
 #'   private = list(
 #'     x = 1,
 #'     y = 2,
@@ -67,7 +67,7 @@
 #' }
 #' print(z)
 #'
-new_class <- function(classname, private = list(), public = list(),
+new_pub_priv_ref_class <- function(classname, private = list(), public = list(),
                       parent_env = parent.frame(), lock = TRUE) {
   template <- list()
   template$private <- new.env(parent = parent_env)
@@ -85,13 +85,14 @@ new_class <- function(classname, private = list(), public = list(),
   lockEnvironment(template$private, bindings = TRUE)
   lockEnvironment(template$public, bindings = TRUE)
 
-  template$new <- generate_new(classname, template, parent_env, lock)
+  template$new <- generate_pub_priv_ref_class_new(classname, template,
+                                                  parent_env, lock)
 
   structure(template, class = paste0(classname, "_generator"))
 }
 
 # Returns a $new() function for a class
-generate_new <- function(classname = NULL, template = NULL,
+generate_pub_priv_ref_class_new <- function(classname = NULL, template = NULL,
                          parent_env = NULL, lock = TRUE) {
   if (is.null(classname) || is.null(template) || is.null(parent_env)) {
     stop("classname, template, and parent_env must be supplied.")
