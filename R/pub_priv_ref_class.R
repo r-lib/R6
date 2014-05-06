@@ -14,8 +14,9 @@
 #'     environment, even if it's a private method. Private methods are found
 #'     in the private environment, but they have the public environment as
 #'     their execution environment.
-#'   \item Each instance of the class has its own copy of each method. (I'm not
-#'     sure whether this means that the class is )
+#'   \item Each instance of the class has its own copy of each method. I'm not
+#'     sure how large the memory footprint is for this; each copy of a method
+#'     is exactly the same except for the environment.
 #' }
 #'
 #' @param classname Name of the class.
@@ -41,7 +42,7 @@
 #'       if (!is.null(z)) public$z  <- z
 #'     },
 #'     # Set a private variable
-#'     set_x = function(val) private$x <- val,
+#'     set_x = function(value) private$x <- value,
 #'     # Access private and public variables
 #'     sum_xyz = function() x + y + z,
 #'     # Access a private variable and private method
@@ -60,8 +61,8 @@
 #' z$z <- 100   # Can set public members directly
 #' z$sum_xyz()
 #'
-#' # Can also create S3 methods for prettier printing of class objects
-#' # This prints the contents of the public environment
+#' # Can also create S3 methods for prettier printing of class objects.
+#' # This prints the contents of the public environment.
 #' print.class5 <- function(x, ...) {
 #'   str(as.list.environment(x))
 #' }
@@ -111,7 +112,7 @@ generate_pub_priv_ref_class_new <- function(classname = NULL, template = NULL,
     assign_func_envs(private_env, public_env)
     assign_func_envs(public_env,  public_env)
 
-    # Add .private and .public pointers
+    # Add private and public pointers
     public_env$private  <- private_env
     private_env$private <- private_env
     public_env$public   <- public_env
