@@ -22,7 +22,7 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' class4 <- new_ref_class("class4",
+#' class4 <- create_ref_class("class4",
 #'   members = list(
 #'     x = 1,
 #'     y = 2,
@@ -59,7 +59,7 @@
 #' }
 #' print(z)
 #'
-new_ref_class <- function(classname, members = list(),
+create_ref_class <- function(classname, members = list(),
                           parent_env = parent.frame(), lock = TRUE) {
   template <- list()
   template$public <- new.env(parent = parent_env)
