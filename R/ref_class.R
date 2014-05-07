@@ -22,11 +22,11 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' class4 <- create_ref_class("class4",
+#' Class4 <- createRefClass("Class4",
 #'   members = list(
 #'     x = 1,
 #'     y = 2,
-#'     initialize = function(x = NULL, y = NULL, z = NULL) {
+#'     initialize = function(x = NULL, y = NULL) {
 #'       if (!is.null(x)) self$x <- x
 #'       if (!is.null(y)) self$y <- y
 #'     },
@@ -42,7 +42,7 @@
 #' )
 #'
 #' # Create a new object with a specified value for y
-#' z <- class4$new(y = 10)
+#' z <- Class4$new(y = 10)
 #'
 #' z$sum_xy()
 #' z$x <- 20    # Set member directly
@@ -52,14 +52,23 @@
 #' z$sum_xy()
 #' z$sum_xy2()
 #'
-#' # Can also create S3 methods for prettier printing of class objects.
-#' # This prints the contents of the public environment.
-#' print.class4 <- function(x, ...) {
-#'   str(as.list.environment(x))
-#' }
+#' # Print, using the print.RefClass method:
 #' print(z)
 #'
-create_ref_class <- function(classname, members = list(),
+#' # Can also create S3 methods for Class4 objects
+#' # This prints the contents of the public environment.
+#' print.Class4 <- function(x, ...) {
+#'   names <- ls(x, all.names = TRUE)
+#'   values <- vapply(names, function(name) {
+#'     obj <- x[[name]]
+#'     if (is.function(obj)) "function"
+#'     else if (is.environment(obj)) "environment"
+#'     else as.character(obj)
+#'   }, FUN.VALUE = character(1))
+#'   cat(paste("  ", names, ": ", values, sep = "", collapse = "\n"))
+#' }
+#' print(z)
+createRefClass <- function(classname, members = list(),
                           parent_env = parent.frame(), lock = TRUE) {
   template <- list()
   template$public <- new.env(parent = parent_env)
@@ -75,7 +84,7 @@ create_ref_class <- function(classname, members = list(),
 
   template$new <- generate_ref_class_new(classname, template, parent_env, lock)
 
-  structure(template, class = paste0(classname, "_generator"))
+  structure(template, class = paste0("RefClassGenerator"))
 }
 
 # Returns a $new() function for a class
@@ -107,6 +116,13 @@ generate_ref_class_new <- function(classname = NULL, template = NULL,
       public_env$initialize(...)
     }
 
-    structure(public_env, class = classname)
+    structure(public_env, class = c(classname, "RefClass"))
   }
+}
+
+
+#' A rough way of printing out the contents of a RefClass object
+#' @export
+print.RefClass <- function(x, ...) {
+  str(as.list.environment(x))
 }
