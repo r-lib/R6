@@ -8,3 +8,4 @@ Depends:
 License: MIT
 Roxygen: list(wrap = FALSE)
 LazyData: true
+VignetteBuilder: knitr
