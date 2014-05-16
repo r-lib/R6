@@ -28,7 +28,7 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' class5 <- create_pub_priv_ref_class("class5",
+#' class5 <- createRefClass2("class5",
 #'   private = list(
 #'     x = 1,
 #'     y = 2,
@@ -61,73 +61,55 @@
 #' z$z <- 100   # Can set public members directly
 #' z$sum_xyz()
 #'
-#' # Can also create S3 methods for prettier printing of class objects.
-#' # This prints the contents of the public environment.
-#' print.class5 <- function(x, ...) {
-#'   str(as.list.environment(x))
-#' }
+#' # Print, using the print.RefClass2 method:
 #' print(z)
-#'
-create_pub_priv_ref_class <- function(classname, private = list(), public = list(),
-                      parent_env = parent.frame(), lock = TRUE) {
-  template <- list()
-  template$private <- new.env(parent = parent_env)
-  template$public  <- new.env(parent = template$private)
+createRefClass2 <- function(classname = NULL, private = list(), public = list(),
+                           parent_env = parent.frame(), lock = TRUE) {
 
-  # Copy the private and public list items into the environments
-  list2env(private, envir = template$private)
-  list2env(public,  envir = template$public)
+  newfun <- function(...) {
+    private_env <- list2env(private, parent = parent_env)
+    public_env <- list2env(public, parent = private_env)
 
-  # All functions execute in the public env (even if they're found in the
-  # private env)
-  assign_func_envs(template$private, template$public)
-  assign_func_envs(template$public,  template$public)
-
-  lockEnvironment(template$private, bindings = TRUE)
-  lockEnvironment(template$public, bindings = TRUE)
-
-  template$new <- generate_pub_priv_ref_class_new(classname, template,
-                                                  parent_env, lock)
-
-  structure(template, class = paste0(classname, "_generator"))
-}
-
-# Returns a $new() function for a class
-generate_pub_priv_ref_class_new <- function(classname = NULL, template = NULL,
-                         parent_env = NULL, lock = TRUE) {
-  if (is.null(classname) || is.null(template) || is.null(parent_env)) {
-    stop("classname, template, and parent_env must be supplied.")
-  }
-
-  function(...) {
-    # Create private and public environment
-    private_env <- new.env(parent = parent_env)
-    public_env  <- new.env(parent = private_env)
-
-    # Copy private and public environment from the template
-    copy_env(template$private, private_env)
-    copy_env(template$public,  public_env)
-
-    # Fix environments for functions
+    # Fix environment for functions
     assign_func_envs(private_env, public_env)
-    assign_func_envs(public_env,  public_env)
+    assign_func_envs(public_env, public_env)
 
-    # Add private and public pointers
-    public_env$private  <- private_env
+    # Add self pointers
     private_env$private <- private_env
-    public_env$public   <- public_env
     private_env$public  <- public_env
+    public_env$private  <- private_env
+    public_env$public   <- public_env
 
     if (lock) {
       lockEnvironment(private_env)
       lockEnvironment(public_env)
     }
+    if (is.function(public_env$initialize)) public_env$initialize(...)
 
-    # Run the initalize() method if available
-    if (is.function(public_env$initialize)) {
-      public_env$initialize(...)
-    }
-
-    structure(public_env, class = classname)
+    structure(public_env, class = c(classname, "RefClass2"))
   }
+
+  structure(
+    list(new = newfun, classname = classname),
+    class = "RefClass2Generator"
+  )
+}
+
+#' A rough way of printing out the contents of a RefClass object
+#' @export
+print.RefClass2 <- function(x, ...) {
+  cat(
+    "<", class(x)[1], ">\n  Public:\n",
+    indent(object_summaries(x), 4),
+    "\n  Private:\n",
+    indent(object_summaries(parent.env(x)), 4),
+    sep = ""
+  )
+}
+
+#' @export
+print.RefClass2Generator <- function(x, ...) {
+  classname <- x$classname
+  if (is.null(classname)) classname <- "unnamed"
+  cat("<", classname, "> object generator 2", sep = "")
 }
