@@ -1,6 +1,9 @@
 ---
 title: "Reference class performance tests"
-output: html_document
+output:
+  html_document:
+    theme: spacelab
+    toc: yes
 ---
 
 <!--
@@ -8,16 +11,26 @@ output: html_document
 %\VignetteIndexEntry{Reference class performance tests}
 -->
 
+Reference classes in R are very useful for some situations, but they don't come for free. In this document, we'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
+
+We won't cover the other major cost of reference classes, which is the complexity and fickleness of working with S4 (since reference classes are built on S4).
+
+
 ```{r}
+# Some setup stuff
 library(microbenchmark)
 library(pryr)
-library(testclasses)
+library(testclasses)  # For Winston's simple reference classes 
 ```
-## Class definitions
 
-Here are a number of ways of creating reference objects in R, starting with the most complicated (standard R reference classes) and ending with the simplest (an environment created by a closure).
+*****
 
-### Standard R reference class
+Class definitions
+=================
+
+Here are a number of ways of creating reference objects in R, starting with the most complicated (standard R reference class) and ending with the simplest (an environment created by a closure).
+
+## Standard R reference class
 
 ```{r}
 A_rc <- setRefClass("A_rc", 
@@ -29,7 +42,7 @@ A_rc <- setRefClass("A_rc",
 )
 ```
 
-### Winston's simple reference class
+## Winston's simple reference class
 
 ```{r}
 B_wrc <- createRefClass("B_wrc",
@@ -47,7 +60,7 @@ Objects of this type also have an automatically-created `self` member:
 print(B_wrc$new())
 ```
 
-### Environment created by a closure, with class attribute
+## Environment created by a closure, with class attribute
 
 ```{r}
 C_closure_class <- function(x = 1) {
@@ -58,7 +71,7 @@ C_closure_class <- function(x = 1) {
 
 This doesn't have a `self` member, although that could be added.
 
-### Environment created by a closure, without class attribute
+## Environment created by a closure, without class attribute
 
 This is the simplest type of reference object:
 
@@ -69,6 +82,10 @@ D_closure_noclass <- function(x = 1) {
 }
 ```
 
+*****
+
+Tests
+=====
 
 ## Memory footprint
 
@@ -243,4 +260,20 @@ microbenchmark(
   env_noclass = env_noclass,
   env_class = env_class$x
 )
+```
+
+*****
+
+Wrap-up
+=======
+
+Standard reference class objects take more memory and are slower than other, simpler types of reference objects. They do provide additional features, such as type checking of fields and class inheritance, but these aren't, in my opinion, enough to offset the performance penalty and especially the pain of dealing with S4 (which reference classes are built on). Type checking of fields is only a minor benefit, and it would be simple to add inheritance to Winston's reference class implementation. It would also be simple to implement private and public members, though there would be a small performance penalty.
+
+Another drawback to standard R reference class objects is it's not entirely clear how they work, as many advanced R developers can attest. The other types of reference objects used here are simple and can be understood completely, as long as one understands how environments work.
+
+Appendix
+========
+
+```{r}
+sessionInfo()
 ```
