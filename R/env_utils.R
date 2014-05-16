@@ -15,3 +15,17 @@ assign_func_envs <- function(env, target_env) {
     }
   }
 }
+
+
+Rcpp::cppFunction("List setEnvs(List fs, Environment env) {
+   int n = fs.size();
+   List out(n);
+
+   for (int i = 0; i < n; ++i) {
+     SEXP f = Rf_shallow_duplicate(fs[i]);
+     SET_CLOENV(f, env);
+     out[i] = f;
+   }
+
+   return out;
+}")
