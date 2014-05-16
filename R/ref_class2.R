@@ -29,7 +29,7 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' class5 <- createRefClass2("class5",
+#' Class5 <- createRefClass2("Class5",
 #'   private = list(
 #'     x = 1,
 #'     y = 2,
@@ -51,7 +51,7 @@
 #'   )
 #' )
 #'
-#' z <- class5$new(11, z = 13)
+#' z <- Class5$new(11, z = 13)
 #'
 #' z$sum_xyz()
 #' z$sum_xyz2()
