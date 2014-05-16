@@ -54,7 +54,7 @@
 #'
 #' # Print, using the print.RefClass method:
 #' print(z)
-createRefClass <- function(classname, members = list(),
+createRefClass <- function(classname = NULL, members = list(),
                            parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
@@ -73,9 +73,8 @@ createRefClass <- function(classname, members = list(),
   }
 
   structure(
-    list(new = newfun),
-    class = "RefClassGenerator",
-    classname = classname
+    list(new = newfun, classname = classname),
+    class = "RefClassGenerator"
   )
 }
 
@@ -99,5 +98,7 @@ print.RefClass <- function(x, ...) {
 
 #' @export
 print.RefClassGenerator <- function(x, ...) {
-  cat(attr(x, "classname"), "object generator")
+  classname <- x$classname
+  if (is.null(classname)) classname <- "unnamed"
+  cat("<", classname, "> object generator", sep = "")
 }

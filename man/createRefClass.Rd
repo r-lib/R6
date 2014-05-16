@@ -3,8 +3,8 @@
 \alias{createRefClass}
 \title{Reference class generator, with all public members}
 \usage{
-createRefClass(classname, members = list(), parent_env = parent.frame(),
-  lock = TRUE)
+createRefClass(classname = NULL, members = list(),
+  parent_env = parent.frame(), lock = TRUE)
 }
 \arguments{
 \item{classname}{Name of the class.}
