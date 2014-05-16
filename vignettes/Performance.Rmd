@@ -151,6 +151,21 @@ obj_sizes(
 ```
 
 
+It looks like the standard reference class object takes up a huge amount of memory, but much of that is shared between reference classes. Adding another object from a different reference class, doesn't require much more memory -- about 30Kb:
+
+```{r}
+A_rc2 <- setRefClass("A_rc2",
+  fields = list(x = "numeric"),
+  methods = list(
+    initialize = function(x = 2) .self$x <<- x,
+    inc = function(n = 2) x <<- x * n
+  )
+)
+
+# Size of a new A_rc2 object, over and above an A_rc object
+as.numeric(object_size(A_rc$new(), A_rc2$new()) - object_size(A_rc$new()))
+```
+
 ## Object instantiation speed
 
 How much time does it take to create one of these objects?
