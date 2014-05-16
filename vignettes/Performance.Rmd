@@ -44,6 +44,8 @@ A_rc <- setRefClass("A_rc",
 
 ## Winston's simple reference class
 
+This is a simpler implementation of reference objects, from the [testclasses](https://github.com/wch/testclasses) package.
+
 ```{r}
 B_wrc <- createRefClass("B_wrc",
   members = list(
@@ -62,7 +64,7 @@ print(B_wrc$new())
 
 ## Winston's simple reference class 2, with public and private members
 
-This is a variant on Winston's reference class, which has public and private members.
+This is a variant on the previous type of reference class, but this version has public and private members.
 
 ```{r}
 C_wrc_priv <- createRefClass2("C_wrc_priv",
@@ -72,11 +74,17 @@ C_wrc_priv <- createRefClass2("C_wrc_priv",
     inc = function(n = 1) x <<- x + n
   )
 )
+```
 
+Instead of `self`, these objects have `public` and `private` object.
+
+```{r}
 print(C_wrc_priv$new())
 ```
 
 ## Environment created by a closure, with class attribute
+
+This is simply an environment with a class attached to it.
 
 ```{r}
 D_closure_class <- function(x = 1) {
@@ -86,6 +94,13 @@ D_closure_class <- function(x = 1) {
 ```
 
 This doesn't have a `self` member, although that could be added.
+
+Even though `x` isn't declared in the function body, it gets captured because it's an argument to the function.
+
+```{r}
+# Roundabout way to print the contents of a D object
+str(as.list.environment(D_closure_class()))
+```
 
 ## Environment created by a closure, without class attribute
 
