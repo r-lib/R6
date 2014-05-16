@@ -313,9 +313,9 @@ env_class$x <- 10
 
 invisible(gc())
 microbenchmark(
-  list_noclass = list_noclass,
+  list_noclass = list_noclass$x,
   list_class = list_class$x,
-  env_noclass = env_noclass,
+  env_noclass = env_noclass$x,
   env_class = env_class$x,
   unit = "us"
 )
