@@ -2,3 +2,4 @@
 
 S3method(print,RefClass)
 S3method(print,RefClassGenerator)
+export(createRefClass)

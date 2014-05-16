@@ -15,6 +15,7 @@
 #'     is exactly the same except for the environment.
 #' }
 #'
+#' @export
 #' @param classname Name of the class.
 #' @param members A list of public members, which can be functions and
 #'   non-functions.
