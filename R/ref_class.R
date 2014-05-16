@@ -54,75 +54,50 @@
 #'
 #' # Print, using the print.RefClass method:
 #' print(z)
-#'
-#' # Can also create S3 methods for Class4 objects
-#' # This prints the contents of the public environment.
-#' print.Class4 <- function(x, ...) {
-#'   names <- ls(x, all.names = TRUE)
-#'   values <- vapply(names, function(name) {
-#'     obj <- x[[name]]
-#'     if (is.function(obj)) "function"
-#'     else if (is.environment(obj)) "environment"
-#'     else as.character(obj)
-#'   }, FUN.VALUE = character(1))
-#'   cat(paste("  ", names, ": ", values, sep = "", collapse = "\n"))
-#' }
-#' print(z)
 createRefClass <- function(classname, members = list(),
-                          parent_env = parent.frame(), lock = TRUE) {
-  template <- list()
-  template$public <- new.env(parent = parent_env)
+                           parent_env = parent.frame(), lock = TRUE) {
 
-  # Copy the public list items into the environment
-  list2env(members, envir = template$public)
-
-  # All functions execute in the public env (even if they're found in the
-  # private env)
-  assign_func_envs(template$public, template$public)
-
-  lockEnvironment(template$public, bindings = TRUE)
-
-  template$new <- generate_ref_class_new(classname, template, parent_env, lock)
-
-  structure(template, class = paste0("RefClassGenerator"))
-}
-
-# Returns a $new() function for a class
-generate_ref_class_new <- function(classname = NULL, template = NULL,
-                                  parent_env = NULL, lock = TRUE) {
-  if (is.null(classname) || is.null(template) || is.null(parent_env)) {
-    stop("classname, template, and parent_env must be supplied.")
-  }
-
-  function(...) {
-    # Create public environment
-    public_env <- new.env(parent = parent_env)
-
-    # Copy public environment from the template
-    copy_env(template$public, public_env)
+  newfun <- function(...) {
+    env <- list2env(members, parent = parent_env)
 
     # Fix environment for functions
-    assign_func_envs(public_env, public_env)
+    assign_func_envs(env, env)
 
     # Add self pointer
-    public_env$self <- public_env
+    env$self <- env
 
-    if (lock) {
-      lockEnvironment(public_env)
-    }
+    if (lock) lockEnvironment(env)
+    if (is.function(env$initialize)) env$initialize(...)
 
-    # Run the initalize() method if available
-    if (is.function(public_env$initialize)) {
-      public_env$initialize(...)
-    }
-
-    structure(public_env, class = c(classname, "RefClass"))
+    structure(env, class = c(classname, "RefClass"))
   }
-}
 
+  structure(
+    list(new = newfun),
+    class = "RefClassGenerator",
+    classname = classname
+  )
+}
 
 #' A rough way of printing out the contents of a RefClass object
 #' @export
 print.RefClass <- function(x, ...) {
-  str(as.list.environment(x))
+  names <- ls(x, all.names = TRUE)
+  values <- vapply(names, function(name) {
+    obj <- x[[name]]
+    if (is.function(obj)) "function"
+    else if (is.environment(obj)) "environment"
+    else as.character(obj)
+  }, FUN.VALUE = character(1))
+
+  cat(
+    class(x)[1], " object\n",
+    paste("  ", names, ": ", values, sep = "", collapse = "\n"),
+    sep = ""
+  )
+}
+
+#' @export
+print.RefClassGenerator <- function(x, ...) {
+  cat(attr(x, "classname"), "object generator")
 }
