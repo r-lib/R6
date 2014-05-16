@@ -38,7 +38,7 @@ Class4 <- createRefClass("Class4",
   members = list(
     x = 1,
     y = 2,
-    initialize = function(x = NULL, y = NULL, z = NULL) {
+    initialize = function(x = NULL, y = NULL) {
       if (!is.null(x)) self$x <- x
       if (!is.null(y)) self$y <- y
     },
@@ -65,20 +65,6 @@ z$sum_xy()
 z$sum_xy2()
 
 # Print, using the print.RefClass method:
-print(z)
-
-# Can also create S3 methods for Class4 objects
-# This prints the contents of the public environment.
-print.Class4 <- function(x, ...) {
-  names <- ls(x, all.names = TRUE)
-  values <- vapply(names, function(name) {
-    obj <- x[[name]]
-    if (is.function(obj)) "function"
-    else if (is.environment(obj)) "environment"
-    else as.character(obj)
-  }, FUN.VALUE = character(1))
-  cat(paste("  ", names, ": ", values, sep = "", collapse = "\\n"))
-}
 print(z)
 }
 
