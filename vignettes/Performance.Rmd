@@ -60,10 +60,26 @@ Objects of this type also have an automatically-created `self` member:
 print(B_wrc$new())
 ```
 
+## Winston's simple reference class 2, with public and private members
+
+This is a variant on Winston's reference class, which has public and private members.
+
+```{r}
+C_wrc_priv <- createRefClass2("C_wrc_priv",
+  private = list(x = NULL),
+  public = list(
+    initialize = function(x = 1) private$x <<- x,
+    inc = function(n = 1) x <<- x + n
+  )
+)
+
+print(C_wrc_priv$new())
+```
+
 ## Environment created by a closure, with class attribute
 
 ```{r}
-C_closure_class <- function(x = 1) {
+D_closure_class <- function(x = 1) {
   inc <- function(n = 1) x <<- x + n
   structure(environment(), class = "D_closure")
 }
@@ -76,7 +92,7 @@ This doesn't have a `self` member, although that could be added.
 This is the simplest type of reference object:
 
 ```{r}
-D_closure_noclass <- function(x = 1) {
+E_closure_noclass <- function(x = 1) {
   inc <- function(n = 1) x <<- x + n
   environment()
 }
@@ -113,8 +129,9 @@ Sizes of each type of object, in bytes:
 obj_sizes(
   A_rc = A_rc$new,
   B_wrc = B_wrc$new,
-  C_closure_class = C_closure_class,
-  D_closure_noclass = D_closure_noclass
+  C_wrc_priv = C_wrc_priv$new,
+  D_closure_class = D_closure_class,
+  E_closure_noclass = E_closure_noclass
 )
 ```
 
@@ -129,16 +146,17 @@ invisible(gc())
 speed <- microbenchmark(
   A_rc = A_rc$new(),
   B_wrc = B_wrc$new(),
-  C_closure_class = C_closure_class(),
-  D_closure_noclass = D_closure_noclass(),
-  unit = "ns"
+  C_wrc_priv = C_wrc_priv$new(),
+  D_closure_class = D_closure_class(),
+  E_closure_noclass = E_closure_noclass(),
+  unit = "us"
 )
 speed
 ```
 
 Standard R reference classes are much slower to instantiate than the other types of classes, with a median of `r median(speed[speed$expr == "A_rc", "time"]) / 1e6` milliseconds per instantiation.
 
-C is slower than D, though I'm not sure why. The only difference is that the returned object has a class attribute, and R shouldn't have to do any S3 method lookup, since the object returned by the instantiation function is simply discarded.
+D is slower than E, though I'm not sure why. The only difference is that the returned object has a class attribute, and R shouldn't have to do any S3 method lookup, since the object returned by the instantiation function is simply discarded.
 
 
 ## Method call speed
@@ -148,23 +166,25 @@ How much overhead is there when calling a method from one of these objects?
 ```{r}
 A <- A_rc$new()
 B <- B_wrc$new()
-C <- C_closure_class()
-D <- D_closure_noclass()
+C <- C_wrc_priv$new()
+D <- D_closure_class()
+E <- E_closure_noclass()
 
 invisible(gc())
 microbenchmark(
   A_rc = A$inc(),
   B_wrc = B$inc(),
-  C_closure_class = C$inc(),
-  D_closure_noclass = D$inc(),
-  unit = "ns"
+  C_wrc_priv = C$inc(),
+  D_closure_class = D$inc(),
+  E_closure_noclass = E$inc(),
+  unit = "us"
 )
 ```
 
 
-As expected, standard reference classes are the slowest by a large margin. The difference between C and D is probably due to S3 method lookup for the `$` function -- there could be a `$.myclass` method which would be called for `myclass` objects.
+As expected, standard reference classes are the slowest by a large margin. The difference between D and E is probably due to S3 method lookup for the `$` function -- there could be a `$.myclass` method which would be called for `myclass` objects.
 
-When we manually remove the class from the B object, it performs on par with D.
+When we manually remove the class from the B object, it performs on par with E.
 
 ```{r}
 # Really create a reference object without a class
@@ -172,8 +192,8 @@ B2 <- B_wrc$new()
 class(B2) <- NULL
 microbenchmark(
   B_wrc_noclass = B2$inc(),
-  D_closure_noclass = D$inc(),
-  unit = "ns"
+  E_closure_noclass = E$inc(),
+  unit = "us"
 )
 ```
 
@@ -231,7 +251,7 @@ microbenchmark(
   rc_self = rc_self_obj$inc(),
   wrc_no_self = wrc_no_self_obj$inc(),
   wrc_self = wrc_self_obj$inc(),
-  unit = "ns"
+  unit = "us"
 )
 ```
 
