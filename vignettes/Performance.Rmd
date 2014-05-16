@@ -2,7 +2,6 @@
 title: "Reference class performance tests"
 output:
   html_document:
-    theme: spacelab
     toc: yes
 ---
 
@@ -11,9 +10,9 @@ output:
 %\VignetteIndexEntry{Reference class performance tests}
 -->
 
-Reference classes in R are very useful for some situations, but they don't come for free. In this document, we'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
+Reference classes in R are very useful for some situations, but they don't come for free. In this document, I'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
 
-We won't cover the other major cost of reference classes, which is the complexity and fickleness of working with S4 (since reference classes are built on S4).
+I won't cover the other major cost of reference classes, which is the complexity and fickleness of using S4 (since reference classes are built on S4).
 
 
 ```{r}
@@ -44,7 +43,7 @@ A_rc <- setRefClass("A_rc",
 
 ## Winston's simple reference class
 
-This is a simpler implementation of reference objects, from the [testclasses](https://github.com/wch/testclasses) package.
+This is a [simpler implementation](https://github.com/wch/testclasses/blob/master/R/ref_class.R) of reference objects, from the [testclasses](https://github.com/wch/testclasses) package.
 
 ```{r}
 B_wrc <- createRefClass("B_wrc",
@@ -64,7 +63,7 @@ print(B_wrc$new())
 
 ## Winston's simple reference class 2, with public and private members
 
-This is a variant on the previous type of reference class, but this version has public and private members.
+This is a [variant](https://github.com/wch/testclasses/blob/master/R/ref_class2.R) on the previous type of reference class, but this version has public and private members.
 
 ```{r}
 C_wrc_priv <- createRefClass2("C_wrc_priv",
@@ -76,7 +75,7 @@ C_wrc_priv <- createRefClass2("C_wrc_priv",
 )
 ```
 
-Instead of `self`, these objects have `public` and `private` object.
+Instead of a single `self` object which refers to all items in an object, these objects have `public` and `private`.
 
 ```{r}
 print(C_wrc_priv$new())
@@ -118,6 +117,8 @@ E_closure_noclass <- function(x = 1) {
 Tests
 =====
 
+For all the timings using `microbenchmark()`, the results are reported in microseconds, and the most useful value is probably the median column.
+
 ## Memory footprint
 
 How much memory does a single instance of each object take, and how much memory does each additional object take?
@@ -151,7 +152,7 @@ obj_sizes(
 ```
 
 
-It looks like the standard reference class object takes up a huge amount of memory, but much of that is shared between reference classes. Adding another object from a different reference class, doesn't require much more memory -- about 30Kb:
+It looks like the standard reference class object takes up a huge amount of memory, but much of that is shared between reference classes. Adding another object from a different reference class doesn't require much more memory -- about 30KB:
 
 ```{r}
 A_rc2 <- setRefClass("A_rc2",
@@ -186,7 +187,14 @@ speed
 
 Standard R reference classes are much slower to instantiate than the other types of classes, with a median of `r median(speed[speed$expr == "A_rc", "time"]) / 1e6` milliseconds per instantiation.
 
-D is slower than E, though I'm not sure why. The only difference is that the returned object has a class attribute, and R shouldn't have to do any S3 method lookup, since the object returned by the instantiation function is simply discarded.
+D is slower than E. The only difference between them is that the D object has a class attribute. The slowness appears to be due mostly to the call to the `structure()` function that's called in the creation of a D object:
+
+```{r}
+microbenchmark(
+  structure = structure(1, class = "foo"),
+  unit = "us"
+)
+```
 
 
 ## Method call speed
@@ -308,7 +316,8 @@ microbenchmark(
   list_noclass = list_noclass,
   list_class = list_class$x,
   env_noclass = env_noclass,
-  env_class = env_class$x
+  env_class = env_class$x,
+  unit = "us"
 )
 ```
 
