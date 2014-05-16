@@ -187,11 +187,21 @@ speed
 
 Standard R reference classes are much slower to instantiate than the other types of classes, with a median of `r median(speed[speed$expr == "A_rc", "time"]) / 1e6` milliseconds per instantiation.
 
-D is slower than E. The only difference between them is that the D object has a class attribute. The slowness appears to be due mostly to the call to the `structure()` function that's called in the creation of a D object:
+D is slower than E. The only difference between them is that the D object has a class attribute. The slowness appears to be due mostly to the call to the `structure()` function that's called in the creation of a D object. If, instead of using `structure()`, we use `class()<-` to set the class, performance is much better. With the version below, this also adds a `self` object to the environment.
 
 ```{r}
+# Similar to D_closure_class, but uses class()<- instead of structure()
+D_closure_class2 <- function(x = 1) {
+  inc <- function(n = 1) x <<- x + n
+  self <- environment()
+  class(self) <- "D_closure"
+  self
+}
+
 microbenchmark(
-  structure = structure(1, class = "foo"),
+  D_closure_class = D_closure_class(),
+  D_closure_class2 = D_closure_class2(),
+  E_closure_noclass = E_closure_noclass(),
   unit = "us"
 )
 ```
