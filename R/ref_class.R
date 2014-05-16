@@ -82,20 +82,13 @@ createRefClass <- function(classname = NULL, members = list(),
 #' A rough way of printing out the contents of a RefClass object
 #' @export
 print.RefClass <- function(x, ...) {
-  names <- ls(x, all.names = TRUE)
-  values <- vapply(names, function(name) {
-    obj <- x[[name]]
-    if (is.function(obj)) "function"
-    else if (is.environment(obj)) "environment"
-    else as.character(obj)
-  }, FUN.VALUE = character(1))
-
   cat(
-    class(x)[1], " object\n",
-    paste("  ", names, ": ", values, sep = "", collapse = "\n"),
+    "<", class(x)[1], ">\n",
+    indent(object_summaries(x), 2),
     sep = ""
   )
 }
+
 
 #' @export
 print.RefClassGenerator <- function(x, ...) {

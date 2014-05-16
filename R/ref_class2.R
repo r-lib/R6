@@ -100,10 +100,10 @@ createRefClass2 <- function(classname = NULL, private = list(), public = list(),
 #' @export
 print.RefClass2 <- function(x, ...) {
   cat(
-    "<", class(x)[1], ">\n  Public:\n",
-    indent(object_summaries(x), 4),
-    "\n  Private:\n",
+    "<", class(x)[1], ">\n  Private:\n",
     indent(object_summaries(parent.env(x)), 4),
+    "\n  Public:\n",
+    indent(object_summaries(x), 4),
     sep = ""
   )
 }
