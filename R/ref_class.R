@@ -70,7 +70,8 @@ createRefClass <- function(classname = NULL, members = list(),
     if (lock) lockEnvironment(env)
     if (is.function(env$initialize)) env$initialize(...)
 
-    structure(env, class = c(classname, "RefClass"))
+    class(env) <- c(classname, "RefClass")
+    env
   }
 
   structure(

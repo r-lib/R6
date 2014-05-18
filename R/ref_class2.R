@@ -87,7 +87,8 @@ createRefClass2 <- function(classname = NULL, private = list(), public = list(),
     }
     if (is.function(public_env$initialize)) public_env$initialize(...)
 
-    structure(public_env, class = c(classname, "RefClass2"))
+    class(public_env) <- c(classname, "RefClass")
+    public_env
   }
 
   structure(
