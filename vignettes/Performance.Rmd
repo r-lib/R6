@@ -18,8 +18,8 @@ I won't cover the other major cost of reference classes, which is the complexity
 ```{r}
 # Some setup stuff
 library(microbenchmark)
-library(pryr)
-library(testclasses)  # For Winston's simple reference classes 
+library(pryr)           # For object_size function
+library(testclasses)    # For Winston's simple reference classes
 ```
 
 *****
@@ -88,11 +88,11 @@ This is simply an environment with a class attached to it.
 ```{r}
 D_closure_class <- function(x = 1) {
   inc <- function(n = 1) x <<- x + n
-  structure(environment(), class = "D_closure")
+  self <- environment()
+  class(self) <- "D_closure"
+  self
 }
 ```
-
-This doesn't have a `self` member, although that could be added.
 
 Even though `x` isn't declared in the function body, it gets captured because it's an argument to the function.
 
@@ -100,6 +100,13 @@ Even though `x` isn't declared in the function body, it gets captured because it
 # Roundabout way to print the contents of a D object
 str(as.list.environment(D_closure_class()))
 ```
+
+Objects created this way are very similar to those created by `B_wrc`. The main difference is that those created by `B_wrc` contain an `initialize` function:
+
+```{r}
+str(as.list.environment(B_wrc$new()))
+```
+
 
 ## Environment created by a closure, without class attribute
 
@@ -111,6 +118,8 @@ E_closure_noclass <- function(x = 1) {
   environment()
 }
 ```
+
+There are two differences between D and E: objects of type E don't have a class attribute, and they don't have a `self` object.
 
 *****
 
@@ -125,34 +134,44 @@ How much memory does a single instance of each object take, and how much memory 
 
 ```{r}
 # Utility functions for calculating sizes
-obj_size <- function(newfun) {
-  data.frame(
-    one = as.numeric(object_size(newfun())),
-    incremental = as.numeric(object_size(newfun(), newfun()) - object_size(newfun()))
-  )
+obj_size <- function(expr, .env = parent.frame()) {
+  size_n <- function(n = 1) {
+    objs <- lapply(1:n, function(x) eval(expr, .env))
+    as.numeric(do.call(object_size, objs))
+  }
+
+  data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
 }
 
-obj_sizes <- function(...) {
-  dots <- list(...)
-  sizes <- Map(obj_size, dots)
+obj_sizes <- function(..., .env = parent.frame()) {
+  exprs <- as.list(match.call(expand.dots = FALSE)$...)
+  names(exprs) <- lapply(1:length(exprs),
+    FUN = function(n) {
+      name <- names(exprs)[n]
+      if (is.null(name) || name == "") paste(deparse(exprs[[n]]), collapse = " ")
+      else name
+    })
+
+  sizes <- mapply(obj_size, exprs, MoreArgs = list(.env = .env), SIMPLIFY = FALSE)
   do.call(rbind, sizes)
 }
+
 ```
 
 Sizes of each type of object, in bytes:
 
 ```{r}
 obj_sizes(
-  A_rc = A_rc$new,
-  B_wrc = B_wrc$new,
-  C_wrc_priv = C_wrc_priv$new,
-  D_closure_class = D_closure_class,
-  E_closure_noclass = E_closure_noclass
+  A_rc$new(),
+  B_wrc$new(),
+  C_wrc_priv$new(),
+  D_closure_class(),
+  E_closure_noclass()
 )
 ```
 
 
-It looks like the standard reference class object takes up a huge amount of memory, but much of that is shared between reference classes. Adding another object from a different reference class doesn't require much more memory -- about 30KB:
+It looks like using a standard reference class takes up a huge amount of memory, but much of that is shared between reference classes. Adding another object from a different reference class doesn't require much more memory -- around 38KB:
 
 ```{r}
 A_rc2 <- setRefClass("A_rc2",
@@ -175,37 +194,17 @@ How much time does it take to create one of these objects?
 # Garbage collect now so that we (probably) won't do it in the middle of a run
 invisible(gc())
 speed <- microbenchmark(
-  A_rc = A_rc$new(),
-  B_wrc = B_wrc$new(),
-  C_wrc_priv = C_wrc_priv$new(),
-  D_closure_class = D_closure_class(),
-  E_closure_noclass = E_closure_noclass(),
+  A_rc$new(),
+  B_wrc$new(),
+  C_wrc_priv$new(),
+  D_closure_class(),
+  E_closure_noclass(),
   unit = "us"
 )
 speed
 ```
 
 Standard R reference classes are much slower to instantiate than the other types of classes, with a median of `r median(speed[speed$expr == "A_rc", "time"]) / 1e6` milliseconds per instantiation.
-
-D is slower than E. The only difference between them is that the D object has a class attribute. The slowness appears to be due mostly to the call to the `structure()` function that's called in the creation of a D object. If, instead of using `structure()`, we use `class()<-` to set the class, performance is much better. With the version below, this also adds a `self` object to the environment.
-
-```{r}
-# Similar to D_closure_class, but uses class()<- instead of structure()
-D_closure_class2 <- function(x = 1) {
-  inc <- function(n = 1) x <<- x + n
-  self <- environment()
-  class(self) <- "D_closure"
-  self
-}
-
-microbenchmark(
-  D_closure_class = D_closure_class(),
-  D_closure_class2 = D_closure_class2(),
-  E_closure_noclass = E_closure_noclass(),
-  unit = "us"
-)
-```
-
 
 ## Method call speed
 
@@ -251,19 +250,19 @@ microbenchmark(
 With standard reference class objects, you can modify fields using the `<<-` operator, or by using the `self` object. For example, compare the `inc()` methods of these two classes:
 
 ```{r}
-rc_no_self <- setRefClass("rc_no_self", 
-  fields = list(x = "numeric"),
-  methods = list(
-    initialize = function(x = 1) .self$x <<- x,
-    inc = function(n = 1) x <<- x + n
-  )
-)
-
-rc_self <- setRefClass("rc_self", 
+rc_self <- setRefClass("rc_self",
   fields = list(x = "numeric"),
   methods = list(
     initialize = function(x = 1) .self$x <<- x,
     inc = function(n = 1) .self$x <- x + n
+  )
+)
+
+rc_no_self <- setRefClass("rc_no_self",
+  fields = list(x = "numeric"),
+  methods = list(
+    initialize = function(x = 1) .self$x <<- x,
+    inc = function(n = 1) x <<- x + n
   )
 )
 ```
@@ -271,34 +270,34 @@ rc_self <- setRefClass("rc_self",
 Winston's reference classes are similar, except they use `self` instead of `.self`:
 
 ```{r}
-wrc_no_self <- createRefClass("wrc_no_self",
-  members = list(
-    x = 1,
-    inc = function(n = 1) x <<- x + n
-  )
-)
-
 wrc_self <- createRefClass("wrc_self",
   members = list(
     x = 1,
     inc = function(n = 1) self$x <- self$x + n
   )
 )
+
+wrc_no_self <- createRefClass("wrc_no_self",
+  members = list(
+    x = 1,
+    inc = function(n = 1) x <<- x + n
+  )
+)
 ```
 
 
 ```{r}
-rc_no_self_obj <- rc_no_self$new()
 rc_self_obj <- rc_self$new()
-wrc_no_self_obj <- wrc_no_self$new()
+rc_no_self_obj <- rc_no_self$new()
 wrc_self_obj <- wrc_self$new()
+wrc_no_self_obj <- wrc_no_self$new()
 
 invisible(gc())
 microbenchmark(
-  rc_no_self = rc_no_self_obj$inc(),
   rc_self = rc_self_obj$inc(),
-  wrc_no_self = wrc_no_self_obj$inc(),
+  rc_no_self = rc_no_self_obj$inc(),
   wrc_self = wrc_self_obj$inc(),
+  wrc_no_self = wrc_no_self_obj$inc(),
   unit = "us"
 )
 ```
@@ -308,6 +307,28 @@ Using `.self` or `self` adds some overhead, which makes sense when you consider 
 When the method accesses `x` without using `.self`, R first searches in the execution environment but doesn't find `x` there, so it then searches in the parent environment, finds `x` there, and assigns the value.
 
 When using `.self`, R searches for `.self` in the function's execution environment but doesn't find it there, so it looks in the parent environment (which also happens to be the object environment, as well as the environment that `.self` points to) and does find it there. Then it looks in the `.self` environment for `x`, and assigns the value.
+
+Additionally, there is some overhead when the environment has a class attribute.
+
+```{r}
+wrc_self_obj <- wrc_self$new()
+wrc_no_self_obj <- wrc_no_self$new()
+
+wrc_self_noclass_obj <- wrc_self$new()
+class(wrc_self_noclass_obj) <- NULL
+wrc_no_self_noclass_obj <- wrc_no_self$new()
+class(wrc_no_self_noclass_obj) <- NULL
+
+invisible(gc())
+microbenchmark(
+  wrc_self = wrc_self_obj$inc(),
+  wrc_no_self = wrc_no_self_obj$inc(),
+  wrc_self_noclass = wrc_self_noclass_obj$inc(),
+  wrc_no_self_noclass = wrc_no_self_noclass_obj$inc(),
+  unit = "us"
+)
+```
+
 
 ## Lists vs. environments, and S3 object access overhead
 
