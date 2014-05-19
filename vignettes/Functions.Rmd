@@ -1,0 +1,372 @@
+---
+title: "Functions"
+output:
+  html_document:
+    css: mystyle.css
+    toc: yes
+---
+
+
+```{r}
+# Some setup stuff
+library(microbenchmark)
+library(pryr)
+```
+
+Environments
+============
+
+A new environment uses `r as.numeric(object_size(new.env()))` bytes, regardless of what the parent environment is.
+
+```{r}
+as.numeric(object_size(new.env()))
+as.numeric(object_size(new.env(), new.env()) - object_size(new.env()))
+
+as.numeric(object_size(new.env(parent = emptyenv())))
+as.numeric(object_size(new.env(parent = asNamespace('pryr'))))
+```
+
+
+Creating a new environment is pretty quick -- on the order of 1 microsecond.
+
+```{r}
+microbenchmark(new.env(), unit = "us")
+```
+
+
+Functions
+=========
+
+## Time calling functions
+
+Calling a function takes a minimum of about 0.15 microseconds. As you add more arguments, it takes more time. The function signature can use `...` or explicit arguments, and it seems to not impact the speed.
+
+```{r}
+blank <- function() NULL
+dots <- function(...) NULL
+xyz <- function(x, y, z) NULL
+
+invisible(gc())
+microbenchmark(
+  blank(),
+  dots(),
+  dots(1),
+  dots(1, 2),
+  dots(1, 2, 3),
+  xyz(1, 2, 3),
+  unit = "us"
+)
+```
+
+## Time handling and evaluating arguments
+
+```{r}
+noArg_noEval <- function() { 3; NULL }
+arg_noEval <- function(x) { 3; NULL }
+arg_eval <- function(x) { x; NULL }
+
+invisible(gc())
+microbenchmark(
+  noArg_noEval(),
+  arg_noEval(3),
+  arg_eval(3),
+  unit = "us"
+)
+```
+
+
+## Copying functions
+
+### Memory footprint of copied functions
+
+How much memory does a copy of a function take up?
+
+We'll start by looking at a large-ish function, `lm`.
+
+```{r}
+as.numeric(object_size(lm))
+```
+
+Making a copy of it takes up no extra space (other than keeping track of the new "pointer" to the function, which `object_size` doesn't capture):
+
+```{r}
+lm2 <- lm
+as.numeric(object_size(lm, lm2))
+```
+
+But if we change the environment of the copied function, it does take a little bit more memory:
+
+```{r}
+e <- new.env()
+environment(lm2) <- e
+as.numeric(object_size(lm, lm2) - object_size(lm)) 
+```
+
+Maybe the extra memory is just from the new environment -- if we assigned it to an existing environment, it might not use more memory, or at least not that much more.
+
+```{r}
+lm3 <- lm
+environment(lm3) <- e
+as.numeric(object_size(lm, lm2, lm3) - object_size(lm)) 
+```
+
+It looks like it uses 56 more bytes when you make a copy and point it to an environment that's already in use. Oddly, if you take copy a function, then assign the same environment that it started with, this uses 56 bytes.
+
+```{r}
+lm2 <- lm
+as.numeric(object_size(lm, lm2) - object_size(lm))
+
+environment(lm2) <- environment(lm2)
+identical(lm, lm2)
+as.numeric(object_size(lm, lm2) - object_size(lm))
+```
+
+
+## Time to create a function
+
+* Does it cost time and/or memory to define a function within another function?
+
+
+If we call a function which creates a function, how quickly does R create the function? Does it matter how large that function is?
+
+We'll test it with these two functions. The first returns an extremely simple function, and the second returns the same thing as the `stats::lm` function. (You can ignore the contents of this function -- its only purpose here is to be a long function.)
+
+```{r}
+# This function returns a very simple function
+create_inline_short <- function() { 
+  function() 3
+}
+
+# The long function returns the lm function (spelled out)
+create_inline_long <- function() {
+  function(formula, data, subset, weights, na.action, method = "qr",
+      model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE,
+      contrasts = NULL, offset, ...) {
+    ret.x <- x
+    ret.y <- y
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data", "subset", "weights", "na.action",
+        "offset"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$drop.unused.levels <- TRUE
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval(mf, parent.frame())
+    if (method == "model.frame")
+        return(mf)
+    else if (method != "qr")
+        warning(gettextf("method = '%s' is not supported. Using 'qr'",
+            method), domain = NA)
+    mt <- attr(mf, "terms")
+    y <- model.response(mf, "numeric")
+    w <- as.vector(model.weights(mf))
+    if (!is.null(w) && !is.numeric(w))
+        stop("'weights' must be a numeric vector")
+    offset <- as.vector(model.offset(mf))
+    if (!is.null(offset)) {
+        if (length(offset) != NROW(y))
+            stop(gettextf("number of offsets is %d, should equal %d (number of observations)",
+                length(offset), NROW(y)), domain = NA)
+    }
+    if (is.empty.model(mt)) {
+        x <- NULL
+        z <- list(coefficients = if (is.matrix(y)) matrix(, 0,
+            3) else numeric(), residuals = y, fitted.values = 0 *
+            y, weights = w, rank = 0L, df.residual = if (!is.null(w)) sum(w !=
+            0) else if (is.matrix(y)) nrow(y) else length(y))
+        if (!is.null(offset)) {
+            z$fitted.values <- offset
+            z$residuals <- y - offset
+        }
+    }
+    else {
+        x <- model.matrix(mt, mf, contrasts)
+        z <- if (is.null(w))
+            lm.fit(x, y, offset = offset, singular.ok = singular.ok,
+                ...)
+        else lm.wfit(x, y, w, offset = offset, singular.ok = singular.ok,
+            ...)
+    }
+    class(z) <- c(if (is.matrix(y)) "mlm", "lm")
+    z$na.action <- attr(mf, "na.action")
+    z$offset <- offset
+    z$contrasts <- attr(x, "contrasts")
+    z$xlevels <- .getXlevels(mt, mf)
+    z$call <- cl
+    z$terms <- mt
+    if (model)
+        z$model <- mf
+    if (ret.x)
+        z$x <- x
+    if (ret.y)
+        z$y <- y
+    if (!qr)
+        z$qr <- NULL
+    z
+  }
+}
+
+microbenchmark(
+  create_inline_short(),
+  create_inline_long(),
+  unit = "us"
+)
+```
+
+Surprisingly, it takes almost exactly the same amount of time to create a very long function as it does to create a short function, and both are very fast. This is probably because everything is already parsed by the time the outer function is called, so the inner function merely needs to be returned.
+
+Let's dig a little deeper. Presumably, there's some part about making a larger function that takes more time, but whatever it is isn't being reflected in the test above with functions defined inline.
+
+We can break down the creation of a function into two stages: parsing the text into an unevaluated expression, and evaluating the expression. With the inline functions above, by the time we call the outer function, all the text has been parsed. Evaluating the parsed expression seems to not depend on the length of the function contained within; R probably just returns the already-created parse tree for the function, and assigns it a new environment.
+
+We can test these stages directly. Given a string representation of a function, how long does it take to parse it into an unevaluated expression? How long does it take to evaluate the expression? And does it matter how long the expression is?
+
+We'll create the same function in three different ways here.
+
+```{r}
+short_string <- "function() 3"
+# Parse the string into an unevaluated expression
+parse_string_short <- function() parse(text = short_string)
+
+short_expr <- parse_string_short()
+# Evaluate the expression
+eval_expr_short <- function() eval(short_expr, envir = parent.frame())
+
+# Same for long functions
+long_string <- deparse(lm)  # This is a string representation of lm
+parse_string_long <- function() parse(text = long_string)
+long_expr <- parse_string_long()
+eval_expr_long <- function() eval(long_expr, envir = parent.frame())
+
+# We'll also compare it to versions above, where the function was defined inline in a function
+invisible(gc())
+microbenchmark(
+  create_inline_short(),
+  create_inline_long(),
+  parse_string_short(),
+  parse_string_long(),
+  eval_expr_short(),
+  eval_expr_long(),
+  unit = "us"
+)
+```
+
+It appears that parsing is the slowest step, and, not surprisingly, dependent on the length of the text.
+
+Once the text has been parsed into an unevaluated expression, evaluating it is very fast, and apparently not dependent on the length or complexity of the function that's returned. Does this mean that, as soon as an expression is parsed which has a function, that the function is already defined somewhere? We can test it by looking at memory usage.
+
+## Memory footprint of new functions
+
+When we create functions inside other functions, how much memory does it take? Is the memory shared between instances of these functions?
+
+Similarly, is memory shared between functions if we first create an unevaluated expression that returns the function, then evaluate that expression multiple times? If so, that suggests that when a function is created, R simply returns the expression representing the function (with an environment added).
+
+We can also compare the length of a 
+
+To test these things, we need to be a little more careful than we were previously; in the cases above, the environment of the created functions weren't always the same. The wrapper functions below ensure that the environment of the created functions is always the same:
+
+```{r}
+create_inline_short_env <- function() { 
+  f <- create_inline_short()
+  environment(f) <- parent.frame()
+  f
+}
+create_inline_long_env <- function() {
+  f <- create_inline_long()
+  environment(f) <- parent.frame()
+  f
+}
+
+# Create the function by parsing a string and evaluating it
+eval_parse_string_short <- function() {
+  f <- eval(parse_string_short())
+  environment(f) <- parent.frame()
+  f
+}
+eval_parse_string_long <- function() {
+  f <- eval(parse_string_long())
+  environment(f) <- parent.frame()
+  f
+}
+```
+
+We now have three functions, `create_inline_short_env()`, `eval_expr_short()`, `eval_parse_string_short()`, which will create functions that are exactly the same. (The same is true for the `long` versions as well.)
+
+For each of these ways of creating functions, we can now test how much memory is required to create a single instance of a function, and how much memory is required to create each subsequent instance.
+
+```{r}
+# Utility functions for calculating sizes
+obj_size <- function(expr, .env = parent.frame()) {
+  size_n <- function(n = 1) {
+    objs <- lapply(1:n, function(x) eval(expr, .env))
+    as.numeric(do.call(object_size, objs))
+  }
+
+  data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
+}
+
+obj_sizes <- function(..., .env = parent.frame()) {
+  exprs <- as.list(match.call(expand.dots = FALSE)$...)
+  names(exprs) <- lapply(1:length(exprs),
+    FUN = function(n) {
+      name <- names(exprs)[n]
+      if (is.null(name) || name == "") paste(deparse(exprs[[n]]), collapse = " ")
+      else name
+    })
+
+  sizes <- mapply(obj_size, exprs, MoreArgs = list(.env = .env), SIMPLIFY = FALSE)
+  do.call(rbind, sizes)
+}
+```
+
+```{r}
+obj_sizes(
+  create_inline_short_env(),
+  eval_expr_short(),
+  eval_parse_string_short(),
+  create_inline_long_env(),
+  eval_expr_long(),
+  eval_parse_string_long()
+)
+```
+
+Oddly, creating functions inline in a larger function seems to take a lot of memory for the first instance. Creating one more copy takes only 112 bytes.
+
+Creating a function by evaluating an expression takes a smaller amount of memory, and only 112 bytes for another copy.
+
+Creating a function by parsing a string and then evaluating it takes a smaller amount of memory. Instead of taking 112 bytes, each additional copy takes close to the same amount of memory as the first copy.
+
+These results suggest that the memory used by a function is allocated largely when the function is parsed, not when the function is actually created.
+
+
+```{r, eval = FALSE, echo = FALSE}
+# Old way
+obj_size <- function(newfun) {
+  data.frame(
+    one = as.numeric(object_size(newfun())),
+    incremental = as.numeric(object_size(newfun(), newfun()) - object_size(newfun()))
+  )
+}
+
+obj_sizes <- function(...) {
+  dots <- list(...)
+  sizes <- Map(obj_size, dots)
+  do.call(rbind, sizes)
+}
+
+obj_sizes(
+  a = create_inline_short_env,
+  b = eval_expr_short,
+  c = eval_parse_string_short,
+  d = create_inline_long_env,
+  e = eval_expr_long,
+  f = eval_parse_string_long
+)
+```
+
+Appendix
+========
+
+```{r}
+sessionInfo()
+```
