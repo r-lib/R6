@@ -2,6 +2,7 @@
 title: "Reference class performance tests"
 output:
   html_document:
+    css: mystyle.css
     toc: yes
 ---
 
