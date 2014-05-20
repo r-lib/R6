@@ -11,6 +11,10 @@ output:
 %\VignetteIndexEntry{Reference class performance tests}
 -->
 
+```{r echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
 Reference classes in R are very useful for some situations, but they don't come for free. In this document, I'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
 
 I won't cover the other major cost of reference classes, which is the complexity and fickleness of using S4 (since reference classes are built on S4).

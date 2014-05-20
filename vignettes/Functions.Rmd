@@ -1,5 +1,5 @@
 ---
-title: "Functions"
+title: "Functions: memory and speed tests"
 output:
   html_document:
     css: mystyle.css
@@ -7,11 +7,22 @@ output:
 ---
 
 
+```{r echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+This document is motivated by some experiments creating a replacement for reference classes.
+
+How expensive is it to define functions inline inside other functions, in terms of time and memory? How expensive is it to copy a function and assign the copy a new environment?
+
+What is the cost of calling a function?
+
 ```{r}
 # Some setup stuff
 library(microbenchmark)
 library(pryr)
 ```
+
 
 Environments
 ============
@@ -260,8 +271,6 @@ Once the text has been parsed into an unevaluated expression, evaluating it is v
 When we create functions inside other functions, how much memory does it take? Is the memory shared between instances of these functions?
 
 Similarly, is memory shared between functions if we first create an unevaluated expression that returns the function, then evaluate that expression multiple times? If so, that suggests that when a function is created, R simply returns the expression representing the function (with an environment added).
-
-We can also compare the length of a 
 
 To test these things, we need to be a little more careful than we were previously; in the cases above, the environment of the created functions weren't always the same. The wrapper functions below ensure that the environment of the created functions is always the same:
 
