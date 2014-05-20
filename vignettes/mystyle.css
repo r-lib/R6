@@ -157,7 +157,7 @@ pre:not([class]) {
   padding: 4px 25px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin: 0px 5px 5px 20px;
+  margin: 5px 5px 5px 20px;
 }
 
 pre.r {
@@ -165,7 +165,7 @@ pre.r {
   padding: 4px 10px;
   border: 1px solid #AEBDCC;
   border-radius: 5px;
-  margin: 5px 5px 0px 20px;
+  margin: 5px 5px 5px 20px;
 }
 
 img {
