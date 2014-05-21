@@ -21,13 +21,36 @@ What is the cost of calling a function?
 # Some setup stuff
 library(microbenchmark)
 library(pryr)
+
+# Utility functions for calculating sizes
+obj_size <- function(expr, .env = parent.frame()) {
+  size_n <- function(n = 1) {
+    objs <- lapply(1:n, function(x) eval(expr, .env))
+    as.numeric(do.call(object_size, objs))
+  }
+
+  data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
+}
+
+obj_sizes <- function(..., .env = parent.frame()) {
+  exprs <- as.list(match.call(expand.dots = FALSE)$...)
+  names(exprs) <- lapply(1:length(exprs),
+    FUN = function(n) {
+      name <- names(exprs)[n]
+      if (is.null(name) || name == "") paste(deparse(exprs[[n]]), collapse = " ")
+      else name
+    })
+
+  sizes <- mapply(obj_size, exprs, MoreArgs = list(.env = .env), SIMPLIFY = FALSE)
+  do.call(rbind, sizes)
+}
 ```
 
 
 Environments
 ============
 
-A new environment uses `r as.numeric(object_size(new.env()))` bytes, regardless of what the parent environment is.
+A new environment created with `new.env()` uses `r as.numeric(object_size(new.env()))` bytes, regardless of what the parent environment is.
 
 ```{r}
 as.numeric(object_size(new.env()))
@@ -37,11 +60,31 @@ as.numeric(object_size(new.env(parent = emptyenv())))
 as.numeric(object_size(new.env(parent = asNamespace('pryr'))))
 ```
 
+But much of that space is actually taken up by a hash table. The hash table speeds up access when there is a larger number of items, but when there is a small number of items, it probably doesn't help much, if at all.
+
+```{r}
+as.numeric(object_size(new.env(hash = FALSE)))
+```
+
+The `list2env` function uses 100 items as the threshold for using a hash table to an environment. This seems like a reasonable number to me.
 
 Creating a new environment is pretty quick -- on the order of 1 microsecond.
 
 ```{r}
-microbenchmark(new.env(), unit = "us")
+microbenchmark(
+  new.env(),
+  new.env(hash = FALSE),
+  unit = "us"
+)
+```
+
+Memory footprint of hashed vs. non-hashed environments.
+
+```{r}
+obj_sizes(
+  hashed = list2env(list(a = 1, b = function() 3), hash = TRUE),
+  unhashed = list2env(list(a = 1, b = function() 3), hash = FALSE)
+)
 ```
 
 
@@ -303,30 +346,6 @@ We now have three functions, `create_inline_short_env()`, `eval_expr_short()`, `
 
 For each of these ways of creating functions, we can now test how much memory is required to create a single instance of a function, and how much memory is required to create each subsequent instance.
 
-```{r}
-# Utility functions for calculating sizes
-obj_size <- function(expr, .env = parent.frame()) {
-  size_n <- function(n = 1) {
-    objs <- lapply(1:n, function(x) eval(expr, .env))
-    as.numeric(do.call(object_size, objs))
-  }
-
-  data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
-}
-
-obj_sizes <- function(..., .env = parent.frame()) {
-  exprs <- as.list(match.call(expand.dots = FALSE)$...)
-  names(exprs) <- lapply(1:length(exprs),
-    FUN = function(n) {
-      name <- names(exprs)[n]
-      if (is.null(name) || name == "") paste(deparse(exprs[[n]]), collapse = " ")
-      else name
-    })
-
-  sizes <- mapply(obj_size, exprs, MoreArgs = list(.env = .env), SIMPLIFY = FALSE)
-  do.call(rbind, sizes)
-}
-```
 
 ```{r}
 obj_sizes(
