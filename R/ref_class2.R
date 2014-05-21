@@ -68,10 +68,15 @@
 #' z$z <- 100   # Can set public members directly
 #' z$sum_xyz()
 #'
+#' z$x2         # An active binding that returns x*2
+#' z$x2 <- 1000 # Setting an active binding
+#' z$sum_xyz()  # 515
+#'
 #' # Print, using the print.RefClass2 method:
 #' print(z)
-createRefClass2 <- function(classname = NULL, private = list(), public = list(),
-                           parent_env = parent.frame(), lock = TRUE) {
+createRefClass2 <- function(classname = NULL, private = list(),
+                            public = list(), active = NULL,
+                            parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
     private_env <- list2env(private, parent = parent_env)
@@ -86,6 +91,16 @@ createRefClass2 <- function(classname = NULL, private = list(), public = list(),
     private_env$public  <- public_env
     public_env$private  <- private_env
     public_env$public   <- public_env
+
+    if (!is.null(active)) {
+      active_env <- list2env(active, parent = public_env)
+      public_env$.active <- active_env
+      assign_func_envs(active_env, public_env)
+
+      for (name in names(active)) {
+        makeActiveBinding(name, active_env[[name]], public_env)
+      }
+    }
 
     if (lock) {
       lockEnvironment(private_env)
