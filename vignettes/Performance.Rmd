@@ -7,7 +7,7 @@ output:
 ---
 
 <!--
-%\VignetteEngine{knitr}
+%\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Reference class performance tests}
 -->
 

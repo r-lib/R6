@@ -6,6 +6,10 @@ output:
     toc: yes
 ---
 
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Functions: memory and speed tests}
+-->
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE)

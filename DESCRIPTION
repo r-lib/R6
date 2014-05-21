@@ -4,7 +4,11 @@ Version: 0.1
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
 Description: Experiments with new types of classes in R.
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.0)
+Suggests:
+    knitr,
+    microbenchmark,
+    pryr
 License: MIT
 Roxygen: list(wrap = FALSE)
 LazyData: true
