@@ -99,6 +99,7 @@ table td {
 
 p {
   margin-left: 15px;
+  margin-bottom: 5px;
 }
 
 blockquote {
@@ -151,21 +152,12 @@ pre {
   white-space: pre-wrap;    /* Wrap long lines */
 }
 
-pre:not([class]) {
-  color: #00b;
-  background-color: #f8f8f8;
-  padding: 4px 25px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 5px 5px 5px 20px;
-}
-
 pre.r {
   background-color: #F3F5F7;
   padding: 4px 10px;
   border: 1px solid #AEBDCC;
   border-radius: 5px;
-  margin: 5px 5px 5px 20px;
+  margin: 5px 5px 10px 20px;
 }
 
 img {
