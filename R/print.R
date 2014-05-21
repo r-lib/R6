@@ -8,9 +8,10 @@ object_summaries <- function(x) {
 
   values <- vapply(names, function(name) {
     obj <- x[[name]]
-    if (is.function(obj)) "function"
+    if (is.environment(x) && bindingIsActive(name, x)) "active binding"
+    else if (is.function(obj)) "function"
     else if (is.environment(obj)) "environment"
-    else as.character(obj)
+    else class(obj)
   }, FUN.VALUE = character(1))
 
   paste0(names, ": ", values, sep = "", collapse = "\n")
