@@ -258,7 +258,7 @@ With standard reference class objects, you can modify fields using the `<<-` ope
 rc_self <- setRefClass("rc_self",
   fields = list(x = "numeric"),
   methods = list(
-    initialize = function(x = 1) .self$x <<- x,
+    initialize = function(x = 1) .self$x <- x,
     inc = function(n = 1) .self$x <- x + n
   )
 )
@@ -266,7 +266,7 @@ rc_self <- setRefClass("rc_self",
 rc_no_self <- setRefClass("rc_no_self",
   fields = list(x = "numeric"),
   methods = list(
-    initialize = function(x = 1) .self$x <<- x,
+    initialize = function(x = 1) .self$x <- x,
     inc = function(n = 1) x <<- x + n
   )
 )
@@ -278,7 +278,7 @@ Winston's reference classes are similar, except they use `self` instead of `.sel
 wrc_self <- createRefClass("wrc_self",
   members = list(
     x = 1,
-    inc = function(n = 1) self$x <- self$x + n
+    inc = function(n = 1) self$x <- x + n
   )
 )
 
