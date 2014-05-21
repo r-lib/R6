@@ -130,7 +130,6 @@ createRefClass2 <- function(classname = NULL, private = list(),
   )
 }
 
-#' A rough way of printing out the contents of a RefClass object
 #' @export
 print.RefClass2 <- function(x, ...) {
   cat(

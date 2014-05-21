@@ -110,7 +110,6 @@ createRefClass <- function(classname = NULL, members = list(), active = NULL,
   )
 }
 
-#' A rough way of printing out the contents of a RefClass object
 #' @export
 print.RefClass <- function(x, ...) {
   cat(
