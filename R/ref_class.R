@@ -52,7 +52,7 @@
 #' z <- Class4$new(y = 10)
 #'
 #' z$sum_xy()
-#' z$x <- 20    # Set member directly
+#' # z$x <- 20  # Set member directly
 #' z$sum_xy()
 #' z$set_x(40)  # Set member with setter function
 #' z$set_y(60)

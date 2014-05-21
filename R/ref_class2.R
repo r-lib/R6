@@ -61,7 +61,7 @@
 #'
 #' z$sum_xyz()
 #' z$sum_xyz2()
-#' z$x <- 20    # Error - can't access private member directly
+#' # z$x <- 20  # Error - can't access private member directly
 #' z$set_x(20)
 #' z$sum_xyz()
 #' z$sum_xyz2()
