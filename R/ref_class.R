@@ -81,19 +81,21 @@ createRefClass <- function(classname = NULL, members = list(), active = NULL,
                            parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
-    env <- list2env(members, parent = parent_env)
+    env <- new.env(parent = parent_env)
+
     # Fix environment for functions
-    assign_func_envs(env, env)
+    members <- assign_func_envs(members, env)
+
+    # Copy objects to environments
+    list2env(members, envir = env)
 
     env$self <- env
 
     if (!is.null(active)) {
-      active_env <- list2env(active, parent = env)
-      env$.active <- active_env
-      assign_func_envs(active_env, env)
+      active <- assign_func_envs(active, env)
 
       for (name in names(active)) {
-        makeActiveBinding(name, active_env[[name]], env)
+        makeActiveBinding(name, active[[name]], env)
       }
     }
 

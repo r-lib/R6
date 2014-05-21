@@ -91,12 +91,16 @@ createRefClass2 <- function(classname = NULL, private = list(),
                             parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
-    private_env <- list2env(private, parent = parent_env)
-    public_env <- list2env(public, parent = private_env)
+    private_env <- new.env(parent = parent_env)
+    public_env <- new.env(parent = private_env)
 
     # Fix environment for functions
-    assign_func_envs(private_env, public_env)
-    assign_func_envs(public_env, public_env)
+    private <- assign_func_envs(private, public_env)
+    public <- assign_func_envs(public, public_env)
+
+    # Copy objects to environments
+    list2env(private, envir = private_env)
+    list2env(public, envir = public_env)
 
     # Add self pointers
     private_env$private <- private_env
@@ -105,12 +109,10 @@ createRefClass2 <- function(classname = NULL, private = list(),
     public_env$public   <- public_env
 
     if (!is.null(active)) {
-      active_env <- list2env(active, parent = public_env)
-      public_env$.active <- active_env
-      assign_func_envs(active_env, public_env)
+      active <- assign_func_envs(active, public_env)
 
       for (name in names(active)) {
-        makeActiveBinding(name, active_env[[name]], public_env)
+        makeActiveBinding(name, active[[name]], public_env)
       }
     }
 
