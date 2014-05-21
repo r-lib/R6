@@ -91,8 +91,8 @@ createRefClass2 <- function(classname = NULL, private = list(),
                             parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
-    private_env <- new.env(parent = parent_env)
-    public_env <- new.env(parent = private_env)
+    private_env <- new.env(parent = parent_env, hash = (length(private) > 100))
+    public_env <- new.env(parent = private_env, hash = (length(public) > 100))
 
     # Fix environment for functions
     private <- assign_func_envs(private, public_env)

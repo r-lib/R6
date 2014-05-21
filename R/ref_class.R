@@ -81,7 +81,7 @@ createRefClass <- function(classname = NULL, members = list(), active = NULL,
                            parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
-    env <- new.env(parent = parent_env)
+    env <- new.env(parent = parent_env, hash = (length(members) > 100))
 
     # Fix environment for functions
     members <- assign_func_envs(members, env)
