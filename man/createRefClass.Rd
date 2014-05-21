@@ -3,7 +3,7 @@
 \alias{createRefClass}
 \title{Reference class generator, with all public members}
 \usage{
-createRefClass(classname = NULL, members = list(),
+createRefClass(classname = NULL, members = list(), active = NULL,
   parent_env = parent.frame(), lock = TRUE)
 }
 \arguments{
@@ -14,6 +14,8 @@ non-functions.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
+
+\item{active}{An optional list of active binding functions.}
 
 \item{lock}{Should the environments of the generated objects be locked?}
 }
@@ -26,12 +28,23 @@ Classes created by this generator have the following properties:
   \item Methods can directly access the public (or object) environment, by
     using \code{self$foo}. Assignment can be done with \code{<<-}, but it's
     more precise to explicitly use \code{self}.
+  \item Active bindings can be used to call a function that looks like an
+    object.
   \item The execution environment of all methods is set to the public
     environment.
-  \item Each instance of the class has its own copy of each method. I'm not
-    sure how large the memory footprint is for this; each copy of a method
-    is exactly the same except for the environment.
+  \item Each instance of the class has its own copy of each method. The
+    memory cost of this is small; it should be 56 bytes per method.
 }
+}
+\details{
+The \code{active} argument is a list of active binding functions. These
+functions take one argument. They look like regular variables, but when
+accessed, a function is called with an optional argument. For example,
+if \code{obj$x2} is an active binding, then when accessed as \code{obj$x2},
+it calls the \code{x2()} function that was in the \code{active} list, with
+no arguments. However, if a value is assigned to it, as in
+\code{obj$x2 <- 50}, then the function is called with the right-side value
+as its argument, as in \code{x2(50)}.
 }
 \examples{
 Class4 <- createRefClass("Class4",
@@ -50,6 +63,12 @@ Class4 <- createRefClass("Class4",
     sum_xy = function() x + y,
     # Access variables and a method
     sum_xy2 = function() x + y + sum_xy()
+  ),
+  active = list(
+    x2 = function(value) {
+      if (missing(value)) return(x * 2)
+      else self$x <- value/2
+    }
   )
 )
 
@@ -57,14 +76,21 @@ Class4 <- createRefClass("Class4",
 z <- Class4$new(y = 10)
 
 z$sum_xy()
-z$x <- 20    # Set member directly
+# z$x <- 20  # Set member directly
 z$sum_xy()
 z$set_x(40)  # Set member with setter function
 z$set_y(60)
 z$sum_xy()
 z$sum_xy2()
 
+z$x2         # An active binding that returns x*2
+z$x2 <- 100  # Setting an active binding
+z$x          # 50
+
 # Print, using the print.RefClass method:
 print(z)
+}
+\seealso{
+\code{\link{makeActiveBinding}}
 }
 

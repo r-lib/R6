@@ -4,7 +4,7 @@
 \title{Reference class generator, with private and public members}
 \usage{
 createRefClass2(classname = NULL, private = list(), public = list(),
-  parent_env = parent.frame(), lock = TRUE)
+  active = NULL, parent_env = parent.frame(), lock = TRUE)
 }
 \arguments{
 \item{classname}{Name of the class.}
@@ -14,6 +14,8 @@ non-functions.}
 
 \item{public}{A list of public members, which can be functions and
 non-functions.}
+
+\item{active}{An optional list of active binding functions.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
@@ -31,14 +33,25 @@ Classes created by this generator have the following properties:
     using \code{public$foo} or \code{private$foo}. Assignment to either
     environment can be done with \code{<<-}, but it's more precise to
     explicitly specify \code{private} or \code{public}.
+  \item Active bindings can be used to call a function that looks like an
+    object.
   \item The execution environment of all methods is set to the public
     environment, even if it's a private method. Private methods are found
     in the private environment, but they have the public environment as
     their execution environment.
-  \item Each instance of the class has its own copy of each method. I'm not
-    sure how large the memory footprint is for this; each copy of a method
-    is exactly the same except for the environment.
+  \item Each instance of the class has its own copy of each method. The
+    memory cost of this is small; it should be 56 bytes per method.
 }
+}
+\details{
+The \code{active} argument is a list of active binding functions. These
+functions take one argument. They look like regular variables, but when
+accessed, a function is called with an optional argument. For example,
+if \code{obj$x2} is an active binding, then when accessed as \code{obj$x2},
+it calls the \code{x2()} function that was in the \code{active} list, with
+no arguments. However, if a value is assigned to it, as in
+\code{obj$x2 <- 50}, then the function is called with the right-side value
+as its argument, as in \code{x2(50)}.
 }
 \examples{
 Class5 <- createRefClass2("Class5",
@@ -60,6 +73,12 @@ Class5 <- createRefClass2("Class5",
     sum_xyz = function() x + y + z,
     # Access a private variable and private method
     sum_xyz2 = function() y + sum_xz()
+  ),
+  active = list(
+    x2 = function(value) {
+      if (missing(value)) return(x * 2)
+      else private$x <- value/2
+    }
   )
 )
 
@@ -67,14 +86,21 @@ z <- Class5$new(11, z = 13)
 
 z$sum_xyz()
 z$sum_xyz2()
-z$x <- 20    # Error - can't access private member directly
+# z$x <- 20  # Error - can't access private member directly
 z$set_x(20)
 z$sum_xyz()
 z$sum_xyz2()
 z$z <- 100   # Can set public members directly
 z$sum_xyz()
 
+z$x2         # An active binding that returns x*2
+z$x2 <- 1000 # Setting an active binding
+z$sum_xyz()  # 515
+
 # Print, using the print.RefClass2 method:
 print(z)
+}
+\seealso{
+\code{\link{makeActiveBinding}}
 }
 
