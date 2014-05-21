@@ -237,15 +237,15 @@ We'll create the same function in three different ways here.
 ```{r}
 short_string <- "function() 3"
 # Parse the string into an unevaluated expression
-parse_string_short <- function() parse(text = short_string)
+parse_string_short <- function() parse(text = short_string, keep.source = FALSE)
 
 short_expr <- parse_string_short()
-# Evaluate the expression
+# Evaluate the (parsed) expression
 eval_expr_short <- function() eval(short_expr, envir = parent.frame())
 
 # Same for long functions
 long_string <- deparse(lm)  # This is a string representation of lm
-parse_string_long <- function() parse(text = long_string)
+parse_string_long <- function() parse(text = long_string, keep.source = FALSE)
 long_expr <- parse_string_long()
 eval_expr_long <- function() eval(long_expr, envir = parent.frame())
 
@@ -337,6 +337,11 @@ obj_sizes(
   eval_expr_long(),
   eval_parse_string_long()
 )
+
+
+function() {
+  obj_sizes
+}
 ```
 
 Oddly, creating functions inline in a larger function seems to take a lot of memory for the first instance. Creating one more copy takes only 112 bytes.
@@ -372,6 +377,14 @@ obj_sizes(
   f = eval_parse_string_long
 )
 ```
+
+
+## Speed of `::` operator
+
+```{r}
+microbenchmark(stats::lm, lm, unit="us")
+```
+
 
 Appendix
 ========

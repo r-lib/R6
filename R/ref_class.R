@@ -39,6 +39,12 @@
 #'     sum_xy = function() x + y,
 #'     # Access variables and a method
 #'     sum_xy2 = function() x + y + sum_xy()
+#'   ),
+#'   active = list(
+#'     x2 = function(value) {
+#'       if (missing(value)) return(x * 2)
+#'       else self$x <- value/2
+#'     }
 #'   )
 #' )
 #'
@@ -53,19 +59,31 @@
 #' z$sum_xy()
 #' z$sum_xy2()
 #'
+#' z$x2         # An active binding that returns x*2
+#' z$x2 <- 100  # Setting an active binding
+#' z$x          # 50
+#'
 #' # Print, using the print.RefClass method:
 #' print(z)
-createRefClass <- function(classname = NULL, members = list(),
+createRefClass <- function(classname = NULL, members = list(), active = NULL,
                            parent_env = parent.frame(), lock = TRUE) {
 
   newfun <- function(...) {
     env <- list2env(members, parent = parent_env)
-
     # Fix environment for functions
     assign_func_envs(env, env)
 
-    # Add self pointer
     env$self <- env
+
+    if (!is.null(active)) {
+      active_env <- list2env(active, parent = env)
+      env$.active <- active_env
+      assign_func_envs(active_env, env)
+
+      for (name in names(active)) {
+        makeActiveBinding(name, active_env[[name]], env)
+      }
+    }
 
     if (lock) lockEnvironment(env)
     if (is.function(env$initialize)) env$initialize(...)

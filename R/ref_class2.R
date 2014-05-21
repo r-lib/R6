@@ -48,6 +48,12 @@
 #'     sum_xyz = function() x + y + z,
 #'     # Access a private variable and private method
 #'     sum_xyz2 = function() y + sum_xz()
+#'   ),
+#'   active = list(
+#'     x2 = function(value) {
+#'       if (missing(value)) return(x * 2)
+#'       else private$x <- value/2
+#'     }
 #'   )
 #' )
 #'
