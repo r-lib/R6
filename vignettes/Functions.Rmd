@@ -360,11 +360,6 @@ obj_sizes(
   eval_expr_long(),
   eval_parse_string_long()
 )
-
-
-function() {
-  obj_sizes
-}
 ```
 
 Oddly, creating functions inline in a larger function seems to take a lot of memory for the first instance. Creating one more copy takes only 112 bytes.
@@ -375,6 +370,41 @@ Creating a function by parsing a string and then evaluating it takes a smaller a
 
 These results suggest that the memory used by a function is allocated largely when the function is parsed, not when the function is actually created.
 
+
+
+## Size of functions with srcref
+
+```{r}
+f <- function() {
+  res <- function() 3
+  res
+}
+g <- function() {
+  res <- function() 3
+  attr(res, "srcref") <- NULL
+  res
+}
+
+obj_sizes(f(), g())
+```
+
+## Speed of `::` operator
+
+```{r}
+microbenchmark(stats::lm, lm, unit="us")
+```
+
+
+Appendix
+========
+
+```{r}
+sessionInfo()
+```
+
+
+
+## Old code for calculating object sizes
 
 ```{r, eval = FALSE, echo = FALSE}
 # Old way
@@ -402,16 +432,3 @@ obj_sizes(
 ```
 
 
-## Speed of `::` operator
-
-```{r}
-microbenchmark(stats::lm, lm, unit="us")
-```
-
-
-Appendix
-========
-
-```{r}
-sessionInfo()
-```
