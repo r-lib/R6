@@ -38,6 +38,7 @@ object_summaries <- function(x) {
     if (is.environment(x) && bindingIsActive(name, x)) "active binding"
     else if (is.function(obj)) "function"
     else if (is.environment(obj)) "environment"
+    else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
     else class(obj)
   }, FUN.VALUE = character(1))
 
@@ -52,4 +53,10 @@ indent <- function(str, indent = 0) {
     str,
     perl = TRUE
   )
+}
+
+# Trim a string to n characters; if it's longer than n, add " ..." to the end
+trim <- function(str, n = 60) {
+  if (nchar(str) > n) paste(substr(str, 1, 56), "...")
+  else str
 }
