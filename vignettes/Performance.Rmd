@@ -52,7 +52,7 @@ This is a [simpler implementation](https://github.com/wch/testclasses/blob/maste
 
 ```{r}
 B_wrc <- createRefClass("B_wrc",
-  members = list(
+  public = list(
     x = NULL,
     initialize = function(x = 1) self$x <<- x,
     inc = function(n = 1) x <<- x + n
@@ -66,12 +66,12 @@ Objects of this type also have an automatically-created `self` member:
 print(B_wrc$new())
 ```
 
-## Winston's simple reference class 2, with public and private members
+## Winston's simple reference class, with public and private members
 
-This is a [variant](https://github.com/wch/testclasses/blob/master/R/ref_class2.R) on the previous type of reference class, but this version has public and private members.
+This is a variant of the previous type of reference class, but this version has public and private members.
 
 ```{r}
-C_wrc_priv <- createRefClass2("C_wrc_priv",
+C_wrc_priv <- createRefClass("C_wrc_priv",
   private = list(x = NULL),
   public = list(
     initialize = function(x = 1) private$x <<- x,
@@ -80,7 +80,7 @@ C_wrc_priv <- createRefClass2("C_wrc_priv",
 )
 ```
 
-Instead of a single `self` object which refers to all items in an object, these objects have `public` and `private`.
+Instead of a single `self` object which refers to all items in an object, these objects have `self` (which refers to the public items) and `private`.
 
 ```{r}
 print(C_wrc_priv$new())
@@ -276,14 +276,14 @@ Winston's reference classes are similar, except they use `self` instead of `.sel
 
 ```{r}
 wrc_self <- createRefClass("wrc_self",
-  members = list(
+  public = list(
     x = 1,
     inc = function(n = 1) self$x <- x + n
   )
 )
 
 wrc_no_self <- createRefClass("wrc_no_self",
-  members = list(
+  public = list(
     x = 1,
     inc = function(n = 1) x <<- x + n
   )
