@@ -1,28 +1,49 @@
 #' @export
 print.RefClass <- function(x, ...) {
-  cat("<", class(x)[1], ">\n", sep = "")
-
-  if (is.environment(x$private)) {
-    cat(
-      "  Private:\n",
-      indent(object_summaries(x$private), 4),
-      "\n",
-      sep = ""
-    )
-  }
-
   cat(
+    "<", class(x)[1], ">\n",
     "  Public:\n",
     indent(object_summaries(x), 4),
     sep = ""
   )
+
+  if (!is.null(x$private)) {
+    cat(
+      "\n  Private:\n",
+      indent(object_summaries(x$private), 4),
+      sep = ""
+    )
+  }
 }
 
 #' @export
 print.RefClassGenerator <- function(x, ...) {
   classname <- x$classname
   if (is.null(classname)) classname <- "unnamed"
-  cat("<", classname, "> object generator", sep = "")
+  cat(
+    "<", classname, "> object generator\n",
+    "  Public:\n",
+    indent(object_summaries(x$public), 4),
+    sep = ""
+  )
+
+  if (!is.null(x$active)) {
+    cat(
+      "\n  Active bindings:\n",
+      indent(object_summaries(x$active), 4),
+      sep = ""
+    )
+  }
+
+  if (!is.null(x$private)) {
+    cat(
+      "\n  Private:\n",
+      indent(object_summaries(x$private), 4),
+      sep = ""
+    )
+  }
+  cat("\n  Parent: ", format(x$parent_env),  sep = "")
+  cat("\n  Lock: ", x$lock,  sep = "")
 }
 
 # Return a summary string of the items of a list or environment

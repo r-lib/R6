@@ -91,8 +91,8 @@
 #' # Print, using the print.RefClass method:
 #' print(z)
 createRefClass <- function(classname = NULL, public = list(),
-                            private = NULL, active = NULL,
-                            parent_env = parent.frame(), lock = TRUE) {
+                           private = NULL, active = NULL,
+                           parent_env = parent.frame(), lock = TRUE) {
 
   has_private <- !is.null(private)
 
@@ -142,7 +142,9 @@ createRefClass <- function(classname = NULL, public = list(),
   }
 
   structure(
-    list(new = newfun, classname = classname),
+    list(new = newfun, classname = classname, public = public,
+         private = private, active = active, parent_env = parent_env,
+         lock = lock),
     class = "RefClassGenerator"
   )
 }
