@@ -1,3 +1,30 @@
+#' @export
+print.RefClass <- function(x, ...) {
+  cat("<", class(x)[1], ">\n", sep = "")
+
+  if (is.environment(x$private)) {
+    cat(
+      "  Private:\n",
+      indent(object_summaries(x$private), 4),
+      "\n",
+      sep = ""
+    )
+  }
+
+  cat(
+    "  Public:\n",
+    indent(object_summaries(x), 4),
+    sep = ""
+  )
+}
+
+#' @export
+print.RefClassGenerator <- function(x, ...) {
+  classname <- x$classname
+  if (is.null(classname)) classname <- "unnamed"
+  cat("<", classname, "> object generator", sep = "")
+}
+
 # Return a summary string of the items of a list or environment
 # x must be a list or environment
 object_summaries <- function(x) {
