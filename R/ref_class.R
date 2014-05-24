@@ -1,4 +1,4 @@
-#' Reference class generator, with public and optional private members
+#' Create a reference class
 #'
 #' Classes created by this generator have the following properties:
 #' \itemize{
@@ -10,16 +10,17 @@
 #'   \item If there are no private members, then no private environment is
 #'     created, and the parent of the public environment is set with
 #'     \code{parent_env}.
+#'   \item If present, active bindings are put in the public environment.
 #'   \item The generator's \code{$new} method creates a new object and returns
 #'     its public environment, which has a class attribute.
 #'   \item Methods can directly access the public and private environments, by
-#'     using \code{private$foo} or \code{self$foo} (for public). Assignment to
+#'     using \code{private$x} or \code{self$x} (for public). Assignment to
 #'     either environment can be done with \code{<<-}, but it's more precise to
 #'     explicitly specify \code{private} or \code{self}.
 #'   \item The enclosing environment of all methods is set to the public
-#'     environment, even if for private methods. In other words, rivate methods
-#'     are found in the private environment, but when they are called, their
-#'     parent environment is the public environment.
+#'     environment, even for private methods. In other words, private methods
+#'     are found in the private environment, but when they are called, the
+#'     public environment is the parent environment.
 #'   \item Each instance of the class has its own copy of each method. The
 #'     memory cost of this is small; it should be 56 bytes per method.
 #' }
@@ -33,6 +34,12 @@
 #' \code{obj$x2 <- 50}, then the function is called with the right-side value
 #' as its argument, as in \code{x2(50)}.
 #'
+#' If the public or private lists contain any items that have reference
+#' semantics, those items will be shared across all instances of the class.
+#' To avoid this, add an entry for that item with a \code{NULL} initial value,
+#' and then in the \code{intialize} method, instantiate the object and assign
+#' it.
+#'
 #' @seealso \code{\link{makeActiveBinding}}
 #' @export
 #' @param classname Name of the class.
@@ -45,48 +52,84 @@
 #'   objects.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
-#' MyClass <- createRefClass("MyClass",
-#'   private = list(
-#'     x = 1,
-#'     y = 2,
-#'     sum_xz = function() x + z
-#'   ),
+#' # A simple class
+#' AnimalHerd <- createRefClass("AnimalHerd",
 #'   public = list(
-#'     z = 3,
-#'     initialize = function(x = NULL, y = NULL, z = NULL) {
-#'       if (!is.null(x)) private$x <- x
-#'       if (!is.null(y)) private$y <- y
-#'       if (!is.null(z)) self$z  <- z
+#'     animal = "buffalo",
+#'     count = 2,
+#'     view = function() {
+#'       paste(rep(animal, count), collapse = " ")
 #'     },
-#'     # Set a private variable
-#'     set_x = function(value) private$x <- value,
-#'     # Access private and public variables
-#'     sum_xyz = function() x + y + z,
-#'     # Access a private variable and private method
-#'     sum_xyz2 = function() y + sum_xz()
-#'   ),
-#'   active = list(
-#'     x2 = function(value) {
-#'       if (missing(value)) return(x * 2)
-#'       else private$x <- value/2
+#'     reproduce = function(mult = 2) {
+#'       count <<- count * mult
+#'       invisible(self)
 #'     }
 #'   )
 #' )
 #'
-#' z <- MyClass$new(11, z = 13)
+#' herd <- AnimalHerd$new()
+#' herd$view()
+#' # "buffalo buffalo"
 #'
-#' z$sum_xyz()
-#' z$sum_xyz2()
+#' herd$reproduce()
+#' herd$view()
+#' # "buffalo buffalo buffalo buffalo"
+#'
+#' # Methods that return self are chainable
+#' herd$reproduce()$view()
+#' "buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo"
+#'
+#'
+#' # An example that demonstrates private members and active bindings
+#' MyClass <- createRefClass("MyClass",
+#'   private = list(
+#'     x = 2,
+#'     # Private methods can access public members
+#'     prod_xy = function() x * y
+#'   ),
+#'   public = list(
+#'     y = 3,
+#'     initialize = function(x, y) {
+#'       if (!missing(x)) private$x <- x
+#'       if (!missing(y)) private$y <- y
+#'     },
+#'     # Set a private variable
+#'     set_x = function(value) private$x <- value,
+#'     # Increment y, and return self
+#'     inc_y = function(n = 1) {
+#'       y <<- y + n
+#'       invisible(self)
+#'     },
+#'     # Access private and public members
+#'     sum_xy = function() x + y,
+#'     # Access a private variable and private method
+#'     sumprod = function() x + prod_xy()
+#'   ),
+#'   active = list(
+#'     y2 = function(value) {
+#'       if (missing(value)) return(y * 2)
+#'       else self$y <- value/2
+#'     }
+#'   )
+#' )
+#'
+#' z <- MyClass$new(5)
+#'
+#' z$sum_xy()   # 8
+#' z$sumprod()  # 20
 #' # z$x <- 20  # Error - can't access private member directly
 #' z$set_x(20)
-#' z$sum_xyz()
-#' z$sum_xyz2()
-#' z$z <- 100   # Can set public members directly
-#' z$sum_xyz()
+#' z$sum_xy()   # 23
+#' z$y <- 100   # Can set public members directly
+#' z$sum_xy()   # 120
 #'
-#' z$x2         # An active binding that returns x*2
-#' z$x2 <- 1000 # Setting an active binding
-#' z$sum_xyz()  # 515
+#' z$y2         # An active binding that returns y*2
+#' z$y2 <- 1000 # Setting an active binding
+#' z$y          # 500
+#'
+#' # Methods that return self allow chaining
+#' z$inc_y()$inc_y()
+#' z$y          # 502
 #'
 #' # Print, using the print.RefClass method:
 #' print(z)
