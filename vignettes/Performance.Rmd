@@ -211,9 +211,10 @@ speed
 
 Standard R reference classes are much slower to instantiate than the other types of classes, with a median of `r median(speed[speed$expr == "A_rc", "time"]) / 1e6` milliseconds per instantiation.
 
-## Method call speed
 
-How much overhead is there when calling a method from one of these objects?
+## Field access speed
+
+How much time does it take to access a field in an object? First we'll make some objects:
 
 ```{r}
 A <- A_rc$new()
@@ -221,7 +222,47 @@ B <- B_wrc$new()
 C <- C_wrc_priv$new()
 D <- D_closure_class()
 E <- E_closure_noclass()
+```
 
+Getting a value:
+
+```{r}
+invisible(gc())
+microbenchmark(
+  A_rc = A$x,
+  B_wrc = B$x,
+  C_wrc_priv = C$private$x,
+  D_closure_class = D$x,
+  E_closure_noclass = E$x,
+  unit = "us"
+)
+```
+
+
+Setting a value:
+
+```{r}
+invisible(gc())
+microbenchmark(
+  A_rc = A$x <- 4,
+  B_wrc = B$x <- 4,
+  C_wrc_priv = C$private$x <- 4,
+  D_closure_class = D$x <- 4,
+  E_closure_noclass = E$x <- 4,
+  unit = "us"
+)
+```
+
+The difference between `D` and `E` is due to overhead from the `class` attribute. Because `D` has a class, R will check whether there is a `$` method for its class. All of the objects `A`--`D` have a class, while `E` does not.
+
+The standard reference class is slowest.
+
+
+## Method call speed
+
+How much overhead is there when calling a method from one of these objects?
+
+```{r}
 invisible(gc())
 microbenchmark(
   A_rc = A$inc(),
@@ -242,6 +283,7 @@ When we manually remove the class from the B object, it performs on par with E.
 # Really create a reference object without a class
 B2 <- B_wrc$new()
 class(B2) <- NULL
+invisible(gc())
 microbenchmark(
   B_wrc_noclass = B2$inc(),
   E_closure_noclass = E$inc(),

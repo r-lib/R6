@@ -91,6 +91,38 @@ obj_sizes(
 )
 ```
 
+Ways of setting and getting values from an environment
+
+```{r}
+e <- new.env()
+l <- list()
+
+microbenchmark(
+  e$a <- 1,
+  e[["b"]] <- 1,
+  .Primitive("[[<-")(e, "c", 1),
+  assign("d", 1, envir = e),
+  .Internal(assign("e", 1, e, FALSE)),
+
+  l$a <- 1,
+  l[["b"]] <- 1,
+  l <- .Primitive("[[<-")(l, "c", 1)
+)
+
+microbenchmark(
+  e$a,
+  e[["b"]],
+  .Primitive("[[")(e, "c"),
+  get("d", envir = e, inherits = FALSE),
+  .Internal(get("e", e, "any", FALSE)),
+
+  l$a,
+  l[["b"]],
+  .Primitive("[[")(l, "c"),
+  .subset2(l, "c")
+)
+```
+
 
 Functions
 =========
@@ -155,7 +187,7 @@ as.numeric(object_size(lm, lm2))
 But if we change the environment of the copied function, it does take a little bit more memory:
 
 ```{r}
-e <- new.env()
+e <- new.env(hash = FALSE)
 environment(lm2) <- e
 as.numeric(object_size(lm, lm2) - object_size(lm)) 
 ```
