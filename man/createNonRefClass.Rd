@@ -8,4 +8,49 @@ createNonRefClass(classname = NULL, members = list(), methods = NULL)
 \description{
 Create a class with non-reference semantics
 }
+\examples{
+AnimalHerd <- createNonRefClass("AnimalHerd",
+  members = list(
+    animal = "buffalo",
+    count = 2
+  ),
+  methods = list(
+    view = function(self) {
+      paste(rep(self$animal, self$count), collapse = " ")
+    },
+    reproduce = function(self, mult = 2) {
+      self$count <- self$count * mult
+      invisible(self)
+    }
+  )
+)
+
+herd <- AnimalHerd$new()
+herd$view()
+# "buffalo buffalo"
+
+herd$reproduce()
+# No change because it doesn't have reference semantics
+herd$view()
+# "buffalo buffalo"
+
+# Need to save it back into the variable if we want to store the result
+herd <- herd$reproduce()
+herd$view()
+# "buffalo buffalo buffalo buffalo"
+
+# Methods that return self are chainable
+herd$reproduce()$view()
+"buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo"
+
+
+# Can add methods after the class has already been created
+AnimalHerd$methods$grow <- function(self) {
+  self$animal <- toupper(self$animal)
+  self
+}
+
+herd$grow()$view()
+"BUFFALO BUFFALO BUFFALO BUFFALO"
+}
 
