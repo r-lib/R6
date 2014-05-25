@@ -40,6 +40,19 @@
 #' and then in the \code{intialize} method, instantiate the object and assign
 #' it.
 #'
+#' Normally the public environment will have two classes: the one supplied in
+#' the \code{classname} argument, and \code{"RefClass"}. It is possible to
+#' get the public environment with no classes, by using \code{class=FALSE}.
+#' This will result in faster access speeds by avoiding class-based dispatch
+#' of \code{$}. The benefit is is negligible in most cases. With classes,
+#' accessing a member with \code{$} takes around 2 microseconds on a modern
+#' machine; without classes, it takes around 0.3 microseconds. This will make
+#' a noticeable difference in performance only when there are hundreds of
+#' thousands or more iterations.
+#'
+#' The primary difference in behavior when \code{class=FALSE} is that pretty
+#' printing of the objects (with \code{print.RefClass}) won't be used.
+#'
 #' @seealso \code{\link{makeActiveBinding}}
 #' @export
 #' @param classname Name of the class.
@@ -50,6 +63,8 @@
 #' @param active An optional list of active binding functions.
 #' @param parent_env An environment to use as the parent of newly-created
 #'   objects.
+#' @param class Should a class attribute be added to the public environment?
+#'   Default is \code{TRUE}.
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
 #' # A simple class
@@ -135,7 +150,8 @@
 #' print(z)
 createRefClass <- function(classname = NULL, public = list(),
                            private = NULL, active = NULL,
-                           parent_env = parent.frame(), lock = TRUE) {
+                           parent_env = parent.frame(), lock = TRUE,
+                           class = TRUE) {
 
   has_private <- !is.null(private)
 
@@ -180,7 +196,7 @@ createRefClass <- function(classname = NULL, public = list(),
     }
     if (is.function(public_env$initialize)) public_env$initialize(...)
 
-    class(public_env) <- c(classname, "RefClass")
+    if (class) class(public_env) <- c(classname, "RefClass")
     public_env
   }
 

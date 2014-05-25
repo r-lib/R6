@@ -4,7 +4,7 @@
 \title{Create a reference class}
 \usage{
 createRefClass(classname = NULL, public = list(), private = NULL,
-  active = NULL, parent_env = parent.frame(), lock = TRUE)
+  active = NULL, parent_env = parent.frame(), lock = TRUE, class = TRUE)
 }
 \arguments{
 \item{classname}{Name of the class.}
@@ -19,6 +19,9 @@ and non-functions.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
+
+\item{class}{Should a class attribute be added to the public environment?
+Default is \code{TRUE}.}
 
 \item{lock}{Should the environments of the generated objects be locked?}
 }
@@ -63,6 +66,19 @@ semantics, those items will be shared across all instances of the class.
 To avoid this, add an entry for that item with a \code{NULL} initial value,
 and then in the \code{intialize} method, instantiate the object and assign
 it.
+
+Normally the public environment will have two classes: the one supplied in
+the \code{classname} argument, and \code{"RefClass"}. It is possible to
+get the public environment with no classes, by using \code{class=FALSE}.
+This will result in faster access speeds by avoiding class-based dispatch
+of \code{$}. The benefit is is negligible in most cases. With classes,
+accessing a member with \code{$} takes around 2 microseconds on a modern
+machine; without classes, it takes around 0.3 microseconds. This will make
+a noticeable difference in performance only when there are hundreds of
+thousands or more iterations.
+
+The primary difference in behavior when \code{class=FALSE} is that pretty
+printing of the objects (with \code{print.RefClass}) won't be used.
 }
 \examples{
 # A simple class
