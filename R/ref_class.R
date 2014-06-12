@@ -176,10 +176,7 @@ createRefClass <- function(classname = NULL, public = list(),
     if (has_private) {
       private <- assign_func_envs(private, public_env)
       list2env(private, envir = private_env)
-      # Add private and self pointers
       public_env$private <- private_env
-      private_env$private <- private_env
-      private_env$self <- public_env
     }
 
     if (!is.null(active)) {
