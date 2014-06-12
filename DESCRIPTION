@@ -2,13 +2,15 @@ Package: testclasses
 Title: Class tests package
 Version: 0.1
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
+Maintainer: Winston Chang <winston@stdout.org>
 Description: Experiments with new types of classes in R.
 Depends:
     R (>= 3.0)
 Suggests:
     knitr,
     microbenchmark,
-    pryr
+    pryr,
+    testthat
 License: MIT
 Roxygen: list(wrap = FALSE)
 LazyData: true
