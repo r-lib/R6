@@ -184,6 +184,10 @@ createRefClass <- function(classname = NULL, public = list(),
     # These will be placed in the super env.
     super_funs <- c(get_functions(inherit$public), get_functions(inherit$private))
     super_active <- inherit$active
+
+    classes <- c(classname, inherit$classname, "RefClass")
+  } else {
+    classes <- c(classname, "RefClass")
   }
 
   has_private <- !is.null(private)
@@ -249,7 +253,7 @@ createRefClass <- function(classname = NULL, public = list(),
     }
     if (is.function(public_env$initialize)) public_env$initialize(...)
 
-    if (class) class(public_env) <- c(classname, "RefClass")
+    if (class) class(public_env) <- classes
     public_env
   }
 
