@@ -106,7 +106,7 @@
 #'     y = 3,
 #'     initialize = function(x, y) {
 #'       if (!missing(x)) private$x <- x
-#'       if (!missing(y)) private$y <- y
+#'       if (!missing(y)) self$y <- y
 #'     },
 #'     # Set a private variable
 #'     set_x = function(value) private$x <- value,
