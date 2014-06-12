@@ -45,8 +45,13 @@
 #' herd$grow()$view()
 #' "BUFFALO BUFFALO BUFFALO BUFFALO"
 createNonRefClass <- function(classname = NULL, members = list(),
-                            methods = NULL) {
+                              methods = NULL) {
 
+  if (!all(vapply(methods, is.function, logical(1)))) {
+    stop("Objects in methods must all be functions.")
+  }
+
+  # Turn methods into an environment so that it's possible to add methods later
   methods <- list2env(methods)
 
   newfun <- function(...) {
