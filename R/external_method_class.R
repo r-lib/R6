@@ -1,7 +1,7 @@
 #' Create a class with non-reference semantics
 #' @export
 #' @examples
-#' AnimalHerd <- createNonRefClass("AnimalHerd",
+#' AnimalHerd <- createExternalMethodClass("AnimalHerd",
 #'   members = list(
 #'     animal = "buffalo",
 #'     count = 2
@@ -44,8 +44,8 @@
 #'
 #' herd$grow()$view()
 #' "BUFFALO BUFFALO BUFFALO BUFFALO"
-createNonRefClass <- function(classname = NULL, members = list(),
-                              methods = NULL) {
+createExternalMethodClass <- function(classname = NULL, members = list(),
+                                      methods = NULL) {
 
   if (!all(vapply(methods, is.function, logical(1)))) {
     stop("Objects in methods must all be functions.")
@@ -59,7 +59,7 @@ createNonRefClass <- function(classname = NULL, members = list(),
       members <- methods$initialize(members, ...)
     }
 
-    class(members) <- c(classname, "NonRefClass")
+    class(members) <- c(classname, "ExternalMethodClass")
     attr(members, "methods") <- methods
     members
   }
@@ -67,12 +67,12 @@ createNonRefClass <- function(classname = NULL, members = list(),
   structure(
     list(new = newfun, classname = classname, members = members,
          methods = methods),
-    class = "NonRefClassGenerator"
+    class = "ExternalMethodClassGenerator"
   )
 }
 
 #' @export
-`$.NonRefClass` <- function(x, name) {
+`$.ExternalMethodClass` <- function(x, name) {
   if (name %in% names(x)) {
     return(.subset2(x, name))
 
@@ -86,4 +86,4 @@ createNonRefClass <- function(classname = NULL, members = list(),
 }
 
 #' @export
-`[[.NonRefClass` <- `$.NonRefClass`
+`[[.ExternalMethodClass` <- `$.ExternalMethodClass`
