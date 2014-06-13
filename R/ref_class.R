@@ -157,8 +157,7 @@
 #'
 createRefClass <- function(classname = NULL, public = list(),
                            private = NULL, active = NULL,
-                           inherit = NULL, override = FALSE,
-                           lock = TRUE, class = TRUE,
+                           inherit = NULL, lock = TRUE, class = TRUE,
                            parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
@@ -193,7 +192,7 @@ createRefClass <- function(classname = NULL, public = list(),
   if (!class) classes <- NULL
 
   newfun <- create_newfun(classes, public, private, active, super_list,
-                          override, lock, parent_env)
+                          lock, parent_env)
 
   structure(
     list(new = newfun, classname = classname, public = public,
@@ -206,7 +205,7 @@ createRefClass <- function(classname = NULL, public = list(),
 
 # Create the $new function for a class
 create_newfun <- function(classes, public, private, active, super_list,
-                          override, lock, parent_env) {
+                          lock, parent_env) {
 
   has_private <- !is.null(private)
 
@@ -244,7 +243,7 @@ create_newfun <- function(classes, public, private, active, super_list,
     }
 
     if (!is.null(super_list$functions) || !is.null(super_list$active)) {
-      public_env$super <- create_super_env(super_list, public_env, override)
+      public_env$super <- create_super_env(super_list, public_env)
     }
 
     if (lock) {
@@ -259,28 +258,21 @@ create_newfun <- function(classes, public, private, active, super_list,
 }
 
 # Create and populate the self$super environment
-create_super_env <- function(super_list, self, override = TRUE) {
+create_super_env <- function(super_list, self) {
   functions <- super_list$functions
   active <- super_list$active
 
   # The environment in which functions evaluate is a child of the enclosing env
-  # (should be the self env). Though this is a child of self, it may or may not
-  # be accessible from self, depending on override, below.
+  # (should be the self env). Though this is a child of self, self has no
+  # bindings that point to it. The only reason this environment is needed is so
+  # that if a function super$foo in turn calls super$bar, it will be able to
+  # find bar from the next superclass up.
   super_enc_env <- new.env(parent = self, hash = FALSE)
 
-  # The binding environment: where the functions can be found. This will be
-  # self$super.
-  if (override) {
-    # If overriding, then the binding environment is a new environment. Its
-    # parent doesn't matter because it's not the enclosing environment for
-    # any functions.
-    super_bind_env <- new.env(parent = emptyenv(),
-      hash = length(functions) + length(active) > 100)
-  } else {
-    # If not overriding, then the binding and enclosing environment are the
-    # same.
-    super_bind_env <- super_enc_env
-  }
+  # The binding environment is a new environment. Its parent doesn't matter
+  # because it's not the enclosing environment for any functions.
+  super_bind_env <- new.env(parent = emptyenv(),
+    hash = length(functions) + length(active) > 100)
 
   # Set up functions. All the functions can be found in self$super (the binding
   # env). Their enclosing env may or may not be self$super.
