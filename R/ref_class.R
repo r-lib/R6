@@ -158,8 +158,8 @@
 createRefClass <- function(classname = NULL, public = list(),
                            private = NULL, active = NULL,
                            inherit = NULL, override = FALSE,
-                           parent_env = parent.frame(),
-                           lock = TRUE, class = TRUE) {
+                           lock = TRUE, class = TRUE,
+                           parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
     stop("All elements of public, private, and active must be named.")
@@ -186,12 +186,31 @@ createRefClass <- function(classname = NULL, public = list(),
     super_list <- listify_superclass(inherit)
     classes <- c(classname, inherit$classname, "RefClass")
   } else {
+    super_list <- NULL
     classes <- c(classname, "RefClass")
   }
 
+  if (!class) classes <- NULL
+
+  newfun <- create_newfun(classes, public, private, active, super_list,
+                          override, lock, parent_env)
+
+  structure(
+    list(new = newfun, classname = classname, public = public,
+         private = private, active = active, inherit = inherit,
+         parent_env = parent_env, lock = lock),
+    class = "RefClassGenerator"
+  )
+}
+
+
+# Create the $new function for a class
+create_newfun <- function(classes, public, private, active, super_list,
+                          override, lock, parent_env) {
+
   has_private <- !is.null(private)
 
-  newfun <- function(...) {
+  function(...) {
     if (has_private) {
       private_env <- new.env(parent = parent_env, hash = (length(private) > 100))
       public_env <- new.env(parent = private_env, hash = (length(public) > 100))
@@ -224,8 +243,7 @@ createRefClass <- function(classname = NULL, public = list(),
       }
     }
 
-    if (!is.null(inherit) &&
-        (!is.null(super_list$functions) || !is.null(super_list$active))) {
+    if (!is.null(super_list$functions) || !is.null(super_list$active)) {
       public_env$super <- create_super_env(super_list, public_env, override)
     }
 
@@ -235,26 +253,20 @@ createRefClass <- function(classname = NULL, public = list(),
     }
     if (is.function(public_env$initialize)) public_env$initialize(...)
 
-    if (class) class(public_env) <- classes
+    class(public_env) <- classes
     public_env
   }
-
-  structure(
-    list(new = newfun, classname = classname, public = public,
-         private = private, active = active, inherit = inherit,
-         parent_env = parent_env, lock = lock),
-    class = "RefClassGenerator"
-  )
 }
 
-create_super_env <- function(super_list, enclosing_env, override = TRUE) {
+# Create and populate the self$super environment
+create_super_env <- function(super_list, self, override = TRUE) {
   functions <- super_list$functions
   active <- super_list$active
 
   # The environment in which functions evaluate is a child of the enclosing env
   # (should be the self env). Though this is a child of self, it may or may not
   # be accessible from self, depending on override, below.
-  super_enc_env <- new.env(parent = enclosing_env, hash = FALSE)
+  super_enc_env <- new.env(parent = self, hash = FALSE)
 
   # The binding environment: where the functions can be found. This will be
   # self$super.
