@@ -2,6 +2,7 @@
 title: "Functions: memory and speed tests"
 output:
   html_document:
+    theme: null
     css: mystyle.css
     toc: yes
 ---
