@@ -250,9 +250,10 @@ create_newfun <- function(classes, public, private, active, super_list,
       if (has_private) lockEnvironment(private_env)
       lockEnvironment(public_env)
     }
-    if (is.function(public_env$initialize)) public_env$initialize(...)
 
     class(public_env) <- classes
+
+    if (is.function(public_env$initialize)) public_env$initialize(...)
     public_env
   }
 }
