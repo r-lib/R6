@@ -199,3 +199,95 @@ test_that("Inheritance", {
 })
 
 
+test_that("Inheritance: superclass methods", {
+  AC <- createRefClass("AC",
+    public = list(
+      x = 0,
+      initialize = function() {
+        inc_x()
+        inc_self_x()
+        inc_y()
+        inc_self_y()
+        incz
+      },
+      inc_x = function() x <<- x + 1,
+      inc_self_x = function() self$x <- self$x + 10,
+      inc = function(val) val + 1,
+      pinc = function(val) priv_inc(val), # Call private inc method
+      z = 0
+    ),
+    private = list(
+      y = 0,
+      inc_y = function() y <<- y + 1,
+      inc_self_y = function() private$y <- private$y + 10,
+      priv_inc = function(val) val + 1
+    ),
+    active = list(
+      incz = function(value) {
+        z <<- z + 1
+      }
+    )
+  )
+  BC <- createRefClass("BC",
+    inherit = AC,
+    public = list(
+      inc_x = function() x <<- x + 2,
+      inc_self_x = function() self$x <- self$x + 20,
+      inc = function(val) super$inc(val) + 20
+    ),
+    private = list(
+      inc_y = function() y <<- y + 2,
+      inc_self_y = function() private$y <- private$y + 20,
+      priv_inc = function(val) super$priv_inc(val) + 20
+    ),
+    active = list(
+      incz = function(value) {
+        z <<- z + 2
+      }
+    )
+  )
+  B <- BC$new()
+
+  # Environment checks
+  expect_identical(parent.env(B$super), emptyenv())
+  # Enclosing env for functions in $super is a child of $self
+  expect_identical(parent.env(environment(B$super$inc_x)), B)
+
+  # Testing overrides
+  expect_identical(B$x, 22)          # Public
+  expect_identical(B$private$y, 22)  # Private
+  expect_identical(B$z, 2)           # Active
+  # Calling superclass methods
+  expect_identical(B$inc(0), 21)
+  expect_identical(B$pinc(0), 21)
+
+
+  # Multi-level inheritance
+  CC <- createRefClass("CC",
+    inherit = BC,
+    public = list(
+      inc_x = function() x <<- x + 3,
+      inc_self_x = function() self$x <- self$x + 30,
+      inc = function(val) super$inc(val) + 300
+    ),
+    private = list(
+      inc_y = function() y <<- y + 3,
+      inc_self_y = function() private$y <- private$y + 30,
+      priv_inc = function(val) super$priv_inc(val) + 300
+    ),
+    active = list(
+      incz = function(value) {
+        z <<- z + 3
+      }
+    )
+  )
+  C <- CC$new()
+
+  # Testing overrides
+  expect_identical(C$x, 33)          # Public
+  expect_identical(C$private$y, 33)  # Private
+  expect_identical(C$z, 3)           # Active
+  # Calling superclass methods (two levels)
+  expect_identical(C$inc(0), 321)
+  expect_identical(C$pinc(0), 321)
+})
