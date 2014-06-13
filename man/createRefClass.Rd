@@ -4,7 +4,8 @@
 \title{Create a reference class}
 \usage{
 createRefClass(classname = NULL, public = list(), private = NULL,
-  active = NULL, parent_env = parent.frame(), lock = TRUE, class = TRUE)
+  active = NULL, inherit = NULL, lock = TRUE, class = TRUE,
+  parent_env = parent.frame())
 }
 \arguments{
 \item{classname}{Name of the class.}
@@ -16,6 +17,9 @@ non-functions.}
 and non-functions.}
 
 \item{active}{An optional list of active binding functions.}
+
+\item{inherit}{A RefClassGenerator object to inherit from; in other words,
+a superclass for this class.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
@@ -120,7 +124,7 @@ MyClass <- createRefClass("MyClass",
     y = 3,
     initialize = function(x, y) {
       if (!missing(x)) private$x <- x
-      if (!missing(y)) private$y <- y
+      if (!missing(y)) self$y <- y
     },
     # Set a private variable
     set_x = function(value) private$x <- value,

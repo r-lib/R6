@@ -150,11 +150,6 @@
 #'
 #' # Print, using the print.RefClass method:
 #' print(z)
-#'
-#'
-#'
-#' # Inheritance
-#'
 createRefClass <- function(classname = NULL, public = list(),
                            private = NULL, active = NULL,
                            inherit = NULL, lock = TRUE, class = TRUE,
