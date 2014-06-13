@@ -157,7 +157,8 @@
 #'
 createRefClass <- function(classname = NULL, public = list(),
                            private = NULL, active = NULL,
-                           inherit = NULL, parent_env = parent.frame(),
+                           inherit = NULL, override = FALSE,
+                           parent_env = parent.frame(),
                            lock = TRUE, class = TRUE) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
@@ -180,11 +181,9 @@ createRefClass <- function(classname = NULL, public = list(),
     private <- merge_vectors(inherit$private, private)
     active  <- merge_vectors(inherit$active,  active)
 
-    # Get just the functions from the inherited class.
-    # These will be placed in the super env.
-    super_funs <- c(get_functions(inherit$public), get_functions(inherit$private))
-    super_active <- inherit$active
-
+    # Do some preparation work on the superclass, so that we don't have to do
+    # it each time an object is created.
+    super_list <- listify_superclass(inherit)
     classes <- c(classname, inherit$classname, "RefClass")
   } else {
     classes <- c(classname, "RefClass")
@@ -225,26 +224,9 @@ createRefClass <- function(classname = NULL, public = list(),
       }
     }
 
-    # Set up super environment, which contains just the functions from the
-    # inherited class.
     if (!is.null(inherit) &&
-        (!is.null(super_funs) || !is.null(super_active))) {
-      super_env <- new.env(parent = emptyenv(),
-        hash = length(super_funs) + length(super_active) > 100)
-
-      if (!is.null(super_funs)) {
-        super_funs <- assign_func_envs(super_funs, public_env)
-        list2env(super_funs, envir = super_env)
-      }
-
-      if (!is.null(super_active)) {
-        super_active <- assign_func_envs(super_active, public_env)
-        for (name in names(super_active)) {
-          makeActiveBinding(name, super_active[[name]], super_env)
-        }
-      }
-
-      public_env$super <- super_env
+        (!is.null(super_list$functions) || !is.null(super_list$active))) {
+      public_env$super <- create_super_env(super_list, public_env, override)
     }
 
     if (lock) {
@@ -264,6 +246,65 @@ createRefClass <- function(classname = NULL, public = list(),
     class = "RefClassGenerator"
   )
 }
+
+create_super_env <- function(super_list, enclosing_env, override = TRUE) {
+  functions <- super_list$functions
+  active <- super_list$active
+
+  # The environment in which functions evaluate is a child of the enclosing env
+  # (should be the self env). Though this is a child of self, it may or may not
+  # be accessible from self, depending on override, below.
+  super_enc_env <- new.env(parent = enclosing_env, hash = FALSE)
+
+  # The binding environment: where the functions can be found. This will be
+  # self$super.
+  if (override) {
+    # If overriding, then the binding environment is a new environment. Its
+    # parent doesn't matter because it's not the enclosing environment for
+    # any functions.
+    super_bind_env <- new.env(parent = emptyenv(),
+      hash = length(functions) + length(active) > 100)
+  } else {
+    # If not overriding, then the binding and enclosing environment are the
+    # same.
+    super_bind_env <- super_enc_env
+  }
+
+  # Set up functions. All the functions can be found in self$super (the binding
+  # env). Their enclosing env may or may not be self$super.
+  if (!is.null(functions)) {
+    functions <- assign_func_envs(functions, super_enc_env)
+    list2env(functions, envir = super_bind_env)
+  }
+
+  # Set up active bindings
+  if (!is.null(active)) {
+    active <- assign_func_envs(active, super_enc_env)
+    for (name in names(active)) {
+      makeActiveBinding(name, active[[name]], super_bind_env)
+    }
+  }
+
+  # Recurse if there are more superclasses
+  if (!is.null(super_list$super)) {
+    super_enc_env$super <- create_super_env(super_list$super, super_enc_env)
+  }
+
+  super_bind_env
+}
+
+# Given a refClassGenerator, recursively
+listify_superclass <- function(class) {
+  if (is.null(class)) return(NULL)
+
+  list(
+    functions = c(get_functions(class$public),
+                  get_functions(class$private)),
+    active = class$active,
+    super = listify_superclass(class$inherit)
+  )
+}
+
 
 get_functions <- function(x) {
   funcs <- vapply(x, is.function, logical(1))
