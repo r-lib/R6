@@ -48,8 +48,17 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
                                       methods = NULL, inherit = NULL,
                                       parent_env = parent.frame()) {
 
-  if (!all(vapply(methods, is.function, logical(1)))) {
+  if (!all_named(members) || !all_named(methods)) {
+    stop("All elements of members and methods must be named.")
+  }
+  if (length(get_nonfunctions(methods)) != 0) {
     stop("Objects in methods must all be functions.")
+  }
+  if (any(duplicated(c(names(members), names(methods))))) {
+    stop("All items in members and methods must have unique names.")
+  }
+  if (any(c(names(members), names(methods)) %in% c("self", "super"))) {
+    stop("Items cannot use reserved names 'self' and 'super'.")
   }
 
   if (!is.null(inherit)) {

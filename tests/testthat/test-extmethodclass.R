@@ -50,6 +50,22 @@ test_that("object is not a reference object", {
 })
 
 
+test_that("Validity checks on creation", {
+  # All arguments must be named
+  expect_error(createExternalMethodClass("AC", members = list(1)))
+  expect_error(createExternalMethodClass("AC", methods = list(1)))
+
+  # Names can't be duplicated
+  expect_error(createExternalMethodClass("AC", members = list(a=1, a=2)))
+  expect_error(createExternalMethodClass("AC", members = list(a=1),
+                                         methods = list(a = function() 1)))
+
+  # Reserved names
+  expect_error(createRefClass("AC", members = list(self = 1)))
+  expect_error(createRefClass("AC", members = list(super = 1)))
+})
+
+
 test_that("methods require 'self' to find each other", {
   # It would be nice within a method to be able to use gety() instead of
   # self$gety(), but it's not possible because we to automatically pass
