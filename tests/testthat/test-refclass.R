@@ -113,15 +113,17 @@ test_that("Locking works", {
 
 
 test_that("Validity checks on creation", {
+  fun <- function() 1  # Dummy function for tests
+
   # All arguments must be named
   expect_error(createRefClass("AC", public = list(1)))
   expect_error(createRefClass("AC", private = list(1)))
-  expect_error(createRefClass("AC", active = list(1)))
+  expect_error(createRefClass("AC", active = list(fun)))
 
   # Names can't be duplicated
   expect_error(createRefClass("AC", public = list(a=1, a=2)))
   expect_error(createRefClass("AC", public = list(a=1), private = list(a=1)))
-  expect_error(createRefClass("AC", private = list(a=1), active = list(a=1)))
+  expect_error(createRefClass("AC", private = list(a=1), active = list(a=fun)))
 
   # Reserved names
   expect_error(createRefClass("AC", public = list(self = 1)))
