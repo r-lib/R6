@@ -193,8 +193,8 @@ createRefClass <- function(classname = NULL, public = list(),
     classes <- NULL
   }
 
-  newfun <- create_newfun(classes, public, private, active, super_list,
-                          lock, parent_env)
+  newfun <- refClass_newfun(classes, public, private, active, super_list,
+                            lock, parent_env)
 
   structure(
     list(new = newfun, classname = classname, public = public,
@@ -205,9 +205,9 @@ createRefClass <- function(classname = NULL, public = list(),
 }
 
 
-# Create the $new function for a class
-create_newfun <- function(classes, public, private, active, super_list,
-                          lock, parent_env) {
+# Create the $new function for a RefClassGenerator
+refClass_newfun <- function(classes, public, private, active, super_list,
+                            lock, parent_env) {
 
   has_private <- !is.null(private)
 

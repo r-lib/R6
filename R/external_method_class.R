@@ -86,18 +86,23 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
   class(members) <- c(classname, "ExternalMethodClass")
   attr(members, "methods") <- methods_env
 
-  newfun <- function(...) {
-    if (is.function(members$initialize)) {
-      members <- members$initialize(...)
-    }
-    members
-  }
+  newfun <- externalMethodsClass_newfun(members)
 
   structure(
     list(new = newfun, classname = classname, members = members,
          methods = methods_env, inherit = inherit),
     class = "ExternalMethodClassGenerator"
   )
+}
+
+# Return a $new function for the ExternalMethodClassGenerator
+externalMethodsClass_newfun <- function(self) {
+  function(...) {
+    if (is.function(self$initialize)) {
+      self <- self$initialize(...)
+    }
+    self
+  }
 }
 
 #' @export
