@@ -161,6 +161,11 @@ createRefClass <- function(classname = NULL, public = list(),
   if (any(duplicated(c(names(public), names(private), names(active))))) {
     stop("All items in public, private, and active must have unique names.")
   }
+  if (any(c(names(public), names(private), names(active)) %in%
+      c("self", "private", "super"))) {
+    stop("Items cannot use reserved names 'self', 'private', and 'super'.")
+  }
+
   if (length(get_nonfunctions(active)) != 0) {
     stop("All items in active must be functions.")
   }

@@ -123,6 +123,11 @@ test_that("Validity checks on creation", {
   expect_error(createRefClass("AC", public = list(a=1, a=2)))
   expect_error(createRefClass("AC", public = list(a=1), private = list(a=1)))
   expect_error(createRefClass("AC", private = list(a=1), active = list(a=1)))
+
+  # Reserved names
+  expect_error(createRefClass("AC", public = list(self = 1)))
+  expect_error(createRefClass("AC", private = list(private = 1)))
+  expect_error(createRefClass("AC", active = list(super = 1)))
 })
 
 
