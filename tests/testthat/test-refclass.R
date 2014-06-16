@@ -294,4 +294,6 @@ test_that("Inheritance: superclass methods", {
   # Calling superclass methods (two levels)
   expect_identical(C$inc(0), 321)
   expect_identical(C$pinc(0), 321)
-})
+
+  # Classes
+  expect_identical(class(C), c("CC", "BC", "AC", "RefClass"))})

@@ -172,7 +172,7 @@ createRefClass <- function(classname = NULL, public = list(),
 
   if (!is.null(inherit)) {
     if (!inherits(inherit, "RefClassGenerator")) {
-      stop("`inherit` must be a RefClass.")
+      stop("`inherit` must be a RefClassGenerator.")
     }
 
     # Merge the new items over the inherited ones
@@ -183,13 +183,20 @@ createRefClass <- function(classname = NULL, public = list(),
     # Do some preparation work on the superclass, so that we don't have to do
     # it each time an object is created.
     super_list <- listify_superclass(inherit)
-    classes <- c(classname, inherit$classname, "RefClass")
   } else {
     super_list <- NULL
-    classes <- c(classname, "RefClass")
   }
 
-  if (!class) classes <- NULL
+  if (class) {
+    # Get names of all superclasses
+    get_superclassnames <- function(inherit) {
+      if (is.null(inherit)) return(NULL)
+      c(inherit$classname, get_superclassnames(inherit$inherit))
+    }
+    classes <- c(classname, get_superclassnames(inherit), "RefClass")
+  } else {
+    classes <- NULL
+  }
 
   newfun <- create_newfun(classes, public, private, active, super_list,
                           lock, parent_env)
@@ -298,7 +305,8 @@ create_super_env <- function(super_list, self) {
   super_bind_env
 }
 
-# Given a refClassGenerator, recursively
+# Given a refClassGenerator, recursively convert it into a list that's useful
+# for efficiently instantiating $super objects.
 listify_superclass <- function(class) {
   if (is.null(class)) return(NULL)
 
@@ -310,13 +318,14 @@ listify_superclass <- function(class) {
   )
 }
 
-
+# Return all the functions in a list.
 get_functions <- function(x) {
   funcs <- vapply(x, is.function, logical(1))
   if (all(!funcs)) return(NULL)
   x[funcs]
 }
 
+# Return all the non-functions in a list.
 get_nonfunctions <- function(x) {
   funcs <- vapply(x, is.function, logical(1))
   if (all(funcs)) return(NULL)
