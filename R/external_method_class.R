@@ -1,4 +1,4 @@
-#' Create a class with non-reference semantics
+#' Create a class with non-reference semantics and externally-stored methods
 #' @export
 #' @examples
 #' AnimalHerd <- createExternalMethodClass("AnimalHerd",
