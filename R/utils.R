@@ -22,3 +22,19 @@ all_named <- function(x) {
   }
   TRUE
 }
+
+
+# Return all the functions in a list.
+get_functions <- function(x) {
+  funcs <- vapply(x, is.function, logical(1))
+  if (all(!funcs)) return(NULL)
+  x[funcs]
+}
+
+
+# Return all the non-functions in a list.
+get_nonfunctions <- function(x) {
+  funcs <- vapply(x, is.function, logical(1))
+  if (all(funcs)) return(NULL)
+  x[!funcs]
+}

@@ -6,3 +6,9 @@ assign_func_envs <- function(objs, target_env) {
     x
   })
 }
+
+# Get names of all superclasses
+get_superclassnames <- function(inherit) {
+  if (is.null(inherit)) return(NULL)
+  c(inherit$classname, get_superclassnames(inherit$inherit))
+}

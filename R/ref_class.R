@@ -188,11 +188,6 @@ createRefClass <- function(classname = NULL, public = list(),
   }
 
   if (class) {
-    # Get names of all superclasses
-    get_superclassnames <- function(inherit) {
-      if (is.null(inherit)) return(NULL)
-      c(inherit$classname, get_superclassnames(inherit$inherit))
-    }
     classes <- c(classname, get_superclassnames(inherit), "RefClass")
   } else {
     classes <- NULL
@@ -316,18 +311,4 @@ listify_superclass <- function(class) {
     active = class$active,
     super = listify_superclass(class$inherit)
   )
-}
-
-# Return all the functions in a list.
-get_functions <- function(x) {
-  funcs <- vapply(x, is.function, logical(1))
-  if (all(!funcs)) return(NULL)
-  x[funcs]
-}
-
-# Return all the non-functions in a list.
-get_nonfunctions <- function(x) {
-  funcs <- vapply(x, is.function, logical(1))
-  if (all(funcs)) return(NULL)
-  x[!funcs]
 }
