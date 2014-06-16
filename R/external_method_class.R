@@ -55,12 +55,12 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
   methods <- list2env(methods)
 
   newfun <- function(...) {
+    class(members) <- c(classname, "ExternalMethodClass")
+    attr(members, "methods") <- methods
+
     if (is.function(methods$initialize)) {
       members <- methods$initialize(members, ...)
     }
-
-    class(members) <- c(classname, "ExternalMethodClass")
-    attr(members, "methods") <- methods
     members
   }
 
