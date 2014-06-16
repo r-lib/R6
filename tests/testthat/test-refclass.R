@@ -5,19 +5,18 @@ test_that("initialization", {
     public = list(
       x = 1,
       initialize = function(x, y) {
-        self$x <- x
-        private$y <- y
+        self$x <- getx() + x    # Assign to self; also access a method
+        private$y <- y          # Assign to private
       },
+      getx = function() x,
       gety = function() private$y
     ),
     private = list(
       y = 2
     )
   )
-
   A <- AC$new(2, 3)
-
-  expect_identical(A$x, 2)
+  expect_identical(A$x, 3)
   expect_identical(A$gety(), 3)
 })
 
