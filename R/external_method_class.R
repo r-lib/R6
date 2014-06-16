@@ -59,13 +59,10 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
 
     # Merge the new items over the inherited ones
     members <- merge_vectors(inherit$members, members)
-    methods <- merge_vectors(inherit$methods, methods)
+    methods <- merge_vectors(as.list(inherit$methods), methods)
 
-    # Do some preparation work on the superclass, so that we don't have to do
-    # it each time an object is created.
-    super_list <- listify_superclass(inherit)
-  } else {
-    super_list <- NULL
+    # Point to the superclass's methods
+    methods$super <- inherit$methods
   }
 
   # Enclosing env for methods
@@ -77,19 +74,19 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
 
   classes <- c(classname, get_superclassnames(inherit), "ExternalMethodClass")
 
-  newfun <- function(...) {
-    class(members) <- c(classname, "ExternalMethodClass")
-    attr(members, "methods") <- methods_env
+  class(members) <- c(classname, "ExternalMethodClass")
+  attr(members, "methods") <- methods_env
 
-    if (is.function(methods$initialize)) {
-      members <- methods$initialize(members, ...)
+  newfun <- function(...) {
+    if (is.function(members$initialize)) {
+      members <- members$initialize(...)
     }
     members
   }
 
   structure(
     list(new = newfun, classname = classname, members = members,
-         methods = methods, inherit = inherit),
+         methods = methods_env, inherit = inherit),
     class = "ExternalMethodClassGenerator"
   )
 }
@@ -100,9 +97,16 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
     return(.subset2(x, name))
 
   } else {
-    fun <- attr(x, "methods")[[name]]
+    methods <- attr(x, "methods")
+    fun <- methods[[name]]
+
     if (is.function(fun)) {
-      return(function(...) fun(x, ...))
+      if ("super" %in% names(formals(fun))) {
+        super <- createExternalSuperMethods(x, methods$super)
+        return(function(...) fun(x, ..., super = super))
+      } else {
+        return(function(...) fun(x, ...))
+      }
     }
     NULL
   }
@@ -110,3 +114,31 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
 
 #' @export
 `[[.ExternalMethodClass` <- `$.ExternalMethodClass`
+
+
+createExternalSuperMethods <- function(obj, methods) {
+  super <- list(self = obj, methods = methods)
+  class(super) <- "ExternalSuperMethods"
+  super
+}
+
+#' @export
+`$.ExternalSuperMethods` <- function(x, name) {
+  self <- .subset2(x, "self")
+  methods <- .subset2(x, "methods")
+  fun <- .subset2(methods, name)
+
+  if (is.function(fun)) {
+    if ("super" %in% names(formals(fun))) {
+      super <- createExternalSuperMethods(self, methods$super)
+      return(function(...) fun(self, ..., super = super))
+
+    } else {
+      return(function(...) fun(self, ...))
+    }
+  }
+  NULL
+}
+
+#' @export
+`[[.ExternalSuperMethods` <- `$.ExternalSuperMethods`
