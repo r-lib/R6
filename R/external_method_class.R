@@ -45,18 +45,41 @@
 #' herd$grow()$view()
 #' "BUFFALO BUFFALO BUFFALO BUFFALO"
 createExternalMethodClass <- function(classname = NULL, members = list(),
-                                      methods = NULL) {
+                                      methods = NULL, inherit = NULL,
+                                      parent_env = parent.frame()) {
 
   if (!all(vapply(methods, is.function, logical(1)))) {
     stop("Objects in methods must all be functions.")
   }
 
+  if (!is.null(inherit)) {
+    if (!inherits(inherit, "ExternalMethodClassGenerator")) {
+      stop("`inherit` must be a ExternalMethodClassGenerator.")
+    }
+
+    # Merge the new items over the inherited ones
+    members <- merge_vectors(inherit$members, members)
+    methods <- merge_vectors(inherit$methods, methods)
+
+    # Do some preparation work on the superclass, so that we don't have to do
+    # it each time an object is created.
+    super_list <- listify_superclass(inherit)
+  } else {
+    super_list <- NULL
+  }
+
+  # Enclosing env for methods
+  methods <- assign_func_envs(methods, parent_env)
+  # Binding env for methods
+  methods_env <- new.env(parent = emptyenv(), hash = length(methods) > 100)
   # Turn methods into an environment so that it's possible to add methods later
-  methods <- list2env(methods)
+  list2env(methods, envir = methods_env)
+
+  classes <- c(classname, get_superclassnames(inherit), "ExternalMethodClass")
 
   newfun <- function(...) {
     class(members) <- c(classname, "ExternalMethodClass")
-    attr(members, "methods") <- methods
+    attr(members, "methods") <- methods_env
 
     if (is.function(methods$initialize)) {
       members <- methods$initialize(members, ...)
@@ -66,7 +89,7 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
 
   structure(
     list(new = newfun, classname = classname, members = members,
-         methods = methods),
+         methods = methods, inherit = inherit),
     class = "ExternalMethodClassGenerator"
   )
 }
