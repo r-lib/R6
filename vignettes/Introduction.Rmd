@@ -1,0 +1,255 @@
+---
+title: "Introduction to testclasses"
+output:
+  html_document:
+    theme: null
+    css: mystyle.css
+    toc: yes
+---
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Introduction to testclasses}
+-->
+
+```{r echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+The testclasses package provides two types of classes: reference classes, similar to R's standard reference classes, and external methods classes, which do not have reference sematics. They serve very different purposes, and both have their uses.
+
+
+## Reference classes
+
+The reference classes in testclasses are similar to R's standard reference classes, but are lighter weight, and avoid some issues that come along with using S4 classes (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance vignette.
+
+Instances (objects) of these reference classes obviously have reference semantics, unlike many objects in R. These reference classes also support:
+
+* public and private methods
+* active bindings
+* inheritance (superclasses)
+
+### Basics
+
+Here's how to create a simple reference class:
+
+```{r}
+library(testclasses)
+
+Person <- createRefClass("Person",
+  public = list(
+    name = NA,
+    hair = NA,
+    initialize = function(name, hair) {
+      if (!missing(name)) self$name <- name
+      if (!missing(hair)) self$hair <- hair
+      greet()
+    },
+    set_hair = function(val) {
+      hair <<- val
+    },
+    greet = function() {
+      cat(paste0("Hello, my name is ", name, ".\n"))
+    }
+  )
+)
+```
+
+To instantiate an object of this class, use the `$new()`:
+
+```{r}
+ann <- Person$new("Ann", "black")
+ann
+```
+
+The `$new()` function creates the object, and calls the `initialize()` method, if it exists. 
+
+Inside methods of the class, `self` refers to the object. Public members of the object (which is all we've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`. Assignment can also be done with `<<-`, as in `x <<- y` -- but in this case, the object member's name must be different from the names of variables in the method.
+
+Once the object is instantiated, you can access values and methods with `$`:
+
+```{r}
+ann$hair
+ann$greet()
+ann$set_hair("red")
+ann$hair
+```
+
+Implementation note: The reference object is basically an environment with the public members in it. The `self` object is bound in that environment, and is simply a reference back to that environment.
+
+### Private members
+
+In the previous example, all the members were public. It's also possible to add private members:
+
+```{r}
+Queue <- createRefClass("Queue",
+  public = list(
+    initialize = function(...) {
+      for (item in list(...)) {
+        add(item)
+      }
+    },
+    add = function(x) {
+      queue <<- c(queue, list(x))
+      invisible(self)
+    },
+    remove = function() {
+      if (length() == 0) return(NULL)
+      # Can use private$queue for explicit access
+      head <- private$queue[[1]]
+      private$queue <- private$queue[-1]
+      head
+    }
+  ),
+  private = list(
+    queue = list(),
+    length = function() base::length(queue)
+  )
+)
+
+q <- Queue$new(5, 6, "foo")
+```
+
+The public members can be accessed as usual:
+
+```{r}
+# Add and remove items
+q$add("something")
+q$add("another thing")
+q$add(17)
+q$remove()
+q$remove()
+```
+
+However, private members can't be accessed directly:
+
+```{r, error=TRUE}
+q$queue
+q$length()
+
+# Actually, there is a way:
+q$private$queue
+```
+
+Because the `add()` method returns `self`, it is chainable:
+
+```{r}
+q$add(10)$add(11)$add(12)
+q$remove()
+q$remove()
+q$remove()
+q$remove()
+```
+
+The `remove()` method isn't chainable, since doesn't return `self`.
+
+Implementation note: When private members are used, the public environment is a child of the private environment, and the `private` object points to the private environment. Although public and private methods ar bound (they can be found) in their respective environments, the _enclosing_ environment for all of those methods is the public environment. This means that private methods "run in" the public environment, so they will find public objects without needing an explicit `self$xx`.
+
+### Active bindings
+
+Active bindings look like items, but each time they are accessed, they call a function. They are always public.
+
+```{r}
+Numbers <- createRefClass("Numbers",
+  public = list(
+    x = 100
+  ),
+  active = list(
+    x2 = function(value) {
+      if (missing(value)) return(x * 2)
+      else self$x <- value/2
+    },
+    rand = function() rnorm(1)
+  )
+)
+
+n <- Numbers$new()
+n$x
+```
+
+When an active binding is accessed as if reading a value, it calls the function with `value` as a missing argument:
+
+```{r}
+n$x2
+```
+
+When it's accessed as if assigning a value, it uses the assignment value as the `value` argument:
+
+```{r}
+n$x2 <- 1000
+n$x
+```
+
+If the function takes no arguments, it's not possible to use it with `<-`:
+
+```{r, error=TRUE}
+n$rand
+n$rand
+n$rand <- 3
+```
+
+### Inheritance
+
+One class can inherit from another. In other words, you can have super- and sub-classes.
+
+Subclasses can have new methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the`remove()` method:
+
+```{r}
+# Note that this isn't very efficient - it's just for illustrating inheritance.
+HistoryQueue <- createRefClass("HistoryQueue",
+  inherit = Queue,
+  public = list(
+    show = function() {
+      cat("Next item is at index", head_idx + 1, "\n")
+      for (i in seq_along(queue)) {
+        cat(i, ": ", queue[[i]], "\n", sep = "")
+      }
+    },
+    remove = function() {
+      if (length() - head_idx == 0) return(NULL)
+      head_idx <<- head_idx + 1
+      queue[[head_idx]]
+    }
+  ),
+  private = list(
+    head_idx = 0
+  )
+)
+
+hq <- HistoryQueue$new(5, 6, "foo")
+hq$show()
+hq$remove()
+hq$show()
+hq$remove()
+```
+
+
+Superclass methods can be called with `super$xx()`. In the CountingQueue example below, it keeps a count of the total number of objects that have ever been added to the queue. It does this by overriding the `add()` method -- it increments a counter and then calls the superclass's `add()` method, with `super$add(x)`:
+
+```{r}
+CountingQueue <- createRefClass("CountingQueue",
+  inherit = Queue,
+  public = list(
+    add = function(x) {
+      total <<- total + 1
+      super$add(x)
+    },
+    get_total = function() total
+  ),
+  private = list(
+    total = 0
+  )
+)
+
+cq <- CountingQueue$new("x", "y")
+cq$get_total()
+cq$add("z")
+cq$remove()
+cq$remove()
+cq$get_total()
+```
+
+
+### Summary
+
+The reference classes in testclasses provide many capabilities common to object-oriented programming languages. They're similar to R's built-in reference classes, but they are simpler, smaller, faster, and easier to understand.
