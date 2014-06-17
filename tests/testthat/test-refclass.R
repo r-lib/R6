@@ -18,6 +18,16 @@ test_that("initialization", {
   A <- AC$new(2, 3)
   expect_identical(A$x, 3)
   expect_identical(A$gety(), 3)
+
+  # No initialize method: throw error if arguments are passed in
+  AC <- createRefClass("AC", public = list(x = 1))
+  expect_error(AC$new(3))
+})
+
+test_that("empty members and methods are allowed", {
+  # No initialize method: throw error if arguments are passed in
+  AC <- createRefClass("AC")
+  expect_that(AC$new(), not(throws_error()))
 })
 
 

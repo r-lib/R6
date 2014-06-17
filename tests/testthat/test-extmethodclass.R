@@ -16,8 +16,17 @@ test_that("initialization", {
   )
   A <- AC$new(2)
   expect_identical(A$x, 4)
+
+  # No initialize method: throw error if arguments are passed in
+  AC <- createExternalMethodClass("AC", members = list(x = 1))
+  expect_error(AC$new(3))
 })
 
+test_that("empty members and methods are allowed", {
+  # No initialize method: throw error if arguments are passed in
+  AC <- createExternalMethodClass("AC")
+  expect_that(AC$new(), not(throws_error()))
+})
 
 test_that("object contains members but not methods", {
   AC <- createExternalMethodClass("AC",
