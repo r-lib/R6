@@ -1,12 +1,25 @@
 #' Create a class with non-reference semantics and externally-stored methods
+#'
+#' @param classname Name of the class.
+#' @param members A list of members, which can be functions and non-functions.
+#' @param methods A list of methods for the class.
+#' @param inherit A ExternalMethodClass object to inherit from (a superclass).
+#' @param lock Should the methods for this class be locked? If locked, it won't
+#'   be possible to add more methods later.
+#' @param parent_env The enclosing environment to use for the methods. If
+#'   \code{NULL}, keep the methods' existing enclosing environment.
 #' @export
 #' @examples
 #' AnimalHerd <- createExternalMethodClass("AnimalHerd",
 #'   members = list(
 #'     animal = "buffalo",
-#'     count = 2
+#'     count = 0
 #'   ),
 #'   methods = list(
+#'     initialize = function(self, count = 0) {
+#'       self$count <- count
+#'       self
+#'     },
 #'     view = function(self) {
 #'       paste(rep(self$animal, self$count), collapse = " ")
 #'     },
@@ -14,15 +27,16 @@
 #'       self$count <- self$count * mult
 #'       invisible(self)
 #'     }
-#'   )
+#'   ),
+#'   lock = FALSE
 #' )
 #'
-#' herd <- AnimalHerd$new()
+#' herd <- AnimalHerd$new(2)
 #' herd$view()
 #' # "buffalo buffalo"
 #'
 #' herd$reproduce()
-#' # No change because it doesn't have reference semantics
+#' # No change to herd because it doesn't have reference semantics
 #' herd$view()
 #' # "buffalo buffalo"
 #'
@@ -33,17 +47,65 @@
 #'
 #' # Methods that return self are chainable
 #' herd$reproduce()$view()
-#' "buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo"
+#' # "buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo"
 #'
-#'
-#' # Can add methods after the class has already been created
+#' # Can add methods after the class has already been created, because we
+#' # used lock = FALSE
 #' AnimalHerd$methods$grow <- function(self) {
 #'   self$animal <- toupper(self$animal)
 #'   self
 #' }
 #'
 #' herd$grow()$view()
-#' "BUFFALO BUFFALO BUFFALO BUFFALO"
+#' # "BUFFALO BUFFALO BUFFALO BUFFALO"
+#'
+#'
+#' # Inheritance
+#' Person <- createExternalMethodClass("Person",
+#'   members = list(
+#'     name = NA,
+#'     hair = NA
+#'   ),
+#'   methods = list(
+#'     initialize = function(self, name, hair = NA) {
+#'       self$name <- name
+#'       self$hair <- hair
+#'       self$greet()
+#'       self
+#'     },
+#'     greet = function(self) {
+#'       cat(paste0("Hello, my name is ", self$name, ".\n"))
+#'     }
+#'   )
+#' )
+#' ann <- Person$new("Ann", "black")
+#' # Hello, my name is Ann.
+#' ann$hair
+#' # "black"
+#'
+#'
+#' Lumberjack <- createExternalMethodClass("Lumberjack",
+#'   inherit = Person,
+#'   members = list(
+#'     beard = NA
+#'   ),
+#'   methods = list(
+#'     initialize = function(self, name, hair = NA, beard = NA, super) {
+#'       self <- super$initialize(name, hair)
+#'       self$beard <- beard
+#'       self
+#'     },
+#'     greet = function(self) {
+#'       cat(paste("I'm a lumberjack and I'm OK.\n"))
+#'     }
+#'   )
+#' )
+#' jim <- Lumberjack$new("Jim", "red", "bushy")
+#' # I'm a lumberjack and I'm OK.
+#' jim$hair
+#' # "red"
+#' jim$beard
+#' # "bushy"
 createExternalMethodClass <- function(classname = NULL, members = list(),
                                       methods = NULL, inherit = NULL,
                                       lock = TRUE, parent_env = NULL) {
