@@ -223,7 +223,7 @@ refClass_newfun <- function(classes, public, private, active, super_list,
     public <- assign_func_envs(public, public_env)
 
     # Copy objects to environments
-    list2env(public, envir = public_env)
+    list2env2(public, envir = public_env)
 
     # Add self pointer
     public_env$self <- public_env
@@ -231,7 +231,7 @@ refClass_newfun <- function(classes, public, private, active, super_list,
     # Do same for private
     if (has_private) {
       private <- assign_func_envs(private, public_env)
-      list2env(private, envir = private_env)
+      list2env2(private, envir = private_env)
       public_env$private <- private_env
     }
 
@@ -255,7 +255,11 @@ refClass_newfun <- function(classes, public, private, active, super_list,
 
     class(public_env) <- classes
 
-    if (is.function(public_env$initialize)) public_env$initialize(...)
+    if (is.function(public_env$initialize)) {
+      public_env$initialize(...)
+    } else if (length(list(...)) != 0 ) {
+      stop("Called new() with arguments, but there is no initialize method.")
+    }
     public_env
   }
 }
@@ -281,7 +285,7 @@ create_super_env <- function(super_list, self) {
   # env). Their enclosing env may or may not be self$super.
   if (!is.null(functions)) {
     functions <- assign_func_envs(functions, super_enc_env)
-    list2env(functions, envir = super_bind_env)
+    list2env2(functions, envir = super_bind_env)
   }
 
   # Set up active bindings

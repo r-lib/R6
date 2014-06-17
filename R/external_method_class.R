@@ -46,8 +46,7 @@
 #' "BUFFALO BUFFALO BUFFALO BUFFALO"
 createExternalMethodClass <- function(classname = NULL, members = list(),
                                       methods = NULL, inherit = NULL,
-                                      lock = TRUE,
-                                      parent_env = parent.frame()) {
+                                      lock = TRUE, parent_env = NULL) {
 
   if (!all_named(members) || !all_named(methods)) {
     stop("All elements of members and methods must be named.")
@@ -80,7 +79,7 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
   # Binding env for methods
   methods_env <- new.env(parent = emptyenv(), hash = length(methods) > 100)
   # Turn methods into an environment so that it's possible to add methods later
-  list2env(methods, envir = methods_env)
+  list2env2(methods, envir = methods_env)
   if (lock) {
     lockEnvironment(methods_env)
   }
@@ -104,6 +103,8 @@ externalMethodsClass_newfun <- function(self) {
   function(...) {
     if (is.function(self$initialize)) {
       self <- self$initialize(...)
+    } else if (length(list(...)) != 0 ) {
+      stop("Called new() with arguments, but there is no initialize method.")
     }
     self
   }
@@ -121,9 +122,9 @@ externalMethodsClass_newfun <- function(self) {
     if (is.function(fun)) {
       if ("super" %in% names(formals(fun))) {
         super <- createExternalSuperMethods(x, methods$super)
-        return(function(...) fun(x, ..., super = super))
+        return(function(...) fun(self = x, ..., super = super))
       } else {
-        return(function(...) fun(x, ...))
+        return(function(...) fun(self = x, ...))
       }
     }
     NULL
@@ -149,9 +150,9 @@ createExternalSuperMethods <- function(obj, methods) {
   if (is.function(fun)) {
     if ("super" %in% names(formals(fun))) {
       super <- createExternalSuperMethods(self, methods$super)
-      return(function(...) fun(self, ..., super = super))
+      return(function(...) fun(self = self, ..., super = super))
     } else {
-      return(function(...) fun(self, ...))
+      return(function(...) fun(self = self, ...))
     }
   }
   NULL
