@@ -133,7 +133,7 @@ externalMethodsClass_newfun <- function(self) {
 #' @export
 `[[.ExternalMethodClass` <- `$.ExternalMethodClass`
 
-
+# A special object that's created when calling superclass methods
 createExternalSuperMethods <- function(obj, methods) {
   super <- list(self = obj, methods = methods)
   class(super) <- "ExternalSuperMethods"
@@ -150,7 +150,6 @@ createExternalSuperMethods <- function(obj, methods) {
     if ("super" %in% names(formals(fun))) {
       super <- createExternalSuperMethods(self, methods$super)
       return(function(...) fun(self, ..., super = super))
-
     } else {
       return(function(...) fun(self, ...))
     }
