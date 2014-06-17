@@ -159,3 +159,62 @@ test_that("inheritance with $super ", {
   expect_identical(C$y, 300)
   expect_identical(C$getx(), 643)
 })
+
+
+test_that("adding methods after class has been created", {
+  # Can't add if locked
+  AC <- createExternalMethodClass("AC",
+    members = list(x = 0),
+    methods = list(
+      getx = function(self) self$x,
+      newy = function(self) 1
+    ),
+    lock = TRUE
+  )
+  BC <- createExternalMethodClass("BC",
+    inherit = AC,
+    methods = list(
+      getx = function(self, x, super) super$getx() + 20
+    ),
+    lock = TRUE
+  )
+  A <- AC$new()
+  B <- BC$new()
+  expect_error(AC$methods$foo <- function(self) 2)
+  expect_error(BC$methods$foo <- function(self) 2)
+  expect_error(BC$methods$super$foo <- function(self) 2)
+
+  # Can add if not locked
+  AC <- createExternalMethodClass("AC",
+    members = list(x = 0),
+    methods = list(
+      getx = function(self) self$x,
+      newy = function(self) 1
+    ),
+    lock = FALSE
+  )
+  BC <- createExternalMethodClass("BC",
+    inherit = AC,
+    methods = list(
+      getx = function(self, x, super) super$getx() + 20
+    ),
+    lock = FALSE
+  )
+  A <- AC$new()
+  B <- BC$new()
+  AC$methods$foo <- function(self) 2
+  BC$methods$foo <- function(self) 3
+  BC$methods$superfoo <- function(self, super) super$foo()
+  expect_identical(A$foo(), 2)
+  expect_identical(B$foo(), 3)
+  expect_identical(B$superfoo(), 2)
+
+  # Modifying superclass methods
+  BC$methods$super$foo <- function(self) 4
+  expect_identical(B$superfoo(), 4)
+
+  # It would be nice if this worked, but it would require a reference from the
+  # superclass to the subclass, which probably isn't worth the trouble.
+  # BC$methods$super$bar <- function(self) 5
+  # expect_identical(B$bar(), 5)
+})

@@ -46,6 +46,7 @@
 #' "BUFFALO BUFFALO BUFFALO BUFFALO"
 createExternalMethodClass <- function(classname = NULL, members = list(),
                                       methods = NULL, inherit = NULL,
+                                      lock = TRUE,
                                       parent_env = parent.frame()) {
 
   if (!all_named(members) || !all_named(methods)) {
@@ -80,6 +81,9 @@ createExternalMethodClass <- function(classname = NULL, members = list(),
   methods_env <- new.env(parent = emptyenv(), hash = length(methods) > 100)
   # Turn methods into an environment so that it's possible to add methods later
   list2env(methods, envir = methods_env)
+  if (lock) {
+    lockEnvironment(methods_env)
+  }
 
   classes <- c(classname, get_superclassnames(inherit), "ExternalMethodClass")
 
