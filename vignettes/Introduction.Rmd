@@ -1,5 +1,5 @@
 ---
-title: "Introduction to testclasses"
+title: "Introduction to R6 classes"
 output:
   html_document:
     theme: null
@@ -9,21 +9,21 @@ output:
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Introduction to testclasses}
+%\VignetteIndexEntry{Introduction to R6 lasses}
 -->
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-The testclasses package provides two types of classes: reference classes, similar to R's standard reference classes, and external methods classes, which do not have reference sematics. They serve very different purposes, and both have their uses.
+The R6 package provides a type of class which is similar to R's standard reference classes, but it is more efficient and doesn't depend on S4 classes and the methods package.
 
 
-## Reference classes
+## R6 classes
 
-The reference classes in testclasses are similar to R's standard reference classes, but are lighter weight, and avoid some issues that come along with using S4 classes (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance vignette.
+R6 classes are similar to R's standard reference classes, but are lighter weight, and avoid some issues that come along with using S4 classes (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance vignette.
 
-Instances (objects) of these reference classes obviously have reference semantics, unlike many objects in R. These reference classes also support:
+Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:
 
 * public and private methods
 * active bindings
@@ -31,12 +31,12 @@ Instances (objects) of these reference classes obviously have reference semantic
 
 ### Basics
 
-Here's how to create a simple reference class:
+Here's how to create a simple R6 class:
 
 ```{r}
-library(testclasses)
+library(R6)
 
-Person <- createRefClass("Person",
+Person <- createR6Class("Person",
   public = list(
     name = NA,
     hair = NA,
@@ -62,7 +62,7 @@ ann <- Person$new("Ann", "black")
 ann
 ```
 
-The `$new()` function creates the object, and calls the `initialize()` method, if it exists. 
+The `$new()` function creates the object and calls the `initialize()` method, if it exists. 
 
 Inside methods of the class, `self` refers to the object. Public members of the object (which is all we've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`. Assignment can also be done with `<<-`, as in `x <<- y` -- but in this case, the object member's name must be different from the names of variables in the method.
 
@@ -75,14 +75,14 @@ ann$set_hair("red")
 ann$hair
 ```
 
-Implementation note: The reference object is basically an environment with the public members in it. The `self` object is bound in that environment, and is simply a reference back to that environment.
+Implementation note: The R6 object is basically an environment with the public members in it. The `self` object is bound in that environment, and is simply a reference back to that environment.
 
 ### Private members
 
 In the previous example, all the members were public. It's also possible to add private members:
 
 ```{r}
-Queue <- createRefClass("Queue",
+Queue <- createR6Class("Queue",
   public = list(
     initialize = function(...) {
       for (item in list(...)) {
@@ -147,10 +147,10 @@ Implementation note: When private members are used, the public environment is a 
 
 ### Active bindings
 
-Active bindings look like items, but each time they are accessed, they call a function. They are always public.
+Active bindings look like items, but each time they are accessed, they call a function. They are always publicly visible.
 
 ```{r}
-Numbers <- createRefClass("Numbers",
+Numbers <- createR6Class("Numbers",
   public = list(
     x = 100
   ),
@@ -190,13 +190,13 @@ n$rand <- 3
 
 ### Inheritance
 
-One class can inherit from another. In other words, you can have super- and sub-classes.
+One R6 class can inherit from another. In other words, you can have super- and sub-classes.
 
 Subclasses can have new methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the`remove()` method:
 
 ```{r}
 # Note that this isn't very efficient - it's just for illustrating inheritance.
-HistoryQueue <- createRefClass("HistoryQueue",
+HistoryQueue <- createR6Class("HistoryQueue",
   inherit = Queue,
   public = list(
     show = function() {
@@ -227,7 +227,7 @@ hq$remove()
 Superclass methods can be called with `super$xx()`. In the CountingQueue example below, it keeps a count of the total number of objects that have ever been added to the queue. It does this by overriding the `add()` method -- it increments a counter and then calls the superclass's `add()` method, with `super$add(x)`:
 
 ```{r}
-CountingQueue <- createRefClass("CountingQueue",
+CountingQueue <- createR6Class("CountingQueue",
   inherit = Queue,
   public = list(
     add = function(x) {
@@ -252,4 +252,4 @@ cq$get_total()
 
 ### Summary
 
-The reference classes in testclasses provide many capabilities common to object-oriented programming languages. They're similar to R's built-in reference classes, but they are simpler, smaller, faster, and easier to understand.
+R6 classes provide many capabilities common to object-oriented programming languages. They're similar to R's built-in reference classes, but they are simpler, smaller, faster, and easier to understand.
