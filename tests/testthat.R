@@ -1,4 +1,4 @@
 library(testthat)
-library(testclasses)
+library(R6)
 
-test_check("testclasses")
+test_check("R6")

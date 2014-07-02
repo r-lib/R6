@@ -1,7 +1,7 @@
-context("refclass")
+context("R6Class")
 
 test_that("initialization", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(
       x = 1,
       initialize = function(x, y) {
@@ -20,19 +20,19 @@ test_that("initialization", {
   expect_identical(A$gety(), 3)
 
   # No initialize method: throw error if arguments are passed in
-  AC <- createRefClass("AC", public = list(x = 1))
+  AC <- createR6Class("AC", public = list(x = 1))
   expect_error(AC$new(3))
 })
 
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
-  AC <- createRefClass("AC")
+  AC <- createR6Class("AC")
   expect_that(AC$new(), not(throws_error()))
 })
 
 
 test_that("Private members are private, and self/private environments", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(
       x = 1,
       gety = function() private$y,
@@ -72,7 +72,7 @@ test_that("Private members are private, and self/private environments", {
 
 
 test_that("Active bindings work", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(
       x = 5
     ),
@@ -95,7 +95,7 @@ test_that("Active bindings work", {
 
 
 test_that("Locking works", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(x = 1),
     private = list(y = 2),
     lock = TRUE
@@ -108,7 +108,7 @@ test_that("Locking works", {
   expect_error(A$private$z <- 1)
 
   # Not locked
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(x = 1),
     private = list(y = 2),
     lock = FALSE
@@ -126,24 +126,24 @@ test_that("Validity checks on creation", {
   fun <- function() 1  # Dummy function for tests
 
   # All arguments must be named
-  expect_error(createRefClass("AC", public = list(1)))
-  expect_error(createRefClass("AC", private = list(1)))
-  expect_error(createRefClass("AC", active = list(fun)))
+  expect_error(createR6Class("AC", public = list(1)))
+  expect_error(createR6Class("AC", private = list(1)))
+  expect_error(createR6Class("AC", active = list(fun)))
 
   # Names can't be duplicated
-  expect_error(createRefClass("AC", public = list(a=1, a=2)))
-  expect_error(createRefClass("AC", public = list(a=1), private = list(a=1)))
-  expect_error(createRefClass("AC", private = list(a=1), active = list(a=fun)))
+  expect_error(createR6Class("AC", public = list(a=1, a=2)))
+  expect_error(createR6Class("AC", public = list(a=1), private = list(a=1)))
+  expect_error(createR6Class("AC", private = list(a=1), active = list(a=fun)))
 
   # Reserved names
-  expect_error(createRefClass("AC", public = list(self = 1)))
-  expect_error(createRefClass("AC", private = list(private = 1)))
-  expect_error(createRefClass("AC", active = list(super = 1)))
+  expect_error(createR6Class("AC", public = list(self = 1)))
+  expect_error(createR6Class("AC", private = list(private = 1)))
+  expect_error(createR6Class("AC", active = list(super = 1)))
 })
 
 
 test_that("Inheritance", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(
       x = 0,
       z = 0,
@@ -166,7 +166,7 @@ test_that("Inheritance", {
       }
     )
   )
-  BC <- createRefClass("BC",
+  BC <- createR6Class("BC",
     inherit = AC,
     public = list(
       y = 0,
@@ -211,12 +211,12 @@ test_that("Inheritance", {
   expect_identical(B$x3, 3) # Inherited
 
   # Classes
-  expect_identical(class(B), c("BC", "AC", "RefClass"))
+  expect_identical(class(B), c("BC", "AC", "R6Class"))
 })
 
 
 test_that("Inheritance: superclass methods", {
-  AC <- createRefClass("AC",
+  AC <- createR6Class("AC",
     public = list(
       x = 0,
       initialize = function() {
@@ -244,7 +244,7 @@ test_that("Inheritance: superclass methods", {
       }
     )
   )
-  BC <- createRefClass("BC",
+  BC <- createR6Class("BC",
     inherit = AC,
     public = list(
       inc_x = function() x <<- x + 2,
@@ -279,7 +279,7 @@ test_that("Inheritance: superclass methods", {
 
 
   # Multi-level inheritance
-  CC <- createRefClass("CC",
+  CC <- createR6Class("CC",
     inherit = BC,
     public = list(
       inc_x = function() x <<- x + 3,
@@ -308,4 +308,4 @@ test_that("Inheritance: superclass methods", {
   expect_identical(C$pinc(0), 321)
 
   # Classes
-  expect_identical(class(C), c("CC", "BC", "AC", "RefClass"))})
+  expect_identical(class(C), c("CC", "BC", "AC", "R6Class"))})
