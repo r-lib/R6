@@ -41,7 +41,7 @@
 #' it.
 #'
 #' Normally the public environment will have two classes: the one supplied in
-#' the \code{classname} argument, and \code{"RefClass"}. It is possible to
+#' the \code{classname} argument, and \code{"R6Class"}. It is possible to
 #' get the public environment with no classes, by using \code{class=FALSE}.
 #' This will result in faster access speeds by avoiding class-based dispatch
 #' of \code{$}. The benefit is is negligible in most cases. With classes,
@@ -51,7 +51,7 @@
 #' thousands or more iterations.
 #'
 #' The primary difference in behavior when \code{class=FALSE} is that pretty
-#' printing of the objects (with \code{print.RefClass}) won't be used.
+#' printing of the objects (with \code{print.R6Class}) won't be used.
 #'
 #' @seealso \code{\link{makeActiveBinding}}
 #' @export
@@ -61,7 +61,7 @@
 #' @param private An optional list of private members, which can be functions
 #'   and non-functions.
 #' @param active An optional list of active binding functions.
-#' @param inherit A RefClassGenerator object to inherit from; in other words,
+#' @param inherit A R6ClassGenerator object to inherit from; in other words,
 #'   a superclass for this class.
 #' @param parent_env An environment to use as the parent of newly-created
 #'   objects.
@@ -70,7 +70,7 @@
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
 #' # A simple class
-#' AnimalHerd <- createRefClass("AnimalHerd",
+#' AnimalHerd <- createR6Class("AnimalHerd",
 #'   public = list(
 #'     animal = "buffalo",
 #'     count = 2,
@@ -98,7 +98,7 @@
 #'
 #'
 #' # An example that demonstrates private members and active bindings
-#' MyClass <- createRefClass("MyClass",
+#' MyClass <- createR6Class("MyClass",
 #'   private = list(
 #'     x = 2,
 #'     # Private methods can access public members
@@ -148,12 +148,12 @@
 #' z$inc_y()$inc_y()
 #' z$y          # 502
 #'
-#' # Print, using the print.RefClass method:
+#' # Print, using the print.R6Class method:
 #' print(z)
-createRefClass <- function(classname = NULL, public = list(),
-                           private = NULL, active = NULL,
-                           inherit = NULL, lock = TRUE, class = TRUE,
-                           parent_env = parent.frame()) {
+createR6Class <- function(classname = NULL, public = list(),
+                          private = NULL, active = NULL,
+                          inherit = NULL, lock = TRUE, class = TRUE,
+                          parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
     stop("All elements of public, private, and active must be named.")
@@ -171,8 +171,8 @@ createRefClass <- function(classname = NULL, public = list(),
   }
 
   if (!is.null(inherit)) {
-    if (!inherits(inherit, "RefClassGenerator")) {
-      stop("`inherit` must be a RefClassGenerator.")
+    if (!inherits(inherit, "R6ClassGenerator")) {
+      stop("`inherit` must be a R6ClassGenerator.")
     }
 
     # Merge the new items over the inherited ones
@@ -188,26 +188,26 @@ createRefClass <- function(classname = NULL, public = list(),
   }
 
   if (class) {
-    classes <- c(classname, get_superclassnames(inherit), "RefClass")
+    classes <- c(classname, get_superclassnames(inherit), "R6Class")
   } else {
     classes <- NULL
   }
 
-  newfun <- refClass_newfun(classes, public, private, active, super_list,
-                            lock, parent_env)
+  newfun <- R6Class_newfun(classes, public, private, active, super_list,
+                           lock, parent_env)
 
   structure(
     list(new = newfun, classname = classname, public = public,
          private = private, active = active, inherit = inherit,
          parent_env = parent_env, lock = lock),
-    class = "RefClassGenerator"
+    class = "R6ClassGenerator"
   )
 }
 
 
-# Create the $new function for a RefClassGenerator
-refClass_newfun <- function(classes, public, private, active, super_list,
-                            lock, parent_env) {
+# Create the $new function for a R6ClassGenerator
+R6Class_newfun <- function(classes, public, private, active, super_list,
+                           lock, parent_env) {
 
   has_private <- !is.null(private)
 
@@ -304,7 +304,7 @@ create_super_env <- function(super_list, self) {
   super_bind_env
 }
 
-# Given a refClassGenerator, recursively convert it into a list that's useful
+# Given a R6ClassGenerator, recursively convert it into a list that's useful
 # for efficiently instantiating $super objects.
 listify_superclass <- function(class) {
   if (is.null(class)) return(NULL)

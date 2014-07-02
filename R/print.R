@@ -1,5 +1,5 @@
 #' @export
-print.RefClass <- function(x, ...) {
+print.R6Class <- function(x, ...) {
   cat(
     "<", class(x)[1], ">\n",
     "  Public:\n",
@@ -17,7 +17,7 @@ print.RefClass <- function(x, ...) {
 }
 
 #' @export
-print.RefClassGenerator <- function(x, ...) {
+print.R6ClassGenerator <- function(x, ...) {
   classname <- x$classname
   if (is.null(classname)) classname <- "unnamed"
   cat(

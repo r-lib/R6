@@ -1,4 +1,4 @@
-Package: testclasses
+Package: R6
 Title: Class tests package
 Version: 0.1
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
