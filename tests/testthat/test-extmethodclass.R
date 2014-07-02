@@ -70,8 +70,8 @@ test_that("Validity checks on creation", {
                                          methods = list(a = function() 1)))
 
   # Reserved names
-  expect_error(createRefClass("AC", members = list(self = 1)))
-  expect_error(createRefClass("AC", members = list(super = 1)))
+  expect_error(createExternalMethodClass("AC", members = list(self = 1)))
+  expect_error(createExternalMethodClass("AC", members = list(super = 1)))
 })
 
 
