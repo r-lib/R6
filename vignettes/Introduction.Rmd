@@ -122,12 +122,25 @@ q$remove()
 
 However, private members can't be accessed directly:
 
-```{r error = TRUE}
+```{r eval = FALSE}
 q$queue
+#> NULL
 q$length()
+#> Error: attempt to apply non-function
 
 # Actually, there is a way:
 q$private$queue
+#> [[1]]
+#> [1] "foo"
+#> 
+#> [[2]]
+#> [1] "something"
+#> 
+#> [[3]]
+#> [1] "another thing"
+#> 
+#> [[4]]
+#> [1] 17
 ```
 
 Unless there's a compelling reason otherwise, methods should return `self` because it makes them chainable. For example, `add()` is returns `self` so you can chain them together:
