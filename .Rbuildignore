@@ -3,3 +3,4 @@
 ^NEWS\.md$
 \.sublime-project$
 \.sublime-workspace$
+^\.travis\.yml$
