@@ -1,9 +1,13 @@
 Package: R6
-Title: Class tests package
+Title: Classes with reference semantics
 Version: 0.1
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
 Maintainer: Winston Chang <winston@stdout.org>
-Description: Experiments with new types of classes in R.
+Description: The R6 package allows the creation of classes with reference
+    semantics, similar to R's built-in reference classes. Compared to reference
+    classes, R6 classes are simpler and lighter-weight, and they are not built
+    on S4 classes so they do not require the methods package. These classes
+    allow public and private members, and they support inheritance.
 Depends:
     R (>= 3.0)
 Suggests:
