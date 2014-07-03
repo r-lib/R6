@@ -1,3 +1,3 @@
-# R6 0.3.0.1
+# R6 1.0
 
 * First release
