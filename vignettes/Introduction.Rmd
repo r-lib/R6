@@ -123,12 +123,25 @@ q$remove()
 
 However, private members can't be accessed directly:
 
-```{r, error=TRUE}
+```{r eval=FALSE}
 q$queue
+## NULL
 q$length()
+## Error: attempt to apply non-function
 
 # Actually, there is a way:
 q$private$queue
+## [[1]]
+## [1] "foo"
+## 
+## [[2]]
+## [1] "something"
+## 
+## [[3]]
+## [1] "another thing"
+## 
+## [[4]]
+## [1] 17
 ```
 
 Because the `add()` method returns `self`, it is chainable:
@@ -182,10 +195,13 @@ n$x
 
 If the function takes no arguments, it's not possible to use it with `<-`:
 
-```{r, error=TRUE}
+```{r eval=FALSE}
 n$rand
+## [1] 0.2648
 n$rand
+## [1] 2.171
 n$rand <- 3
+## Error: unused argument (quote(3))
 ```
 
 ### Inheritance
