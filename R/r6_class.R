@@ -1,5 +1,7 @@
 #' Create an R6 reference class
 #'
+#' Create a lightweight reference class: an environment containing functions.
+#'
 #' Classes created by this generator have the following properties:
 #' \itemize{
 #'   \item Has public members, and optionally has private members, as well as
@@ -35,14 +37,16 @@
 #' as its argument, as in \code{x2(50)}.
 #'
 #' If the public or private lists contain any items that have reference
-#' semantics, those items will be shared across all instances of the class.
-#' To avoid this, add an entry for that item with a \code{NULL} initial value,
-#' and then in the \code{intialize} method, instantiate the object and assign
-#' it.
+#' semantics (for example, an environment), those items will be shared across
+#' all instances of the class. To avoid this, add an entry for that item with
+#' a \code{NULL} initial value, and then in the \code{intialize} method,
+#' instantiate the object and assign it.
+#'
+#' @section S3 details:
 #'
 #' Normally the public environment will have two classes: the one supplied in
 #' the \code{classname} argument, and \code{"R6Class"}. It is possible to
-#' get the public environment with no classes, by using \code{class=FALSE}.
+#' get the public environment with no classes, by using \code{class = FALSE}.
 #' This will result in faster access speeds by avoiding class-based dispatch
 #' of \code{$}. The benefit is is negligible in most cases. With classes,
 #' accessing a member with \code{$} takes around 2 microseconds on a modern
@@ -50,14 +54,15 @@
 #' a noticeable difference in performance only when there are hundreds of
 #' thousands or more iterations.
 #'
-#' The primary difference in behavior when \code{class=FALSE} is that pretty
+#' The primary difference in behavior when \code{class = FALSE} is that pretty
 #' printing of the objects (with \code{print.R6Class}) won't be used.
 #'
 #' @seealso \code{\link{makeActiveBinding}}
+#' @aliases R6
 #' @export
 #' @param classname Name of the class.
-#' @param public A list of public members, which can be functions and
-#'   non-functions.
+#' @param public A list of public members, which can be functions (methods) and
+#'   non-functions (fields).
 #' @param private An optional list of private members, which can be functions
 #'   and non-functions.
 #' @param active An optional list of active binding functions.
