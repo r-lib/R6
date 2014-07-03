@@ -19,7 +19,7 @@ and non-functions.}
 \item{active}{An optional list of active binding functions.}
 
 \item{inherit}{A R6ClassGenerator object to inherit from; in other words,
-a superclass for this class.}
+a superclass.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
@@ -27,13 +27,18 @@ objects.}
 \item{class}{Should a class attribute be added to the public environment?
 Default is \code{TRUE}.}
 
-\item{lock}{Should the environments of the generated objects be locked?}
+\item{lock}{Should the environments of the generated objects be locked?
+If lcoked, new members can't be added to the objects.}
 }
 \description{
-Objects created by this generator have the following properties:
+This function returns an object which generates R6 objects.
+R6 objects have the following properties:
 \itemize{
-  \item Has public members, and optionally has private members, as well as
+  \item They have public members, and optionally have private members and
     active bindings.
+  \item Public members reside in an environment. This environment is what
+    is returned by the generator, and is sometimes referred to as an R6
+    object.
   \item If there are any private members, they are put in a private
     environment, which is the parent of the public environment. The parent
     of the private environment is set with the \code{parent_env} argument.
@@ -42,7 +47,7 @@ Objects created by this generator have the following properties:
     \code{parent_env}.
   \item If present, active bindings are put in the public environment.
   \item The generator's \code{$new} method creates a new object and returns
-    its public environment, which has a class attribute.
+    its public environment.
   \item Methods can directly access the public and private environments, by
     using \code{private$x} or \code{self$x} (for public). Assignment to
     either environment can be done with \code{<<-}, but it's more precise to
@@ -53,6 +58,8 @@ Objects created by this generator have the following properties:
     public environment is the parent environment.
   \item Each instance of the class has its own copy of each method. The
     memory cost of this is small; it should be 56 bytes per method.
+  \item R6 objects have a class attribute so that thet may be used with S3
+    methods.
 }
 }
 \details{
@@ -81,8 +88,9 @@ machine; without classes, it takes around 0.3 microseconds. This will make
 a noticeable difference in performance only when there are hundreds of
 thousands or more iterations.
 
-The primary difference in behavior when \code{class=FALSE} is that pretty
-printing of the objects (with \code{print.R6Class}) won't be used.
+The primary difference in behavior when \code{class=FALSE} is that, without
+a class attribute, it won't be possible to use S3 methods with the objects,
+and so pretty printing (with \code{print.R6Class}) won't be used.
 }
 \examples{
 # A simple class
