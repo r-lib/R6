@@ -11,7 +11,7 @@ Suggests:
     microbenchmark,
     pryr,
     testthat
-License: MIT
+License: MIT + file LICENSE
 Roxygen: list(wrap = FALSE)
 LazyData: true
 VignetteBuilder: knitr
