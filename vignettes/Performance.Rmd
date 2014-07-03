@@ -13,14 +13,28 @@ output:
 -->
 
 ```{r echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(microbenchmark)
+# Only print 3 significant digits
+print_microbenchmark <- function (x, unit, order = NULL, ...) {
+  s <- summary(x, unit = unit)
+  cat("Unit: ", attr(s, "unit"), "\n", sep = "")
+
+  timing_cols <- c("min", "lq", "median", "uq", "max")
+  s[timing_cols] <- lapply(s[timing_cols], signif, digits = 3)
+  s[timing_cols] <- lapply(s[timing_cols], format, big.mark = ",")
+
+  print(s, ..., row.names = FALSE)
+}
+assignInNamespace("print.microbenchmark", print_microbenchmark,
+  "microbenchmark")
 ```
 
 Reference classes in R are very useful for some situations, but they don't come for free. In this document, I'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
 
-
 ```{r}
 library(microbenchmark)
+options(microbenchmark.unit = "us")
 library(pryr)  # For object_size function
 library(R6)
 ```
@@ -218,16 +232,13 @@ as.numeric(object_size(A_rc$new(), A_rc2$new()) - object_size(A_rc$new()))
 How much time does it take to create one of these objects?
 
 ```{r}
-# Garbage collect now so that we (probably) won't do it in the middle of a run
-invisible(gc())
 speed <- microbenchmark(
   A_rc$new(),
   B_r6$new(),
   C_r6_noclass$new(),
   D_r6_priv$new(),
   E_closure_class(),
-  F_closure_noclass(),
-  unit = "us"
+  F_closure_noclass()
 )
 speed
 ```
@@ -251,15 +262,13 @@ F <- F_closure_noclass()
 Getting a value:
 
 ```{r}
-invisible(gc())
 microbenchmark(
   A_rc = A$x,
   B_r6 = B$x,
   C_r6_noclass = C$x,
   D_r6_priv = D$private$x,
   E_closure_class = E$x,
-  F_closure_noclass = F$x,
-  unit = "us"
+  F_closure_noclass = F$x
 )
 ```
 
@@ -267,15 +276,13 @@ microbenchmark(
 Setting a value:
 
 ```{r}
-invisible(gc())
 microbenchmark(
   A_rc = A$x <- 4,
   B_r6 = B$x <- 4,
   C_r6_noclass = C$x <- 4,
   D_r6_priv = D$private$x <- 4,
   E_closure_class = E$x <- 4,
-  F_closure_noclass = F$x <- 4,
-  unit = "us"
+  F_closure_noclass = F$x <- 4
 )
 ```
 
@@ -289,15 +296,13 @@ The standard reference class is slowest.
 How much overhead is there when calling a method from one of these objects?
 
 ```{r}
-invisible(gc())
 microbenchmark(
   A_rc = A$getx(),
   B_r6 = B$getx(),
   C_r6_noclass = C$getx(),
   D_r6_priv = D$getx(),
   E_closure_class = E$getx(),
-  F_closure_noclass = F$getx(),
-  unit = "us"
+  F_closure_noclass = F$getx()
 )
 ```
 
@@ -355,13 +360,11 @@ rc_no_self_obj <- rc_no_self$new()
 r6_self_obj <- r6_self$new()
 r6_no_self_obj <- r6_no_self$new()
 
-invisible(gc())
 microbenchmark(
   rc_self = rc_self_obj$inc(),
   rc_no_self = rc_no_self_obj$inc(),
   r6_self = r6_self_obj$inc(),
-  r6_no_self = r6_no_self_obj$inc(),
-  unit = "us"
+  r6_no_self = r6_no_self_obj$inc()
 )
 ```
 
@@ -382,13 +385,11 @@ class(r6_self_noclass_obj) <- NULL
 r6_no_self_noclass_obj <- r6_no_self$new()
 class(r6_no_self_noclass_obj) <- NULL
 
-invisible(gc())
 microbenchmark(
   r6_self = r6_self_obj$inc(),
   r6_no_self = r6_no_self_obj$inc(),
   r6_self_noclass = r6_self_noclass_obj$inc(),
-  r6_no_self_noclass = r6_no_self_noclass_obj$inc(),
-  unit = "us"
+  r6_no_self_noclass = r6_no_self_noclass_obj$inc()
 )
 ```
 
@@ -405,13 +406,11 @@ env_noclass$x <- 10
 env_class <- structure(new.env(), class = "foo")
 env_class$x <- 10
 
-invisible(gc())
 microbenchmark(
   list_noclass = list_noclass$x,
   list_class = list_class$x,
   env_noclass = env_noclass$x,
-  env_class = env_class$x,
-  unit = "us"
+  env_class = env_class$x
 )
 ```
 
