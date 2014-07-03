@@ -13,11 +13,10 @@ output:
 -->
 
 ```{r echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 The R6 package provides a type of class which is similar to R's standard reference classes, but it is more efficient and doesn't depend on S4 classes and the methods package.
-
 
 ## R6 classes
 
@@ -55,16 +54,16 @@ Person <- createR6Class("Person",
 )
 ```
 
-To instantiate an object of this class, use the `$new()`:
+To instantiate an object of this class, use `$new()`:
 
 ```{r}
 ann <- Person$new("Ann", "black")
 ann
 ```
 
-The `$new()` function creates the object and calls the `initialize()` method, if it exists. 
+The `$new()` method creates the object and calls the `initialize()` method, if it exists. 
 
-Inside methods of the class, `self` refers to the object. Public members of the object (which is all we've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`. Assignment can also be done with `<<-`, as in `x <<- y` -- but in this case, the object member's name must be different from the names of variables in the method.
+Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`. Assignment can also be done with `<<-`, as in `x <<- y` -- but in this case, the object member's name must be different from the names of variables in the method.
 
 Once the object is instantiated, you can access values and methods with `$`:
 
@@ -123,44 +122,34 @@ q$remove()
 
 However, private members can't be accessed directly:
 
-```{r eval=FALSE}
+```{r error = TRUE}
 q$queue
-## NULL
 q$length()
-## Error: attempt to apply non-function
 
 # Actually, there is a way:
 q$private$queue
-## [[1]]
-## [1] "foo"
-## 
-## [[2]]
-## [1] "something"
-## 
-## [[3]]
-## [1] "another thing"
-## 
-## [[4]]
-## [1] 17
 ```
 
-Because the `add()` method returns `self`, it is chainable:
+Unless there's a compelling reason otherwise, methods should return `self` because it makes them chainable. For example, `add()` is returns `self` so you can chain them together:
 
 ```{r}
 q$add(10)$add(11)$add(12)
+```
+
+On the other hand, the `remove()` returns the value removed, so it's not chainable:
+
+```{r}
 q$remove()
 q$remove()
 q$remove()
 q$remove()
 ```
-
-The `remove()` method isn't chainable, since doesn't return `self`.
 
 Implementation note: When private members are used, the public environment is a child of the private environment, and the `private` object points to the private environment. Although public and private methods ar bound (they can be found) in their respective environments, the _enclosing_ environment for all of those methods is the public environment. This means that private methods "run in" the public environment, so they will find public objects without needing an explicit `self$xx`.
 
 ### Active bindings
 
-Active bindings look like items, but each time they are accessed, they call a function. They are always publicly visible.
+Active bindings look like fields, but each time they are accessed, they call a function. They are always publicly visible.
 
 ```{r}
 Numbers <- createR6Class("Numbers",
@@ -208,7 +197,7 @@ n$rand <- 3
 
 One R6 class can inherit from another. In other words, you can have super- and sub-classes.
 
-Subclasses can have new methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the`remove()` method:
+Subclasses can have new methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the `remove()` method:
 
 ```{r}
 # Note that this isn't very efficient - it's just for illustrating inheritance.
@@ -239,8 +228,7 @@ hq$show()
 hq$remove()
 ```
 
-
-Superclass methods can be called with `super$xx()`. In the CountingQueue example below, it keeps a count of the total number of objects that have ever been added to the queue. It does this by overriding the `add()` method -- it increments a counter and then calls the superclass's `add()` method, with `super$add(x)`:
+Superclass methods can be called with `super$xx()`. The `CountingQueue` (example below) keeps a count of the total number of objects that have ever been added to the queue. It does this by overriding the `add()` method -- it increments a counter and then calls the superclass's `add()` method, with `super$add(x)`:
 
 ```{r}
 CountingQueue <- createR6Class("CountingQueue",
@@ -264,7 +252,6 @@ cq$remove()
 cq$remove()
 cq$get_total()
 ```
-
 
 ### Summary
 
