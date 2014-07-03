@@ -1,4 +1,4 @@
-#' Create a reference class
+#' Create an R6 reference class
 #'
 #' Classes created by this generator have the following properties:
 #' \itemize{
