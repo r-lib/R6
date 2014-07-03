@@ -161,9 +161,12 @@ createR6Class <- function(classname = NULL, public = list(),
   if (any(duplicated(c(names(public), names(private), names(active))))) {
     stop("All items in public, private, and active must have unique names.")
   }
-  if (any(c(names(public), names(private), names(active)) %in%
-      c("self", "private", "super"))) {
+  if (any(c("self", "private", "super") %in%
+      c(names(public), names(private), names(active)))) {
     stop("Items cannot use reserved names 'self', 'private', and 'super'.")
+  }
+  if ("initialize" %in% c(names(private), names(active))) {
+    stop("'initialize' is not allowed in private or active.")
   }
 
   if (length(get_nonfunctions(active)) != 0) {

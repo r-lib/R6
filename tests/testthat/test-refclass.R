@@ -139,6 +139,10 @@ test_that("Validity checks on creation", {
   expect_error(createR6Class("AC", public = list(self = 1)))
   expect_error(createR6Class("AC", private = list(private = 1)))
   expect_error(createR6Class("AC", active = list(super = 1)))
+
+  # `initialize` only allowed in public
+  expect_error(createR6Class("AC", private = list(initialize = fun)))
+  expect_error(createR6Class("AC", active = list(initialize = fun)))
 })
 
 
@@ -308,4 +312,5 @@ test_that("Inheritance: superclass methods", {
   expect_identical(C$pinc(0), 321)
 
   # Classes
-  expect_identical(class(C), c("CC", "BC", "AC", "R6Class"))})
+  expect_identical(class(C), c("CC", "BC", "AC", "R6Class"))
+})
