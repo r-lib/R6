@@ -215,7 +215,7 @@ test_that("Inheritance", {
   expect_identical(B$x3, 3) # Inherited
 
   # Classes
-  expect_identical(class(B), c("BC", "AC", "R6Class"))
+  expect_identical(class(B), c("BC", "AC", "R6"))
 })
 
 
@@ -312,5 +312,5 @@ test_that("Inheritance: superclass methods", {
   expect_identical(C$pinc(0), 321)
 
   # Classes
-  expect_identical(class(C), c("CC", "BC", "AC", "R6Class"))
+  expect_identical(class(C), c("CC", "BC", "AC", "R6"))
 })

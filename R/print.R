@@ -1,5 +1,5 @@
 #' @export
-print.R6Class <- function(x, ...) {
+print.R6 <- function(x, ...) {
   cat(
     "<", class(x)[1], ">\n",
     "  Public:\n",

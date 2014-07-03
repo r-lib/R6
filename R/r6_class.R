@@ -1,6 +1,6 @@
-#' Create an R6 reference class
+#' Create an R6 reference object generator
 #'
-#' Classes created by this generator have the following properties:
+#' Objects created by this generator have the following properties:
 #' \itemize{
 #'   \item Has public members, and optionally has private members, as well as
 #'     active bindings.
@@ -191,7 +191,7 @@ R6Class <- function(classname = NULL, public = list(),
   }
 
   if (class) {
-    classes <- c(classname, get_superclassnames(inherit), "R6Class")
+    classes <- c(classname, get_superclassnames(inherit), "R6")
   } else {
     classes <- NULL
   }
