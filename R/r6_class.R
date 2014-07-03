@@ -70,7 +70,7 @@
 #' @param lock Should the environments of the generated objects be locked?
 #' @examples
 #' # A simple class
-#' AnimalHerd <- createR6Class("AnimalHerd",
+#' AnimalHerd <- R6Class("AnimalHerd",
 #'   public = list(
 #'     animal = "buffalo",
 #'     count = 2,
@@ -98,7 +98,7 @@
 #'
 #'
 #' # An example that demonstrates private members and active bindings
-#' MyClass <- createR6Class("MyClass",
+#' MyClass <- R6Class("MyClass",
 #'   private = list(
 #'     x = 2,
 #'     # Private methods can access public members
@@ -150,10 +150,10 @@
 #'
 #' # Print, using the print.R6Class method:
 #' print(z)
-createR6Class <- function(classname = NULL, public = list(),
-                          private = NULL, active = NULL,
-                          inherit = NULL, lock = TRUE, class = TRUE,
-                          parent_env = parent.frame()) {
+R6Class <- function(classname = NULL, public = list(),
+                    private = NULL, active = NULL,
+                    inherit = NULL, lock = TRUE, class = TRUE,
+                    parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
     stop("All elements of public, private, and active must be named.")

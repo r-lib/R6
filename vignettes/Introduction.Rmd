@@ -36,7 +36,7 @@ Here's how to create a simple R6 class. The `public` argument is a list of items
 ```{r}
 library(R6)
 
-Person <- createR6Class("Person",
+Person <- R6Class("Person",
   public = list(
     name = NA,
     hair = NA,
@@ -82,7 +82,7 @@ Implementation note: The R6 object is basically an environment with the public m
 In the previous example, all the members were public. It's also possible to add private members:
 
 ```{r}
-Queue <- createR6Class("Queue",
+Queue <- R6Class("Queue",
   public = list(
     initialize = function(...) {
       for (item in list(...)) {
@@ -163,7 +163,7 @@ Implementation note: When private members are used, the public environment is a 
 Active bindings look like items, but each time they are accessed, they call a function. They are always publicly visible.
 
 ```{r}
-Numbers <- createR6Class("Numbers",
+Numbers <- R6Class("Numbers",
   public = list(
     x = 100
   ),
@@ -214,7 +214,7 @@ Subclasses can have additional methods, and they can also have methods that over
 
 ```{r}
 # Note that this isn't very efficient - it's just for illustrating inheritance.
-HistoryQueue <- createR6Class("HistoryQueue",
+HistoryQueue <- R6Class("HistoryQueue",
   inherit = Queue,
   public = list(
     show = function() {
@@ -245,7 +245,7 @@ hq$remove()
 Superclass methods can be called with `super$xx()`. In the CountingQueue example below, it keeps a count of the total number of objects that have ever been added to the queue. It does this by overriding the `add()` method -- it increments a counter and then calls the superclass's `add()` method, with `super$add(x)`:
 
 ```{r}
-CountingQueue <- createR6Class("CountingQueue",
+CountingQueue <- R6Class("CountingQueue",
   inherit = Queue,
   public = list(
     add = function(x) {
