@@ -31,7 +31,7 @@ Unlike many objects in R, instances (objects) of R6 classes have reference seman
 
 ### Basics
 
-Here's how to create a simple R6 class:
+Here's how to create a simple R6 class. The `public` argument is a list of items, which can be functions and non-functions. Functions will be used as class methods.
 
 ```{r}
 library(R6)
@@ -55,7 +55,7 @@ Person <- createR6Class("Person",
 )
 ```
 
-To instantiate an object of this class, use the `$new()`:
+To instantiate an object of this class, use `$new()`:
 
 ```{r}
 ann <- Person$new("Ann", "black")
@@ -156,7 +156,7 @@ q$remove()
 
 The `remove()` method isn't chainable, since doesn't return `self`.
 
-Implementation note: When private members are used, the public environment is a child of the private environment, and the `private` object points to the private environment. Although public and private methods ar bound (they can be found) in their respective environments, the _enclosing_ environment for all of those methods is the public environment. This means that private methods "run in" the public environment, so they will find public objects without needing an explicit `self$xx`.
+Implementation note: When private members are used, the public environment is a child of the private environment, and the `private` object points to the private environment. Although public and private methods are bound (that is, they can be found) in their respective environments, the _enclosing_ environment for all of those methods is the public environment. This means that private methods "run in" the public environment, so they will find public objects without needing an explicit `self$xx`.
 
 ### Active bindings
 
@@ -204,11 +204,13 @@ n$rand <- 3
 ## Error: unused argument (quote(3))
 ```
 
+Implementation note: Active bindings are bound in the public environment. The enclosing environment for these functions is also the public environment.
+
 ### Inheritance
 
 One R6 class can inherit from another. In other words, you can have super- and sub-classes.
 
-Subclasses can have new methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the`remove()` method:
+Subclasses can have additional methods, and they can also have methods that override the superclass methods. In this example of a queue that retains its history, we'll add a `show()` method and override the `remove()` method:
 
 ```{r}
 # Note that this isn't very efficient - it's just for illustrating inheritance.
@@ -268,4 +270,4 @@ cq$get_total()
 
 ### Summary
 
-R6 classes provide many capabilities common to object-oriented programming languages. They're similar to R's built-in reference classes, but they are simpler, smaller, faster, and easier to understand.
+R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster.
