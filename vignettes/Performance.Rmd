@@ -30,7 +30,7 @@ assignInNamespace("print.microbenchmark", print_microbenchmark,
   "microbenchmark")
 ```
 
-Reference classes in R are very useful for some situations, but they don't come for free. In this document, I'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
+Reference classes in R are very useful for some situations, but using them has a cost. In this document, I'll explore the costs in memory and speed of standard R reference classes vs. other reference objects which are created in different ways.
 
 ```{r}
 library(microbenchmark)
@@ -229,7 +229,7 @@ as.numeric(object_size(A_rc$new(), A_rc2$new()) - object_size(A_rc$new()))
 
 ## Object instantiation speed
 
-How much time does it take to create one of these objects?
+How much time does it take to create one of these objects? (The `median` time is probably the most informative.)
 
 ```{r}
 speed <- microbenchmark(
