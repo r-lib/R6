@@ -28,6 +28,9 @@ Unlike many objects in R, instances (objects) of R6 classes have reference seman
 * active bindings
 * inheritance (superclasses)
 
+Why the name R6? When R's reference classes were introduced, some users, following the names of R's existing class systems S3 and S4, jokingly called the new class system R5. Although reference classes are not actually called R5, the name of this package and its classes takes inspiration from that name.
+
+
 ### Basics
 
 Here's how to create a simple R6 class. The `public` argument is a list of items, which can be functions and non-functions. Functions will be used as class methods.
