@@ -12,6 +12,7 @@ Depends:
 Suggests:
     knitr,
     microbenchmark,
+    pryr,
     testthat
 License: MIT + file LICENSE
 Roxygen: list(wrap = FALSE)
