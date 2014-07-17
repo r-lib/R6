@@ -9,7 +9,7 @@ output:
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Introduction to R6 lasses}
+%\VignetteIndexEntry{Introduction to R6 classes}
 -->
 
 ```{r echo = FALSE}
