@@ -4,3 +4,4 @@
 \.sublime-project$
 \.sublime-workspace$
 ^\.travis\.yml$
+^doc_extra$
