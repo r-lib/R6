@@ -2,7 +2,6 @@ Package: R6
 Title: Classes with reference semantics
 Version: 1.0
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
-Maintainer: Winston Chang <winston@stdout.org>
 Description: The R6 package allows the creation of classes with reference
     semantics, similar to R's built-in reference classes. Compared to reference
     classes, R6 classes are simpler and lighter-weight, and they are not built
