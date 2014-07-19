@@ -298,17 +298,13 @@ create_super_env <- function(super_list, self) {
 
   # Set up functions. All the functions can be found in self$super (the binding
   # env). Their enclosing env may or may not be self$super.
-  if (!is.null(functions)) {
-    functions <- assign_func_envs(functions, super_enc_env)
-    list2env2(functions, envir = super_bind_env)
-  }
+  functions <- assign_func_envs(functions, super_enc_env)
+  list2env2(functions, envir = super_bind_env)
 
   # Set up active bindings
-  if (!is.null(active)) {
-    active <- assign_func_envs(active, super_enc_env)
-    for (name in names(active)) {
-      makeActiveBinding(name, active[[name]], super_bind_env)
-    }
+  active <- assign_func_envs(active, super_enc_env)
+  for (name in names(active)) {
+    makeActiveBinding(name, active[[name]], super_bind_env)
   }
 
   # Recurse if there are more superclasses
