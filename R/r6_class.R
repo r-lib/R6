@@ -324,6 +324,7 @@ listify_superclass <- function(class) {
     functions = c(get_functions(class$public),
                   get_functions(class$private)),
     active = class$active,
+    parent_env = class$parent_env,
     super = listify_superclass(class$inherit)
   )
 }
