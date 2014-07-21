@@ -294,7 +294,7 @@ create_super_env <- function(super, self) {
   # The binding environment is a new environment. Its parent doesn't matter
   # because it's not the enclosing environment for any functions.
   super_bind_env <- new.env(parent = emptyenv(),
-    hash = length(functions) + length(active) > 100)
+                            hash = length(functions) + length(active) > 100)
 
   # Set up functions. All the functions can be found in self$super (the binding
   # env). Their enclosing env may or may not be self$super.
