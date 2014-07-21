@@ -197,9 +197,9 @@ R6Class <- function(classname = NULL, public = list(),
 
     # Do some preparation work on the superclass, so that we don't have to do
     # it each time an object is created.
-    super_list <- listify_superclass(inherit)
+    super <- listify_superclass(inherit)
   } else {
-    super_list <- NULL
+    super <- NULL
   }
 
   if (class) {
@@ -208,7 +208,7 @@ R6Class <- function(classname = NULL, public = list(),
     classes <- NULL
   }
 
-  newfun <- R6Class_newfun(classes, public, private, active, super_list,
+  newfun <- R6Class_newfun(classes, public, private, active, super,
                            lock, parent_env)
 
   structure(
@@ -221,7 +221,7 @@ R6Class <- function(classname = NULL, public = list(),
 
 
 # Create the $new function for a R6ClassGenerator
-R6Class_newfun <- function(classes, public, private, active, super_list,
+R6Class_newfun <- function(classes, public, private, active, super,
                            lock, parent_env) {
 
   has_private <- !is.null(private)
@@ -259,8 +259,8 @@ R6Class_newfun <- function(classes, public, private, active, super_list,
       }
     }
 
-    if (!is.null(super_list$functions) || !is.null(super_list$active)) {
-      public_env$super <- create_super_env(super_list, public_env)
+    if (!is.null(super$functions) || !is.null(super$active)) {
+      public_env$super <- create_super_env(super, public_env)
     }
 
     if (lock) {
@@ -280,9 +280,9 @@ R6Class_newfun <- function(classes, public, private, active, super_list,
 }
 
 # Create and populate the self$super environment
-create_super_env <- function(super_list, self) {
-  functions <- super_list$functions
-  active <- super_list$active
+create_super_env <- function(super, self) {
+  functions <- super$functions
+  active <- super$active
 
   # The environment in which functions evaluate is a child of the enclosing env
   # (should be the self env). Though this is a child of self, self has no
@@ -308,8 +308,8 @@ create_super_env <- function(super_list, self) {
   }
 
   # Recurse if there are more superclasses
-  if (!is.null(super_list$super)) {
-    super_enc_env$super <- create_super_env(super_list$super, super_enc_env)
+  if (!is.null(super$super)) {
+    super_enc_env$super <- create_super_env(super$super, super_enc_env)
   }
 
   super_bind_env
