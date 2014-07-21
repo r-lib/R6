@@ -128,7 +128,7 @@ E_closure_class <- function(x = 1) {
   inc <- function(n = 1) x <<- x + n
   getx <- function() x
   self <- environment()
-  class(self) <- "D_closure"
+  class(self) <- "E_closure"
   self
 }
 ```
