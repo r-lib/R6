@@ -11,18 +11,18 @@ SEXP subset_R8(SEXP x, SEXP name) {
 
   // if not found in x, look in methods
   SEXP methods = Rf_getAttrib(x, Rf_install("methods"));
-  if (methods == R_NilValue) {
+  if (!isEnvironment(methods)) {
     return R_NilValue;
   }
   SEXP fun = Rf_findVarInFrame(methods, nameSym);
-  if (fun == R_UnboundValue) {
+  if (!isFunction(fun)) {
     return R_NilValue;
   }
 
   // Make a copy of the function, with a new environment
   SEXP fun2 = PROTECT(duplicate(fun));
   SEXP eval_env = Rf_getAttrib(x, Rf_install("eval_env"));
-  if (eval_env == R_NilValue) {
+  if (!isEnvironment(eval_env)) {
     UNPROTECT(1);
     return R_NilValue;
   }
