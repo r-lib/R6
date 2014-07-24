@@ -3,4 +3,6 @@
 .RData
 *.sublime-project
 *.sublime-workspace
+src/*.so
+src/*.o
 
