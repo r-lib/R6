@@ -114,9 +114,8 @@ R8Class_newfun <- function(classes, public_fields, public_methods,
       }
     }
 
-    if (!is.null(inherit$public_methods) ||
-        !is.null(inherit$private_methods) ||
-        !is.null(inherit$active)) {
+    # Create super environment if needed
+    if (!is.null(inherit)) {
       eval_env$super <- create_r8_super_env(inherit, public_bind_env,
                                             private_bind_env)
     }
