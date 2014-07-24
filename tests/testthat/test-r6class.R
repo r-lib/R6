@@ -1,4 +1,4 @@
-context("R6Class")
+context("R6")
 
 test_that("initialization", {
   AC <- R6Class("AC",

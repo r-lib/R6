@@ -52,7 +52,7 @@ Here are a number of ways of creating reference objects in R, starting with the 
 A_rc <- setRefClass("A_rc", 
   fields = list(x = "numeric"),
   methods = list(
-    initialize = function(x = 1) .self$x <<- x,
+    initialize = function(x = 1) .self$x <- x,
     getx = function() x,
     inc = function(n = 1) x <<- x + n
   )
@@ -67,7 +67,7 @@ R6 classes are similar to R's standard reference objects, but they are simpler.
 B_r6 <- R6Class("B_r6",
   public = list(
     x = NULL,
-    initialize = function(x = 1) self$x <<- x,
+    initialize = function(x = 1) self$x <- x,
     getx = function() x,
     inc = function(n = 1) x <<- x + n
   )
@@ -90,7 +90,7 @@ It's possible generate objects without the class attribute, by using `class=FALS
 C_r6_noclass <- R6Class("C_r6_noclass",
   public = list(
     x = NULL,
-    initialize = function(x = 1) self$x <<- x,
+    initialize = function(x = 1) self$x <- x,
     getx = function() x,
     inc = function(n = 1) x <<- x + n
   ),
@@ -106,7 +106,7 @@ This is a variant of the previous type of reference class, but this version has 
 D_r6_priv <- R6Class("D_r6_priv",
   private = list(x = NULL),
   public = list(
-    initialize = function(x = 1) private$x <<- x,
+    initialize = function(x = 1) private$x <- x,
     getx = function() x,
     inc = function(n = 1) x <<- x + n
   )
@@ -118,6 +118,80 @@ Instead of a single `self` object which refers to all items in an object, these 
 ```{r}
 print(D_r6_priv$new())
 ```
+
+
+## R7 class
+
+
+```{r}
+G_r7 <- R7Class("G_r7",
+  public = list(
+    x = NULL,
+    initialize = function(x = 1) self$x <- x,
+    getx = function() self$x,
+    inc = function(n = 1) self$x <- self$x + n
+  )
+)
+```
+
+```{r}
+print(G_r7$new())
+```
+
+## R7 class, with public and private members
+
+
+```{r}
+H_r7_priv <- R7Class("H_r7_priv",
+  private = list(x = NULL),
+  public = list(
+    initialize = function(x = 1) private$x <- x,
+    getx = function() private$x,
+    inc = function(n = 1) private$x <- private$x + n
+  )
+)
+```
+
+```{r}
+print(H_r7_priv$new())
+```
+
+## R8 class
+
+
+```{r}
+I_r8 <- R8Class("I_r8",
+  public = list(
+    x = NULL,
+    initialize = function(x = 1) self$x <- x,
+    getx = function() self$x,
+    inc = function(n = 1) self$x <- self$x + n
+  )
+)
+```
+
+```{r}
+print(I_r8$new())
+```
+
+## R7 class, with public and private members
+
+
+```{r}
+J_r8_priv <- R8Class("J_r8_priv",
+  private = list(x = NULL),
+  public = list(
+    initialize = function(x = 1) private$x <- x,
+    getx = function() private$x,
+    inc = function(n = 1) private$x <- private$x + n
+  )
+)
+```
+
+```{r}
+# print(J_r8_priv$new())
+```
+
 
 ## Environment created by a closure, with class attribute
 
@@ -206,6 +280,9 @@ obj_sizes(
   B_r6$new(),
   C_r6_noclass$new(),
   D_r6_priv$new(),
+  G_r7$new(),
+  H_r7_priv$new(),
+  I_r8$new(),
   E_closure_class(),
   F_closure_noclass()
 )
@@ -237,6 +314,9 @@ speed <- microbenchmark(
   B_r6$new(),
   C_r6_noclass$new(),
   D_r6_priv$new(),
+  G_r7$new(),
+  H_r7_priv$new(),
+  I_r8$new(),
   E_closure_class(),
   F_closure_noclass()
 )
@@ -255,6 +335,9 @@ A <- A_rc$new()
 B <- B_r6$new()
 C <- C_r6_noclass$new()
 D <- D_r6_priv$new()
+G <- G_r7$new()
+H <- H_r7_priv$new()
+I <- I_r8$new()
 E <- E_closure_class()
 F <- F_closure_noclass()
 ```
@@ -301,6 +384,40 @@ microbenchmark(
   B_r6 = B$getx(),
   C_r6_noclass = C$getx(),
   D_r6_priv = D$getx(),
+  G_r7 = G$getx(),
+  H_r7_priv = H$getx(),
+  I_r8 = I$getx(),
+  E_closure_class = E$getx(),
+  F_closure_noclass = F$getx()
+)
+```
+```{r}
+A <- A_rc$new()
+B <- B_r6$new()
+C <- C_r6_noclass$new()
+D <- D_r6_priv$new()
+G <- G_r7$new()
+G_noclass <- G_r7$new()
+class(G_noclass) <- NULL
+H <- H_r7_priv$new()
+I <- I_r8$new()
+J <- J_r8_priv$new()
+E <- E_closure_class()
+F <- F_closure_noclass()
+
+invisible(gc())
+microbenchmark(
+  A_rc = A$getx(),
+  B_r6 = B$getx(),
+  C_r6_noclass = C$getx(),
+  D_r6_priv = D$getx(),
+  G_r7 = G$getx(),
+  G_r7_noclass = G_noclass$getx(),
+  H_r7_priv = H$getx(),
+  I_r8x = I$x,
+  I_r8 = I$getx,
+  I_r8p = I$getx(),
+  J_r8_priv = J$getx(),
   E_closure_class = E$getx(),
   F_closure_noclass = F$getx()
 )
