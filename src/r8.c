@@ -1,6 +1,14 @@
 #include <R.h>
 #include <Rdefines.h>
 
+SEXP get_function_from_env_attrib(SEXP x, SEXP attribSym, SEXP nameSym) {
+  SEXP methods_env = Rf_getAttrib(x, attribSym);
+  if (isEnvironment(methods_env)) {
+    return Rf_findVarInFrame(methods_env, nameSym);
+  }
+  return R_NilValue;
+}
+
 SEXP subset_R8(SEXP x, SEXP name) {
   // Look in x (an environment) for the object
   SEXP nameSym = Rf_install(CHAR(STRING_ELT(name, 0)));
@@ -10,11 +18,13 @@ SEXP subset_R8(SEXP x, SEXP name) {
   }
 
   // if not found in x, look in methods
-  SEXP methods = Rf_getAttrib(x, Rf_install("methods"));
-  if (!isEnvironment(methods)) {
-    return R_NilValue;
+  SEXP fun = get_function_from_env_attrib(x, Rf_install("methods"), nameSym);
+
+  // If not found in methods, search in methods2. This is present only for
+  // storing private methods in a superclass.
+  if (!isFunction(fun)) {
+    fun = get_function_from_env_attrib(x, Rf_install("methods2"), nameSym);
   }
-  SEXP fun = Rf_findVarInFrame(methods, nameSym);
   if (!isFunction(fun)) {
     return R_NilValue;
   }
