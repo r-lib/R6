@@ -22,21 +22,12 @@ R8Class <- function(classname = NULL, public = list(),
     stop("All items in active must be functions.")
   }
 
-  # Separate methods from non-methods
+  # Separate methods from fields
   fun_idx <- vapply(public, is.function, logical(1))
-  public_methods <- public[fun_idx]
   public_fields <- public[!fun_idx]
+  public_methods <- new.env(parent = emptyenv(), hash = FALSE)
+  list2env2(public[fun_idx], envir = public_methods)
 
-
-  # # Enclosing env for methods
-  # public_methods <- assign_func_envs(public_methods, parent_env)
-  # # Binding env for methods
-  # public_methods_env <- new.env(parent = emptyenv(), hash = length(public_methods) > 100)
-  # # Turn methods into an environment so that it's possible to add methods later
-  # list2env2(public_methods, envir = public_methods_env)
-  # if (lock) {
-  #   lockEnvironment(public_methods_env)
-  # }
 
   # if (!is.null(inherit)) {
   #   if (!inherits(inherit, "R8ClassGenerator")) {
@@ -89,20 +80,16 @@ R8Class_newfun <- function(classes, public_fields, public_methods, private, acti
     # Add self pointer
     eval_env$self <- public_bind_env
 
-    # # Fix environment for functions
-    # public <- assign_func_envs(public, eval_env)
-
     # Copy objects to environments
     list2env2(public_fields, envir = public_bind_env)
 
-    # # Do same for private
-    # if (has_private) {
-    #   private_bind_env <- new.env(parent = emptyenv(),
-    #                               hash = (length(private) > 100))
-    #   eval_env$private <- private_bind_env
-    #   private <- assign_func_envs(private, eval_env)
-    #   list2env2(private, envir = private_bind_env)
-    # }
+    # Do same for private
+    if (has_private) {
+      private_bind_env <- new.env(parent = emptyenv(),
+                                  hash = (length(private) > 100))
+      eval_env$private <- private_bind_env
+      list2env2(private, envir = private_bind_env)
+    }
 
     # # Set up active bindings
     # if (!is.null(active)) {
@@ -177,19 +164,11 @@ create_r8_super_env <- function(super_list, public_bind_env, private_bind_env = 
   super_bind_env
 }
 
+
 #' @export
-`$.R8` <- function(x, name) {
-  methods <- attr(x, "public_methods", exact = TRUE)
-  fun <- methods[[name]]
-
-  if (!is.null(fun)) {
-    eval_env <- attr(x, "eval_env", exact = TRUE)
-    environment(fun) <- eval_env
-    fun
-
-  } else {
-    .subset2(x, name)
-  }
+#' @useDynLib R6 subset_R8
+`$.R8` <-  function(x, name) {
+  .Call(subset_R8, x, name)
 }
 
 #' @export
