@@ -1,8 +1,7 @@
 #' @export
-R8Class <- function(classname = NULL, public = list(),
-                    private = NULL, active = NULL,
-                    inherit = NULL, lock = TRUE, class = TRUE,
-                    parent_env = parent.frame()) {
+R8Class <- function(classname = NULL, public = list(), private = NULL,
+                    active = NULL, inherit = NULL, lock = TRUE, shared = TRUE,
+                    class = TRUE, parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
     stop("All elements of public, private, and active must be named.")
@@ -22,73 +21,93 @@ R8Class <- function(classname = NULL, public = list(),
     stop("All items in active must be functions.")
   }
 
-  # Separate methods from fields
-  fun_idx <- vapply(public, is.function, logical(1))
-  public_fields <- public[!fun_idx]
-  public_methods <- new.env(parent = emptyenv(), hash = FALSE)
-  list2env2(public[fun_idx], envir = public_methods)
+  if (!is.null(inherit)) {
+    if (!inherits(inherit, "R8ClassGenerator")) {
+      stop("`inherit` must be a R8ClassGenerator.")
+    }
 
+    # Merge the new items over the inherited ones
+    public  <- merge_vectors(inherit$public,  public)
+    private <- merge_vectors(inherit$private, private)
+#     active  <- merge_vectors(inherit$active,  active)
 
-  # if (!is.null(inherit)) {
-  #   if (!inherits(inherit, "R8ClassGenerator")) {
-  #     stop("`inherit` must be a R8ClassGenerator.")
-  #   }
+    # Do some preparation work on the superclass, so that we don't have to do
+    # it each time an object is created.
+    super_list <- listify_superclass(inherit)
+  } else {
+    super_list <- NULL
+  }
 
-  #   # Merge the new items over the inherited ones
-  #   public  <- merge_vectors(inherit$public,  public)
-  #   private <- merge_vectors(inherit$private, private)
-  #   active  <- merge_vectors(inherit$active,  active)
+  # If methods are shared, extract the methods and put them in an environment
+  if (shared) {
+    # Separate methods from fields
+    public_fields <- get_nonfunctions(public)
+    public_methods <- list2env2(get_functions(public))
 
-  #   # Do some preparation work on the superclass, so that we don't have to do
-  #   # it each time an object is created.
-  #   super_list <- listify_superclass(inherit)
-  # } else {
-  #   super_list <- NULL
-  # }
+    private_fields <- get_nonfunctions(private)
+    private_methods <- list2env2(get_functions(private))
+  }
 
   if (class) {
-    classes <- c(classname, get_superclassnames(inherit), "R8")
+    if (shared)
+      classes <- c("R8shared", "R8")
+    else
+      classes <- "R8"
+
+    classes <- c(classname, get_superclassnames(inherit), classes)
+
   } else {
+    if (!shared)
+      stop("R8 classes with shared methods must have class=TRUE")
+
     classes <- NULL
   }
 
-  newfun <- R8Class_newfun(classes, public_fields, public_methods, private, active, super_list,
-                           lock, parent_env)
+  newfun <- R8Class_newfun(classes,
+                           public_fields, public_methods,
+                           private_fields, private_methods,
+                           active, super_list, lock, parent_env)
 
   structure(
-    list(new = newfun, classname = classname, public = public,
-         private = private, active = active, inherit = inherit,
-         parent_env = parent_env, lock = lock),
+    list(
+      new = newfun,
+      classname = classname,
+      public_fields = public_fields,
+      public_methods = public_methods,
+      private_fields = private_fields,
+      private_methods = private_methods,
+      active = active,
+      inherit = inherit,
+      parent_env = parent_env,
+      lock = lock
+    ),
     class = "R8ClassGenerator"
   )
 }
 
 
 # Create the $new function for a R8ClassGenerator
-R8Class_newfun <- function(classes, public_fields, public_methods, private, active, super_list,
-                           lock, parent_env) {
-
-  has_private <- !is.null(private)
+R8Class_newfun <- function(classes, public_fields, public_methods,
+                           private_fields, private_methods, active,
+                           super_list, lock, parent_env) {
 
   function(...) {
     # Create the evaluation environment
     eval_env <- new.env(parent = parent_env, hash = FALSE)
 
-    # Create the binding environment
-    public_bind_env <- new.env(parent = emptyenv(),
-                               hash = (length(public_fields) > 100))
+    # Copy public fields to public binding environment
+    if (is.null(public_fields))
+      public_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+    else
+      public_bind_env <- list2env2(public_fields)
+
     # Add self pointer
     eval_env$self <- public_bind_env
 
-    # Copy objects to environments
-    list2env2(public_fields, envir = public_bind_env)
-
-    # Do same for private
-    if (has_private) {
-      private_bind_env <- new.env(parent = emptyenv(),
-                                  hash = (length(private) > 100))
+    # Do same for private_fields
+    if (!is.null(private_fields)) {
+      private_bind_env <- list2env2(private_fields)
       eval_env$private <- private_bind_env
-      list2env2(private, envir = private_bind_env)
     }
 
     # # Set up active bindings
@@ -104,20 +123,23 @@ R8Class_newfun <- function(classes, public_fields, public_methods, private, acti
     #   eval_env$super <- create_r8_super_env(super_list, public_bind_env, private_bind_env, parent_env)
     # }
 
-    # if (lock) {
-    #   if (has_private) lockEnvironment(private_bind_env)
-    #   lockEnvironment(public_bind_env)
-    # }
+    if (lock) {
+      lockEnvironment(public_bind_env)
+      if (!is.null(private_fields))
+        lockEnvironment(private_bind_env)
+    }
 
     # Do locking at end, after adding private and super?
 #     lockEnvironment(eval_env)
 
     class(public_bind_env) <- classes
-
-    attr(public_bind_env, "public_methods") <- public_methods
     attr(public_bind_env, "eval_env") <- eval_env
+    attr(public_bind_env, "public_methods") <- public_methods
+    if (!is.null(private_methods)) {
+      attr(public_bind_env, "private_methods") <- private_methods
+    }
 
-    if (is.function(public_bind_env$initialize)) {
+    if (is.function(public_methods$initialize)) {
       public_bind_env$initialize(...)
     } else if (length(list(...)) != 0 ) {
       stop("Called new() with arguments, but there is no initialize method.")
