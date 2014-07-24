@@ -10,7 +10,7 @@ SEXP subset_R8(SEXP x, SEXP name) {
   }
 
   // if not found in x, look in methods
-  SEXP methods = Rf_getAttrib(x, Rf_install("public_methods"));
+  SEXP methods = Rf_getAttrib(x, Rf_install("methods"));
   if (methods == R_NilValue) {
     return R_NilValue;
   }

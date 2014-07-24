@@ -50,7 +50,7 @@ R8Class <- function(classname = NULL, public = list(), private = NULL,
 
   if (class) {
     if (shared)
-      classes <- c("R8shared", "R8")
+      classes <- c("R8_shared", "R8")
     else
       classes <- "R8"
 
@@ -108,6 +108,7 @@ R8Class_newfun <- function(classes, public_fields, public_methods,
     if (!is.null(private_fields)) {
       private_bind_env <- list2env2(private_fields)
       eval_env$private <- private_bind_env
+      class(private_bind_env) <- "R8_shared"
     }
 
     # # Set up active bindings
@@ -129,14 +130,15 @@ R8Class_newfun <- function(classes, public_fields, public_methods,
         lockEnvironment(private_bind_env)
     }
 
-    # Do locking at end, after adding private and super?
-#     lockEnvironment(eval_env)
+    # Always lock the eval_env
+    lockEnvironment(eval_env)
 
     class(public_bind_env) <- classes
     attr(public_bind_env, "eval_env") <- eval_env
-    attr(public_bind_env, "public_methods") <- public_methods
+    attr(public_bind_env, "methods") <- public_methods
     if (!is.null(private_methods)) {
-      attr(public_bind_env, "private_methods") <- private_methods
+      attr(private_bind_env, "eval_env") <- eval_env
+      attr(private_bind_env, "methods") <- private_methods
     }
 
     if (is.function(public_methods$initialize)) {
@@ -189,9 +191,9 @@ create_r8_super_env <- function(super_list, public_bind_env, private_bind_env = 
 
 #' @export
 #' @useDynLib R6 subset_R8
-`$.R8` <-  function(x, name) {
+`$.R8_shared` <-  function(x, name) {
   .Call(subset_R8, x, name)
 }
 
 #' @export
-`[[.R8` <- `$.R8`
+`[[.R8_shared` <- `$.R8_shared`
