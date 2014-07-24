@@ -29,7 +29,7 @@ R8Class <- function(classname = NULL, public = list(), private = NULL,
     # Merge the new items over the inherited ones
     public  <- merge_vectors(inherit$public,  public)
     private <- merge_vectors(inherit$private, private)
-#     active  <- merge_vectors(inherit$active,  active)
+    active  <- merge_vectors(inherit$active,  active)
 
     # Do some preparation work on the superclass, so that we don't have to do
     # it each time an object is created.
@@ -111,14 +111,14 @@ R8Class_newfun <- function(classes, public_fields, public_methods,
       class(private_bind_env) <- "R8_shared"
     }
 
-    # # Set up active bindings
-    # if (!is.null(active)) {
-    #   active <- assign_func_envs(active, eval_env)
+    # Set up active bindings
+    if (!is.null(active)) {
+      active <- assign_func_envs(active, eval_env)
 
-    #   for (name in names(active)) {
-    #     makeActiveBinding(name, active[[name]], public_bind_env)
-    #   }
-    # }
+      for (name in names(active)) {
+        makeActiveBinding(name, active[[name]], public_bind_env)
+      }
+    }
 
     # if (!is.null(super_list$functions) || !is.null(super_list$active)) {
     #   eval_env$super <- create_r8_super_env(super_list, public_bind_env, private_bind_env, parent_env)
