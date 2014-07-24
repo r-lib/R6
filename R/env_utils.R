@@ -16,7 +16,12 @@ get_superclassnames <- function(inherit) {
 }
 
 # Wrapper around list2env with a NULL check
-list2env2 <- function(x, envir) {
-  if (is.null(x) || length(x) == 0) return()
+list2env2 <- function(x, envir = NULL, parent = emptyenv(),
+                       hash = (length(x) >  100),
+                       size = max(29L, length(x))) {
+  if (is.null(envir)) {
+    envir <- new.env(hash = hash, parent = parent, size = size)
+  }
+  if (is.null(x) || length(x) == 0) return(NULL)
   list2env(x, envir)
 }
