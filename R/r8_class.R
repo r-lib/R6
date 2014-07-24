@@ -175,6 +175,9 @@ create_r8_super_env <- function(inherit, public_bind_env, private_bind_env) {
                                           inherit$parent_env)
   }
 
+  # Always lock the eval_env
+  lockEnvironment(eval_env)
+
   # Add the methods
   attr(bind_env, "methods") <- inherit$public_methods
   attr(bind_env, "methods2") <- inherit$private_methods
