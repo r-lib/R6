@@ -135,7 +135,7 @@ ul {
 code {
   font-family: Consolas, Monaco, 'Courier New', monospace;
   color: #000;
-  padding: 0px 2px;
+  padding: 0px;
 }
 
 p > code {
