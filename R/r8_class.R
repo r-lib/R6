@@ -189,7 +189,7 @@ create_r8_super_env <- function(inherit, public_bind_env, private_bind_env) {
 
 #' @export
 #' @useDynLib R6 subset_R8
-`$.R8_shared` <-  function(x, name) {
+`$.R8_shared` <- function(x, name) {
   .Call(subset_R8, x, name)
 }
 
