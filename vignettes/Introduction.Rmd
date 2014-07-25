@@ -28,7 +28,7 @@ Unlike many objects in R, instances (objects) of R6 classes have reference seman
 * active bindings
 * inheritance (superclasses)
 
-Why the name R6? When R's reference classes were introduced, some users, following the names of R's existing class systems S3 and S4, jokingly called the new class system R5. Although reference classes are not actually called R5, the name of this package and its classes takes inspiration from that name.
+Why the name R6? When R's reference classes were introduced, some users, following the names of R's existing class systems S3 and S4, called the new class system R5 in jest. Although reference classes are not actually called R5, the name of this package and its classes takes inspiration from that name.
 
 
 ### Basics
