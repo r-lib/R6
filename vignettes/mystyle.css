@@ -138,7 +138,7 @@ code {
   padding: 0px;
 }
 
-p > code {
+p > code, li > code {
   color: #333;
   border: 1px solid #ddd;
   border-radius: 3px;
