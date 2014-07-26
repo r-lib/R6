@@ -329,7 +329,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
 p
 ```
 
-R reference classes are much slower to instantiate than the other types of classes, with a median of `r speed$median[speed$name == "A_rc"] / 1000` milliseconds per instantiation.
+R reference classes are much slower to instantiate than the other types of classes. Instantiating R6 objects is roughly 10 times faster. Creating an environment with a closure is another 10-20 times faster still.
 
 
 ## Field access speed
@@ -514,7 +514,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
 p
 ```
 
-For reference and R6classes, assignment using `.self$x <-` is somewhat slower than using `x <<-`.
+For reference and R6 classes, assignment using `.self$x <-` is somewhat slower than using `x <<-`.
 
 ## Overhead from using `$` on objects with a class attribute
 
@@ -538,13 +538,13 @@ e3$x <- 1
 class(e2) <- "e2"
 class(e3) <- "e3"
 
-# Define an S3 method for class bar
+# Define an S3 method for class e3
 `$.e3` <- function(x, name) {
   NULL
 }
 ```
 
-Now we can run timing tests for calling `$` on each type of object. Note that for the `e3` object of class `"bar"`, the `$` function does nothing --- it simply returns `NULL`.
+Now we can run timing tests for calling `$` on each type of object. Note that for the `e3` object, the `$` function does nothing --- it simply returns `NULL`.
 
 ```{r}
 speed <- microbenchmark(
@@ -571,17 +571,17 @@ lst <- list(x = 10)
 env <- new.env()
 env$x <- 10
 
-microbenchmark(
+mb_summary(microbenchmark(
   lst = lst$x,
   env = env$x,
   lst[['x']],
   env[['x']]
-)
+))
 ```
 
 Performance is comparable across environments and lists.
 
-The `[[` operator is slightly faster than `$`, probably because it doesn't need to convert the unevaluated symbol to a string; it doesn't need to convert the unevaluated symbol to a string.
+The `[[` operator is slightly faster than `$`, probably because it doesn't need to convert the unevaluated symbol to a string.
 
 *****
 
