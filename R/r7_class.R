@@ -143,7 +143,7 @@ create_r7_super_env <- function(super, public_bind_env, private_bind_env = NULL)
 
   # Set up active bindings
   if (!is.null(active)) {
-    active <- assign_func_envs(active, super_enc_env)
+    active <- assign_func_envs(active, super_eval_env)
     for (name in names(active)) {
       makeActiveBinding(name, active[[name]], super_bind_env)
     }
