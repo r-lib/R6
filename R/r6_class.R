@@ -165,6 +165,7 @@
 R6Class <- function(classname = NULL, public = list(),
                     private = NULL, active = NULL,
                     inherit = NULL, lock = TRUE, class = TRUE,
+                    modular = FALSE,
                     parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active)) {
@@ -208,8 +209,8 @@ R6Class <- function(classname = NULL, public = list(),
     classes <- NULL
   }
 
-  newfun <- R6Class_newfun(classes, public, private, active, super,
-                           lock, parent_env)
+  newfun <- R6_newfun(classes, public, private, active, super,
+                      lock, modular, parent_env)
 
   structure(
     list(new = newfun, classname = classname, public = public,
@@ -227,43 +228,58 @@ R6_newfun <- function(classes, public, private, active, super,
   has_private <- !is.null(private)
 
   function(...) {
-    if (has_private) {
-      private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
-      public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
+    # Create binding and enclosing environments -----------------------
+    if (modular) {
+      # Binding environment for private objects (where private objects are found)
+      if (has_private)
+        private_bind_env <- new.env(parent = emptyenv(), hash = length(private) > 100)
+
+      # Binding environment for public objects (where public objects are found)
+      public_bind_env <- new.env(parent = emptyenv(), hash = length(public) > 100)
+
+      # The enclosing environment for methods
+      enclos_env <- new.env(parent = parent_env, hash = FALSE)
+
     } else {
-      public_bind_env <- new.env(parent = parent_env, hash = (length(public) > 100))
+      if (has_private) {
+        private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
+        public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
+      } else {
+        public_bind_env <- new.env(parent = parent_env, hash = (length(public) > 100))
+      }
+
+      enclos_env <- public_bind_env
     }
 
-    eval_env <- public_bind_env
-
-    # Fix environment for functions
-    public <- assign_func_envs(public, eval_env)
-
+    # Set up public objects -------------------------------------------
+    # Fix environment for methods
+    public <- assign_func_envs(public, enclos_env)
     # Copy objects to environments
     list2env2(public, envir = public_bind_env)
-
     # Add self pointer
-    eval_env$self <- public_bind_env
+    enclos_env$self <- public_bind_env
 
-    # Do same for private
+    # Set up private objects ------------------------------------------
     if (has_private) {
-      private <- assign_func_envs(private, eval_env)
+      private <- assign_func_envs(private, enclos_env)
       list2env2(private, envir = private_bind_env)
-      eval_env$private <- private_bind_env
+      enclos_env$private <- private_bind_env
     }
 
-    # Set up active bindings
+    # Set up active bindings ------------------------------------------
     if (!is.null(active)) {
-      active <- assign_func_envs(active, eval_env)
+      active <- assign_func_envs(active, enclos_env)
 
       for (name in names(active)) {
         makeActiveBinding(name, active[[name]], public_bind_env)
       }
     }
 
+    # Set up superclass objects ---------------------------------------
     if (!is.null(super$functions) || !is.null(super$active)) {
-      eval_env$super <- create_super_env(super, public_bind_env)
+      enclos_env$super <- create_super_env(super, public_bind_env)
     }
+
 
     if (lock) {
       if (has_private) lockEnvironment(private_bind_env)
@@ -272,6 +288,7 @@ R6_newfun <- function(classes, public, private, active, super,
 
     class(public_bind_env) <- classes
 
+    # Initialize ------------------------------------------------------
     if (is.function(public_bind_env$initialize)) {
       public_bind_env$initialize(...)
     } else if (length(list(...)) != 0 ) {
@@ -323,8 +340,7 @@ listify_superclass <- function(class) {
   if (is.null(class)) return(NULL)
 
   list(
-    functions = c(get_functions(class$public),
-                  get_functions(class$private)),
+    functions = c(get_functions(class$public), get_functions(class$private)),
     active = class$active,
     parent_env = class$parent_env,
     super = listify_superclass(class$inherit)

@@ -6,7 +6,7 @@
 \usage{
 R6Class(classname = NULL, public = list(), private = NULL,
   active = NULL, inherit = NULL, lock = TRUE, class = TRUE,
-  parent_env = parent.frame())
+  modular = FALSE, parent_env = parent.frame())
 }
 \arguments{
 \item{classname}{Name of the class.}
