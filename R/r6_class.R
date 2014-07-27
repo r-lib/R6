@@ -221,61 +221,63 @@ R6Class <- function(classname = NULL, public = list(),
 
 
 # Create the $new function for a R6ClassGenerator
-R6Class_newfun <- function(classes, public, private, active, super,
-                           lock, parent_env) {
+R6_newfun <- function(classes, public, private, active, super,
+                      lock, modular, parent_env) {
 
   has_private <- !is.null(private)
 
   function(...) {
     if (has_private) {
-      private_env <- new.env(parent = parent_env, hash = (length(private) > 100))
-      public_env <- new.env(parent = private_env, hash = (length(public) > 100))
+      private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
+      public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
     } else {
-      public_env <- new.env(parent = parent_env, hash = (length(public) > 100))
+      public_bind_env <- new.env(parent = parent_env, hash = (length(public) > 100))
     }
 
+    eval_env <- public_bind_env
+
     # Fix environment for functions
-    public <- assign_func_envs(public, public_env)
+    public <- assign_func_envs(public, eval_env)
 
     # Copy objects to environments
-    list2env2(public, envir = public_env)
+    list2env2(public, envir = public_bind_env)
 
     # Add self pointer
-    public_env$self <- public_env
+    eval_env$self <- public_bind_env
 
     # Do same for private
     if (has_private) {
-      private <- assign_func_envs(private, public_env)
-      list2env2(private, envir = private_env)
-      public_env$private <- private_env
+      private <- assign_func_envs(private, eval_env)
+      list2env2(private, envir = private_bind_env)
+      eval_env$private <- private_bind_env
     }
 
     # Set up active bindings
     if (!is.null(active)) {
-      active <- assign_func_envs(active, public_env)
+      active <- assign_func_envs(active, eval_env)
 
       for (name in names(active)) {
-        makeActiveBinding(name, active[[name]], public_env)
+        makeActiveBinding(name, active[[name]], public_bind_env)
       }
     }
 
     if (!is.null(super$functions) || !is.null(super$active)) {
-      public_env$super <- create_super_env(super, public_env)
+      eval_env$super <- create_super_env(super, public_bind_env)
     }
 
     if (lock) {
-      if (has_private) lockEnvironment(private_env)
-      lockEnvironment(public_env)
+      if (has_private) lockEnvironment(private_bind_env)
+      lockEnvironment(public_bind_env)
     }
 
-    class(public_env) <- classes
+    class(public_bind_env) <- classes
 
-    if (is.function(public_env$initialize)) {
-      public_env$initialize(...)
+    if (is.function(public_bind_env$initialize)) {
+      public_bind_env$initialize(...)
     } else if (length(list(...)) != 0 ) {
       stop("Called new() with arguments, but there is no initialize method.")
     }
-    public_env
+    public_bind_env
   }
 }
 
