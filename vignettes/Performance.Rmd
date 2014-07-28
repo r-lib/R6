@@ -314,7 +314,7 @@ speed <- mb_summary(speed)
 speed
 ```
 
-The first plot below shows the median instantiation time. The second plot is the same data, but rescaled so that the non-reference class bars can be more easily compared.
+The plot below shows the median instantiation time.
 
 ```{r echo = FALSE, results = 'hold', fig.width = 8}
 speed$name <- factor(speed$name, rev(levels(speed$name)))
