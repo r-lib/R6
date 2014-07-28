@@ -42,8 +42,9 @@ print.R6ClassGenerator <- function(x, ...) {
       sep = ""
     )
   }
-  cat("\n  Parent: ", format(x$parent_env),  sep = "")
+  cat("\n  Parent env: ", format(x$parent_env),  sep = "")
   cat("\n  Lock: ", x$lock,  sep = "")
+  cat("\n  Modular: ", x$modular,  sep = "")
 }
 
 # Return a summary string of the items of a list or environment
