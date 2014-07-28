@@ -1,7 +1,8 @@
-context("R7")
+context("R6-modular")
 
 test_that("initialization", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 1,
       initialize = function(x, y) {
@@ -20,19 +21,21 @@ test_that("initialization", {
   expect_identical(A$gety(), 3)
 
   # No initialize method: throw error if arguments are passed in
-  AC <- R7Class("AC", public = list(x = 1))
+  AC <- R6Class("AC", modular = TRUE, public = list(x = 1))
   expect_error(AC$new(3))
 })
 
+
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
-  AC <- R7Class("AC")
+  AC <- R6Class("AC", modular = TRUE)
   expect_that(AC$new(), not(throws_error()))
 })
 
 
 test_that("Private members are private, and self/private environments", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 1,
       gety = function() private$y,
@@ -77,7 +80,8 @@ test_that("Private members are private, and self/private environments", {
 
 
 test_that("Private methods exist even when no private fields", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 1,
       getx = function() self$x,
@@ -99,7 +103,8 @@ test_that("Private methods exist even when no private fields", {
 
 
 test_that("Active bindings work", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 5
     ),
@@ -122,7 +127,8 @@ test_that("Active bindings work", {
 
 
 test_that("Locking works", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(x = 1),
     private = list(y = 2),
     lock = TRUE
@@ -134,7 +140,8 @@ test_that("Locking works", {
   expect_error(A$z <- 1)
 
   # Not locked
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(x = 1),
     private = list(y = 2),
     lock = FALSE
@@ -147,32 +154,33 @@ test_that("Locking works", {
 })
 
 
-test_that("Validity checks on creation", {
-  fun <- function() 1  # Dummy function for tests
+# test_that("Validity checks on creation", {
+#   fun <- function() 1  # Dummy function for tests
 
-  # All arguments must be named
-  expect_error(R7Class("AC", public = list(1)))
-  expect_error(R7Class("AC", private = list(1)))
-  expect_error(R7Class("AC", active = list(fun)))
+#   # All arguments must be named
+#   expect_error(R6Class("AC", public = list(1)))
+#   expect_error(R6Class("AC", private = list(1)))
+#   expect_error(R6Class("AC", active = list(fun)))
 
-  # Names can't be duplicated
-  expect_error(R7Class("AC", public = list(a=1, a=2)))
-  expect_error(R7Class("AC", public = list(a=1), private = list(a=1)))
-  expect_error(R7Class("AC", private = list(a=1), active = list(a=fun)))
+#   # Names can't be duplicated
+#   expect_error(R6Class("AC", public = list(a=1, a=2)))
+#   expect_error(R6Class("AC", public = list(a=1), private = list(a=1)))
+#   expect_error(R6Class("AC", private = list(a=1), active = list(a=fun)))
 
-  # Reserved names
-  expect_error(R7Class("AC", public = list(self = 1)))
-  expect_error(R7Class("AC", private = list(private = 1)))
-  expect_error(R7Class("AC", active = list(super = 1)))
+#   # Reserved names
+#   expect_error(R6Class("AC", public = list(self = 1)))
+#   expect_error(R6Class("AC", private = list(private = 1)))
+#   expect_error(R6Class("AC", active = list(super = 1)))
 
-  # `initialize` only allowed in public
-  expect_error(R7Class("AC", private = list(initialize = fun)))
-  expect_error(R7Class("AC", active = list(initialize = fun)))
-})
+#   # `initialize` only allowed in public
+#   expect_error(R6Class("AC", private = list(initialize = fun)))
+#   expect_error(R6Class("AC", active = list(initialize = fun)))
+# })
 
 
 test_that("Inheritance", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 0,
       z = 0,
@@ -196,7 +204,8 @@ test_that("Inheritance", {
       }
     )
   )
-  BC <- R7Class("BC",
+  BC <- R6Class("BC",
+    modular = TRUE,
     inherit = AC,
     public = list(
       y = 0,
@@ -252,12 +261,13 @@ test_that("Inheritance", {
   expect_identical(B$x3, 3) # Inherited
 
   # Classes
-  expect_identical(class(B), c("BC", "AC", "R7"))
+  expect_identical(class(B), c("BC", "AC", "R6"))
 })
 
 
 test_that("Inheritance: superclass methods", {
-  AC <- R7Class("AC",
+  AC <- R6Class("AC",
+    modular = TRUE,
     public = list(
       x = 0,
       initialize = function() {
@@ -282,7 +292,8 @@ test_that("Inheritance: superclass methods", {
       }
     )
   )
-  BC <- R7Class("BC",
+  BC <- R6Class("BC",
+    modular = TRUE,
     inherit = AC,
     public = list(
       inc_x = function() self$x <- self$x + 2,
@@ -310,7 +321,8 @@ test_that("Inheritance: superclass methods", {
 
 
   # Multi-level inheritance
-  CC <- R7Class("CC",
+  CC <- R6Class("CC",
+    modular = TRUE,
     inherit = BC,
     public = list(
       inc_x = function() self$x <- self$x + 3,
@@ -337,5 +349,99 @@ test_that("Inheritance: superclass methods", {
   expect_identical(C$pinc(0), 321)
 
   # Classes
-  expect_identical(class(C), c("CC", "BC", "AC", "R7"))
+  expect_identical(class(C), c("CC", "BC", "AC", "R6"))
+})
+
+
+test_that("Inheritance: superclass enclosing environments", {
+  encA <- new.env()
+  encB <- new.env()
+  encC <- new.env()
+
+  encA$n <- 1
+  encB$n <- 20
+  encC$n <- 300
+
+  AC <- R6Class("AC",
+    modular = TRUE,
+    parent_env = encA,
+    public = list(
+      x = 0,
+      initialize = function() {
+        self$x <- self$get_n()
+      },
+      get_n = function() n,
+      priv_get_n = function(val) private$get_n_priv()
+    ),
+    private = list(
+      get_n_priv = function() n
+    ),
+    active = list(
+      active_get_n = function() n
+    )
+  )
+  A <- AC$new()
+  expect_identical(A$x, 1)
+  expect_identical(A$get_n(), 1)
+  expect_identical(A$priv_get_n(), 1)
+  expect_identical(A$active_get_n, 1)
+
+  BC <- R6Class("BC",
+    modular = TRUE,
+    parent_env = encB,
+    inherit = AC,
+    public = list(
+      x = 0,
+      initialize = function() {
+        super$initialize()
+      },
+      get_n = function() n + super$get_n(),
+      priv_get_n = function(val) private$get_n_priv()
+    ),
+    private = list(
+      get_n_priv = function() n + super$get_n_priv()
+    ),
+    active = list(
+      active_get_n = function() n + super$active_get_n
+    )
+  )
+  B <- BC$new()
+  expect_identical(B$x, 21)
+  expect_identical(B$get_n(), 21)
+  expect_identical(B$priv_get_n(), 21)
+  expect_identical(B$active_get_n, 21)
+
+  CC <- R6Class("CC",
+    modular = TRUE,
+    parent_env = encC,
+    inherit = BC,
+    public = list(
+      x = 0,
+      initialize = function() {
+        super$initialize()
+      },
+      get_n = function() n + super$get_n(),
+      priv_get_n = function(val) private$get_n_priv()
+    ),
+    private = list(
+      get_n_priv = function() n + super$get_n_priv()
+    ),
+    active = list(
+      active_get_n = function() n + super$active_get_n
+    )
+  )
+  C <- CC$new()
+  expect_identical(C$x, 321)
+  expect_identical(C$get_n(), 321)
+  expect_identical(C$priv_get_n(), 321)
+  expect_identical(C$active_get_n, 321)
+})
+
+
+test_that("sub and superclass must both be modular or non-modular", {
+  AC <- R6Class("AC", modular = FALSE, public = list(x=1))
+  expect_error(R6Class("BC", modular = TRUE, inherit = AC))
+
+  AC <- R6Class("AC", modular = TRUE, public = list(x=1))
+  expect_error(R6Class("BC", modular = FALSE, inherit = AC))
 })
