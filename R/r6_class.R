@@ -168,28 +168,25 @@ R6Class <- function(classname = NULL, public = list(),
                     modular = FALSE,
                     parent_env = parent.frame()) {
 
-  if (!all_named(public) || !all_named(private) || !all_named(active)) {
+  if (!all_named(public) || !all_named(private) || !all_named(active))
     stop("All elements of public, private, and active must be named.")
-  }
-  if (any(duplicated(c(names(public), names(private), names(active))))) {
-    stop("All items in public, private, and active must have unique names.")
-  }
-  if (any(c("self", "private", "super") %in%
-      c(names(public), names(private), names(active)))) {
-    stop("Items cannot use reserved names 'self', 'private', and 'super'.")
-  }
-  if ("initialize" %in% c(names(private), names(active))) {
-    stop("'initialize' is not allowed in private or active.")
-  }
 
-  if (length(get_nonfunctions(active)) != 0) {
+  if (any(duplicated(c(names(public), names(private), names(active)))))
+    stop("All items in public, private, and active must have unique names.")
+
+  if (any(c("self", "private", "super") %in%
+      c(names(public), names(private), names(active))))
+    stop("Items cannot use reserved names 'self', 'private', and 'super'.")
+
+  if ("initialize" %in% c(names(private), names(active)))
+    stop("'initialize' is not allowed in private or active.")
+
+  if (length(get_nonfunctions(active)) != 0)
     stop("All items in active must be functions.")
-  }
 
   if (!is.null(inherit)) {
-    if (!inherits(inherit, "R6ClassGenerator")) {
+    if (!inherits(inherit, "R6ClassGenerator"))
       stop("`inherit` must be a R6ClassGenerator.")
-    }
 
     # Merge the new items over the inherited ones
     public  <- merge_vectors(inherit$public,  public)
