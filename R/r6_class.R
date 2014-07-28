@@ -230,6 +230,9 @@ R6_newfun <- function(classes, public, private, active, super,
   function(...) {
     # Create binding and enclosing environments -----------------------
     if (modular) {
+      # When modular==TRUE, the public binding environment is separate from the
+      # enclosing environment.
+
       # Binding environment for private objects (where private objects are found)
       if (has_private)
         private_bind_env <- new.env(parent = emptyenv(), hash = length(private) > 100)
@@ -241,6 +244,9 @@ R6_newfun <- function(classes, public, private, active, super,
       enclos_env <- new.env(parent = parent_env, hash = FALSE)
 
     } else {
+      # When modular==FALSE, the public binding environment is the same as the
+      # enclosing environment. If present, the private binding env is the parent
+      # of the public binding env.
       if (has_private) {
         private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
         public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
@@ -277,7 +283,10 @@ R6_newfun <- function(classes, public, private, active, super,
 
     # Set up superclass objects ---------------------------------------
     if (!is.null(super$functions) || !is.null(super$active)) {
-      enclos_env$super <- create_super_env(super, public_bind_env)
+      if (modular)
+        enclos_env$super <- create_modular_super_env(super, public_bind_env, private_bind_env)
+      else
+        enclos_env$super <- create_super_env(super, public_bind_env)
     }
 
 
@@ -298,8 +307,9 @@ R6_newfun <- function(classes, public, private, active, super,
   }
 }
 
-# Create and populate the self$super environment
-create_super_env <- function(super, self) {
+
+# Create and populate the self$super environment, for non-modular case
+create_super_env <- function(super, public_bind_env) {
   functions <- super$functions
   active <- super$active
 
@@ -308,7 +318,7 @@ create_super_env <- function(super, self) {
   # bindings that point to it. The only reason this environment is needed is so
   # that if a function super$foo in turn calls super$bar, it will be able to
   # find bar from the next superclass up.
-  super_enc_env <- new.env(parent = self, hash = FALSE)
+  super_enclos_env <- new.env(parent = public_bind_env, hash = FALSE)
 
   # The binding environment is a new environment. Its parent doesn't matter
   # because it's not the enclosing environment for any functions.
@@ -317,22 +327,58 @@ create_super_env <- function(super, self) {
 
   # Set up functions. All the functions can be found in self$super (the binding
   # env). Their enclosing env may or may not be self$super.
-  functions <- assign_func_envs(functions, super_enc_env)
+  functions <- assign_func_envs(functions, super_enclos_env)
   list2env2(functions, envir = super_bind_env)
 
   # Set up active bindings
-  active <- assign_func_envs(active, super_enc_env)
+  active <- assign_func_envs(active, super_enclos_env)
   for (name in names(active)) {
     makeActiveBinding(name, active[[name]], super_bind_env)
   }
 
   # Recurse if there are more superclasses
   if (!is.null(super$super)) {
-    super_enc_env$super <- create_super_env(super$super, super_enc_env)
+    super_enclos_env$super <- create_super_env(super$super, public_bind_env)
   }
 
   super_bind_env
 }
+
+
+# Create and populate the self$super environment, for modular case
+create_modular_super_env <- function(super, public_bind_env, private_bind_env = NULL) {
+  functions <- super$functions
+  active <- super$active
+
+  super_enclos_env <- new.env(parent = super$parent_env, hash = FALSE)
+  super_bind_env <- new.env(parent = emptyenv(),
+                            hash = length(functions) + length(active) > 100)
+
+  super_enclos_env$self <- public_bind_env
+  if (!is.null(private_bind_env)) {
+    super_enclos_env$private <- private_bind_env
+  }
+
+  # Set up functions. All the functions can be found in self$super (the binding
+  # env). Their enclosing env may or may not be self$super.
+  functions <- assign_func_envs(functions, super_enclos_env)
+  list2env2(functions, envir = super_bind_env)
+
+  # Set up active bindings
+  active <- assign_func_envs(active, super_enclos_env)
+  for (name in names(active)) {
+    makeActiveBinding(name, active[[name]], super_bind_env)
+  }
+
+  # Recurse if there are more superclasses
+  if (!is.null(super$super)) {
+    super_enclos_env$super <- create_modular_super_env(super$super,
+                                  public_bind_env, private_bind_env)
+  }
+
+  super_bind_env
+}
+
 
 # Given a R6ClassGenerator, recursively convert it into a list that's useful
 # for efficiently instantiating $super objects.
