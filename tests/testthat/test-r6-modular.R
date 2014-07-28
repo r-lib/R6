@@ -25,6 +25,7 @@ test_that("initialization", {
   expect_error(AC$new(3))
 })
 
+
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
   AC <- R6Class("AC", modular = TRUE)
@@ -434,4 +435,13 @@ test_that("Inheritance: superclass enclosing environments", {
   expect_identical(C$get_n(), 321)
   expect_identical(C$priv_get_n(), 321)
   expect_identical(C$active_get_n, 321)
+})
+
+
+test_that("sub and superclass must both be modular or non-modular", {
+  AC <- R6Class("AC", modular = FALSE, public = list(x=1))
+  expect_error(R6Class("BC", modular = TRUE, inherit = AC))
+
+  AC <- R6Class("AC", modular = TRUE, public = list(x=1))
+  expect_error(R6Class("BC", modular = FALSE, inherit = AC))
 })

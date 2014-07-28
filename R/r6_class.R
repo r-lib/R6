@@ -188,6 +188,9 @@ R6Class <- function(classname = NULL, public = list(),
     if (!inherits(inherit, "R6ClassGenerator"))
       stop("`inherit` must be a R6ClassGenerator.")
 
+    if (!identical(modular, inherit$modular))
+      stop("Sub and superclass must both be modular or non-modular.")
+
     # Merge the new items over the inherited ones
     public  <- merge_vectors(inherit$public,  public)
     private <- merge_vectors(inherit$private, private)
@@ -212,7 +215,7 @@ R6Class <- function(classname = NULL, public = list(),
   structure(
     list(new = newfun, classname = classname, public = public,
          private = private, active = active, inherit = inherit,
-         parent_env = parent_env, lock = lock),
+         modular = modular, parent_env = parent_env, lock = lock),
     class = "R6ClassGenerator"
   )
 }
