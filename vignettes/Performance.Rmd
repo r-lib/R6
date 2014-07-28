@@ -266,7 +266,7 @@ ggplot(sizes, aes(y = name, x = one)) +
   my_theme +
   ggtitle("First object")
 
-ggplot(sizes, aes(y = reorder(name, incremental), x = incremental)) +
+ggplot(sizes, aes(y = name, x = incremental)) +
   geom_segment(aes(yend = name), xend = 0, colour = "gray80") +
   scale_x_continuous(limits = c(0, max(sizes$incremental) * 1.05),
                      expand = c(0, 0)) +
