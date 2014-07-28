@@ -1,8 +1,8 @@
-context("R6-modular")
+context("R6-portable")
 
 test_that("initialization", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 1,
       initialize = function(x, y) {
@@ -21,21 +21,21 @@ test_that("initialization", {
   expect_identical(A$gety(), 3)
 
   # No initialize method: throw error if arguments are passed in
-  AC <- R6Class("AC", modular = TRUE, public = list(x = 1))
+  AC <- R6Class("AC", portable = TRUE, public = list(x = 1))
   expect_error(AC$new(3))
 })
 
 
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
-  AC <- R6Class("AC", modular = TRUE)
+  AC <- R6Class("AC", portable = TRUE)
   expect_that(AC$new(), not(throws_error()))
 })
 
 
 test_that("Private members are private, and self/private environments", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 1,
       gety = function() private$y,
@@ -81,7 +81,7 @@ test_that("Private members are private, and self/private environments", {
 
 test_that("Private methods exist even when no private fields", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 1,
       getx = function() self$x,
@@ -104,7 +104,7 @@ test_that("Private methods exist even when no private fields", {
 
 test_that("Active bindings work", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 5
     ),
@@ -128,7 +128,7 @@ test_that("Active bindings work", {
 
 test_that("Locking works", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(x = 1),
     private = list(y = 2),
     lock = TRUE
@@ -141,7 +141,7 @@ test_that("Locking works", {
 
   # Not locked
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(x = 1),
     private = list(y = 2),
     lock = FALSE
@@ -180,7 +180,7 @@ test_that("Locking works", {
 
 test_that("Inheritance", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 0,
       z = 0,
@@ -205,7 +205,7 @@ test_that("Inheritance", {
     )
   )
   BC <- R6Class("BC",
-    modular = TRUE,
+    portable = TRUE,
     inherit = AC,
     public = list(
       y = 0,
@@ -267,7 +267,7 @@ test_that("Inheritance", {
 
 test_that("Inheritance: superclass methods", {
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     public = list(
       x = 0,
       initialize = function() {
@@ -293,7 +293,7 @@ test_that("Inheritance: superclass methods", {
     )
   )
   BC <- R6Class("BC",
-    modular = TRUE,
+    portable = TRUE,
     inherit = AC,
     public = list(
       inc_x = function() self$x <- self$x + 2,
@@ -322,7 +322,7 @@ test_that("Inheritance: superclass methods", {
 
   # Multi-level inheritance
   CC <- R6Class("CC",
-    modular = TRUE,
+    portable = TRUE,
     inherit = BC,
     public = list(
       inc_x = function() self$x <- self$x + 3,
@@ -363,7 +363,7 @@ test_that("Inheritance: superclass enclosing environments", {
   encC$n <- 300
 
   AC <- R6Class("AC",
-    modular = TRUE,
+    portable = TRUE,
     parent_env = encA,
     public = list(
       x = 0,
@@ -387,7 +387,7 @@ test_that("Inheritance: superclass enclosing environments", {
   expect_identical(A$active_get_n, 1)
 
   BC <- R6Class("BC",
-    modular = TRUE,
+    portable = TRUE,
     parent_env = encB,
     inherit = AC,
     public = list(
@@ -412,7 +412,7 @@ test_that("Inheritance: superclass enclosing environments", {
   expect_identical(B$active_get_n, 21)
 
   CC <- R6Class("CC",
-    modular = TRUE,
+    portable = TRUE,
     parent_env = encC,
     inherit = BC,
     public = list(
@@ -438,10 +438,10 @@ test_that("Inheritance: superclass enclosing environments", {
 })
 
 
-test_that("sub and superclass must both be modular or non-modular", {
-  AC <- R6Class("AC", modular = FALSE, public = list(x=1))
-  expect_error(R6Class("BC", modular = TRUE, inherit = AC))
+test_that("sub and superclass must both be portable or non-portable", {
+  AC <- R6Class("AC", portable = FALSE, public = list(x=1))
+  expect_error(R6Class("BC", portable = TRUE, inherit = AC))
 
-  AC <- R6Class("AC", modular = TRUE, public = list(x=1))
-  expect_error(R6Class("BC", modular = FALSE, inherit = AC))
+  AC <- R6Class("AC", portable = TRUE, public = list(x=1))
+  expect_error(R6Class("BC", portable = FALSE, inherit = AC))
 })

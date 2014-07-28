@@ -165,7 +165,7 @@
 R6Class <- function(classname = NULL, public = list(),
                     private = NULL, active = NULL,
                     inherit = NULL, lock = TRUE, class = TRUE,
-                    modular = FALSE,
+                    portable = FALSE,
                     parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
@@ -188,8 +188,8 @@ R6Class <- function(classname = NULL, public = list(),
     if (!inherits(inherit, "R6ClassGenerator"))
       stop("`inherit` must be a R6ClassGenerator.")
 
-    if (!identical(modular, inherit$modular))
-      stop("Sub and superclass must both be modular or non-modular.")
+    if (!identical(portable, inherit$portable))
+      stop("Sub and superclass must both be portable or non-portable.")
 
     # Merge the new items over the inherited ones
     public  <- merge_vectors(inherit$public,  public)
@@ -210,12 +210,12 @@ R6Class <- function(classname = NULL, public = list(),
   }
 
   newfun <- R6_newfun(classes, public, private, active, super,
-                      lock, modular, parent_env)
+                      lock, portable, parent_env)
 
   structure(
     list(new = newfun, classname = classname, public = public,
          private = private, active = active, inherit = inherit,
-         modular = modular, parent_env = parent_env, lock = lock),
+         portable = portable, parent_env = parent_env, lock = lock),
     class = "R6ClassGenerator"
   )
 }
@@ -223,14 +223,14 @@ R6Class <- function(classname = NULL, public = list(),
 
 # Create the $new function for a R6ClassGenerator
 R6_newfun <- function(classes, public, private, active, super,
-                      lock, modular, parent_env) {
+                      lock, portable, parent_env) {
 
   has_private <- !is.null(private)
 
   function(...) {
     # Create binding and enclosing environments -----------------------
-    if (modular) {
-      # When modular==TRUE, the public binding environment is separate from the
+    if (portable) {
+      # When portable==TRUE, the public binding environment is separate from the
       # enclosing environment.
 
       # Binding environment for private objects (where private objects are found)
@@ -244,7 +244,7 @@ R6_newfun <- function(classes, public, private, active, super,
       enclos_env <- new.env(parent = parent_env, hash = FALSE)
 
     } else {
-      # When modular==FALSE, the public binding environment is the same as the
+      # When portable==FALSE, the public binding environment is the same as the
       # enclosing environment. If present, the private binding env is the parent
       # of the public binding env.
       if (has_private) {
@@ -283,8 +283,8 @@ R6_newfun <- function(classes, public, private, active, super,
 
     # Set up superclass objects ---------------------------------------
     if (!is.null(super$functions) || !is.null(super$active)) {
-      if (modular)
-        enclos_env$super <- create_modular_super_env(super, public_bind_env, private_bind_env)
+      if (portable)
+        enclos_env$super <- create_portable_super_env(super, public_bind_env, private_bind_env)
       else
         enclos_env$super <- create_super_env(super, public_bind_env)
     }
@@ -308,7 +308,7 @@ R6_newfun <- function(classes, public, private, active, super,
 }
 
 
-# Create and populate the self$super environment, for non-modular case
+# Create and populate the self$super environment, for non-portable case
 create_super_env <- function(super, public_bind_env) {
   functions <- super$functions
   active <- super$active
@@ -345,8 +345,8 @@ create_super_env <- function(super, public_bind_env) {
 }
 
 
-# Create and populate the self$super environment, for modular case
-create_modular_super_env <- function(super, public_bind_env, private_bind_env = NULL) {
+# Create and populate the self$super environment, for portable case
+create_portable_super_env <- function(super, public_bind_env, private_bind_env = NULL) {
   functions <- super$functions
   active <- super$active
 
@@ -372,7 +372,7 @@ create_modular_super_env <- function(super, public_bind_env, private_bind_env = 
 
   # Recurse if there are more superclasses
   if (!is.null(super$super)) {
-    super_enclos_env$super <- create_modular_super_env(super$super,
+    super_enclos_env$super <- create_portable_super_env(super$super,
                                   public_bind_env, private_bind_env)
   }
 
