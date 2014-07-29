@@ -74,6 +74,10 @@
 #' @param active An optional list of active binding functions.
 #' @param inherit A R6ClassGenerator object to inherit from; in other words,
 #'   a superclass.
+#' @param portable If \code{TRUE}, this class will work with inheritance across
+#'   different packages. Note that when this is enabled, fields and members must
+#'   be accessed with  \code{self$x} or \code{private$x}; they can't be
+#'   accessed with just \code{x}.
 #' @param parent_env An environment to use as the parent of newly-created
 #'   objects.
 #' @param class Should a class attribute be added to the public environment?

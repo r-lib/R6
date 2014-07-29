@@ -6,7 +6,7 @@
 \usage{
 R6Class(classname = NULL, public = list(), private = NULL,
   active = NULL, inherit = NULL, lock = TRUE, class = TRUE,
-  modular = FALSE, parent_env = parent.frame())
+  portable = FALSE, parent_env = parent.frame())
 }
 \arguments{
 \item{classname}{Name of the class.}
@@ -21,6 +21,11 @@ and non-functions.}
 
 \item{inherit}{A R6ClassGenerator object to inherit from; in other words,
 a superclass.}
+
+\item{portable}{If \code{TRUE}, this class will work with inheritance across
+different packages. Note that when this is enabled, fields and members must
+be accessed with  \code{self$x} or \code{private$x}; they can't be
+accessed with just \code{x}.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
