@@ -61,7 +61,7 @@ object_summaries <- function(x) {
     else if (is.function(obj)) "function"
     else if (is.environment(obj)) "environment"
     else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
-    else class(obj)
+    else paste(class(obj), collapse = ", ")
   }, FUN.VALUE = character(1))
 
   paste0(names, ": ", values, sep = "", collapse = "\n")
