@@ -240,6 +240,8 @@ R6_newfun <- function(classes, public, private, active, super,
       # Binding environment for private objects (where private objects are found)
       if (has_private)
         private_bind_env <- new.env(parent = emptyenv(), hash = length(private) > 100)
+      else
+        private_bind_env <- NULL
 
       # Binding environment for public objects (where public objects are found)
       public_bind_env <- new.env(parent = emptyenv(), hash = length(public) > 100)
