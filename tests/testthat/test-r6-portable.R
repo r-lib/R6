@@ -353,7 +353,7 @@ test_that("Inheritance: superclass methods", {
 })
 
 
-test_that("Inheritance: superclass enclosing environments", {
+test_that("Inheritance: enclosing environments for super$ methods", {
   encA <- new.env()
   encB <- new.env()
   encC <- new.env()
@@ -437,6 +437,51 @@ test_that("Inheritance: superclass enclosing environments", {
   expect_identical(C$active_get_n, 321)
 })
 
+
+test_that("Inheritance: enclosing environments for inherited methods", {
+  encA <- new.env()
+  encB <- new.env()
+  encC <- new.env()
+
+  encA$n <- 1
+  encB$n <- 20
+  encC$n <- 300
+
+  AC <- R6Class("AC",
+    portable = TRUE,
+    parent_env = encA,
+    public = list(
+      get_n = function() n
+    )
+  )
+  A <- AC$new()
+  expect_identical(A$get_n(), 1)
+
+  BC <- R6Class("BC",
+    portable = TRUE,
+    parent_env = encB,
+    inherit = AC
+  )
+  B <- BC$new()
+  # Since this inerhits A's get_n() method, it should also inherit the
+  # environment in which get_n() runs. This is necessary for inherited methods
+  # to find methods from the correct namespace.
+  expect_identical(B$get_n(), 1)
+
+  CC <- R6Class("CC",
+    portable = TRUE,
+    parent_env = encC,
+    inherit = BC,
+    public = list(
+      get_n = function() n + super$get_n()
+    )
+  )
+  C <- CC$new()
+  # When this calls super$get_n(), it should get B's version of get_n(), which
+  # should in turn run in A's environment, returning 1. Add C's value of n, and
+  # the total is 301.
+  expect_identical(C$get_n(), 301)
+})
 
 test_that("sub and superclass must both be portable or non-portable", {
   AC <- R6Class("AC", portable = FALSE, public = list(x=1))
