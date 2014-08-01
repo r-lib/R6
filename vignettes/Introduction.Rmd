@@ -271,6 +271,53 @@ cq$remove()
 cq$get_total()
 ```
 
+
+### Fields containing reference objects
+
+If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, and environments), those fields should be populated in the `initialize` method. If the field set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here's an example:
+
+```{r}
+SimpleClass <- R6Class("SimpleClass",
+  public = list(x = NULL)
+)
+
+SharedField <- R6Class("SharedField",
+  public = list(
+    e = SimpleClass$new()
+  )
+)
+
+s1 <- SharedField$new()
+s1$e$x <- 1
+
+s2 <- SharedField$new()
+s2$e$x <- 2
+
+# Changing s2$e$x has changed the value of s1$e$x
+s1$e$x
+```
+
+To avoid this, populate the field in the `initialize` method:
+
+```{r}
+NonSharedField <- R6Class("NonSharedField",
+  public = list(
+    e = NULL,
+    initialize = function() e <<- SimpleClass$new()
+  )
+)
+
+n1 <- NonSharedField$new()
+n1$e$x <- 1
+
+n2 <- NonSharedField$new()
+n2$e$x <- 2
+
+# n2$e$x does not affect n1$e$x
+n1$e$x
+```
+
+
 ### Summary
 
 R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster.
