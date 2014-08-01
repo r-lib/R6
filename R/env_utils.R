@@ -25,7 +25,7 @@ list2env2 <- function(x, envir = NULL, parent = emptyenv(),
   if (is.null(envir)) {
     envir <- new.env(hash = hash, parent = parent, size = size)
   }
-  if ((is.null(x) || length(x) == 0)) {
+  if (length(x) == 0) {
     if (empty_to_null)
       return(NULL)
     else
