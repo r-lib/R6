@@ -436,12 +436,3 @@ test_that("Inheritance: superclass enclosing environments", {
   expect_identical(C$priv_get_n(), 321)
   expect_identical(C$active_get_n, 321)
 })
-
-
-test_that("sub and superclass must both be portable or non-portable", {
-  AC <- R6Class("AC", portable = FALSE, public = list(x=1))
-  expect_error(R6Class("BC", portable = TRUE, inherit = AC))
-
-  AC <- R6Class("AC", portable = TRUE, public = list(x=1))
-  expect_error(R6Class("BC", portable = FALSE, inherit = AC))
-})
