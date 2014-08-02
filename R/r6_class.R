@@ -47,6 +47,21 @@
 #' a \code{NULL} initial value, and then in the \code{intialize} method,
 #' instantiate the object and assign it.
 #'
+#' @section The \code{print} method:
+#'
+#' R6 object generators and R6 objects have a default \code{print} method
+#' to show them on the screen: they simply list the members and parameters
+#' (e.g. lock, portable, etc., see above) of the object.
+#'
+#' The default \code{print} method of R6 objects can be redefined,
+#' by supplying a public \code{print} method. (\code{print} members that
+#' are not functions are ignored.) This method is automatically called
+#' whenever the object is printed, e.g. when the object's name is typed
+#' at the command prompt, or when \code{print(obj)} is called. It can also
+#' be called directly via \code{obj$print()}. All extra arguments from a
+#' \code{print(obj, ...)} call are passed on to the \code{obj$print(...)}
+#' method.
+#'
 #' @section S3 details:
 #'
 #' Normally the public environment will have two classes: the one supplied in
