@@ -8,13 +8,15 @@ print.R6 <- function(x, ...) {
       "<", class(x)[1], ">\n",
       "  Public:\n",
       indent(object_summaries(x), 4),
+      "\n",
       sep = ""
     )
 
     if (!is.null(x$private)) {
       cat(
-        "\n  Private:\n",
+        "  Private:\n",
         indent(object_summaries(x$private), 4),
+        "\n",
         sep = ""
       )
     }
