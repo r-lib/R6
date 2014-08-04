@@ -4,13 +4,15 @@ print.R6 <- function(x, ...) {
     "<", class(x)[1], ">\n",
     "  Public:\n",
     indent(object_summaries(x), 4),
+    "\n",
     sep = ""
   )
 
   if (!is.null(x$private)) {
     cat(
-      "\n  Private:\n",
+      "  Private:\n",
       indent(object_summaries(x$private), 4),
+      "\n",
       sep = ""
     )
   }
@@ -24,27 +26,30 @@ print.R6ClassGenerator <- function(x, ...) {
     "<", classname, "> object generator\n",
     "  Public:\n",
     indent(object_summaries(x$public), 4),
+    "\n",
     sep = ""
   )
 
   if (!is.null(x$active)) {
     cat(
-      "\n  Active bindings:\n",
+      "  Active bindings:\n",
       indent(object_summaries(x$active), 4),
+      "\n",
       sep = ""
     )
   }
 
   if (!is.null(x$private)) {
     cat(
-      "\n  Private:\n",
+      "  Private:\n",
       indent(object_summaries(x$private), 4),
+      "\n",
       sep = ""
     )
   }
-  cat("\n  Parent env: ", format(x$parent_env),  sep = "")
-  cat("\n  Lock: ", x$lock,  sep = "")
-  cat("\n  Portable: ", x$portable,  sep = "")
+  cat("  Parent env: ", format(x$parent_env), "\n", sep = "")
+  cat("  Lock: ", x$lock, "\n", sep = "")
+  cat("  Portable: ", x$portable, "\n", sep = "")
 }
 
 # Return a summary string of the items of a list or environment
