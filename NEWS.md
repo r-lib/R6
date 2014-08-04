@@ -5,6 +5,8 @@
 
 * Added trailing newline when printing R6 objects. (Thanks to Gabor Csardi)
 
+* The `print` method of R6 objects can be redefined. (Thanks to Gabor Csardi)
+
 # R6 1.0.1
 
 * First release on CRAN.

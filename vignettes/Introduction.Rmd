@@ -318,6 +318,29 @@ n1$e$x
 ```
 
 
+### Other topics
+
+#### Printing R6 objects to the screen
+
+R6 objects have a default `print` method that lists all members of the object.
+If a class defines a `print` method, then it overrides the default one.
+
+```{r}
+PrettyCountingQueue <- R6Class("PrettyCountingQueue",
+  inherit = CountingQueue,
+  public = list(
+    print = function(...) {
+      cat("<PrettyCountingQueue> of ", get_total(), " elements\n", sep="")
+    }
+  )
+)
+```
+
+```{r}
+pq <- PrettyCountingQueue$new(1, 2, "foobar")
+pq
+```
+
 ### Summary
 
 R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster.

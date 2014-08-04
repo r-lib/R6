@@ -314,3 +314,26 @@ test_that("Inheritance: superclass methods", {
   # Classes
   expect_identical(class(C), c("CC", "BC", "AC", "R6"))
 })
+
+test_that("print method", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      initialize = function(x, y) {
+        self$x <- getx() + x
+        private$y <- y
+      },
+      getx = function() x,
+      gety = function() private$y,
+      print = function(...) {
+        cat("<AC> x =", x, ", y =", private$y, "\n")
+      }
+    ),
+    private = list(
+      y = 2
+    )
+  )
+  A <- AC$new(2, 3)
+
+  expect_that(print(A), prints_text("^<AC> x = 3 , y = 3 $"))
+})

@@ -1,20 +1,23 @@
 #' @export
 print.R6 <- function(x, ...) {
-  cat(
-    "<", class(x)[1], ">\n",
-    "  Public:\n",
-    indent(object_summaries(x), 4),
-    "\n",
-    sep = ""
-  )
+  if (is.function(x$print)) {
+    x$print()
 
-  if (!is.null(x$private)) {
+  } else {
     cat(
-      "  Private:\n",
-      indent(object_summaries(x$private), 4),
-      "\n",
+      "<", class(x)[1], ">\n",
+      "  Public:\n",
+      indent(object_summaries(x), 4),
       sep = ""
     )
+
+    if (!is.null(x$private)) {
+      cat(
+        "\n  Private:\n",
+        indent(object_summaries(x$private), 4),
+        sep = ""
+      )
+    }
   }
 }
 
