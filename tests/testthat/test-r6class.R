@@ -337,3 +337,34 @@ test_that("print method", {
 
   expect_that(print(A), prints_text("^<AC> x = 3 , y = 3 $"))
 })
+
+test_that("default print method has a trailing newline", {
+
+  ## This is kind of hackish, because both capture.output and
+  ## expect_output drop the trailing newline. This function
+  ## does not work in the general case, but it is good enough
+  ## for this test.
+
+  expect_output_n <- function(object) {
+    tmp <- file()
+    on.exit(close(tmp))
+    sink(tmp)
+    print(object)
+    sink(NULL)
+    output <- readChar(tmp, nchar = 10000)
+    last_char <- substr(output, nchar(output), nchar(output))
+    expect_that(last_char, equals("\n"))
+  }
+
+  AC <- R6Class("AC")
+  expect_output_n(print(AC))
+
+  A <- AC$new()
+  expect_output_n(print(A))
+
+  AC <- R6Class("AC", private = list( x = 2 ))
+  expect_output_n(print(AC))
+
+  A <- AC$new()
+  expect_output_n(print(A))
+})
