@@ -30,8 +30,8 @@ print.R6ClassGenerator <- function(x, ...) {
   cat(
     "<", classname, "> object generator\n",
     "  Public:\n",
-    indent(object_summaries(x$public), 4),
-    "\n",
+    indent(object_summaries(x$public_fields), 4),
+    indent(object_summaries(x$public_methods), 4),
     sep = ""
   )
 
@@ -39,16 +39,15 @@ print.R6ClassGenerator <- function(x, ...) {
     cat(
       "  Active bindings:\n",
       indent(object_summaries(x$active), 4),
-      "\n",
       sep = ""
     )
   }
 
-  if (!is.null(x$private)) {
+  if (!(is.null(x$private_fields) && is.null(x$private_methods))) {
     cat(
       "  Private:\n",
-      indent(object_summaries(x$private), 4),
-      "\n",
+      indent(object_summaries(x$private_fields), 4),
+      indent(object_summaries(x$private_methods), 4),
       sep = ""
     )
   }
@@ -60,12 +59,15 @@ print.R6ClassGenerator <- function(x, ...) {
 # Return a summary string of the items of a list or environment
 # x must be a list or environment
 object_summaries <- function(x) {
-  if (is.list(x))
-    names <- names(x)
-  else if (is.environment(x))
-    names <- ls(x, all.names = TRUE)
+  if (length(x) == 0)
+    return(NULL)
 
-  values <- vapply(names, function(name) {
+  if (is.list(x))
+    obj_names <- names(x)
+  else if (is.environment(x))
+    obj_names <- ls(x, all.names = TRUE)
+
+  values <- vapply(obj_names, function(name) {
     obj <- x[[name]]
     if (is.environment(x) && bindingIsActive(name, x)) "active binding"
     else if (is.function(obj)) "function"
@@ -74,7 +76,10 @@ object_summaries <- function(x) {
     else paste(class(obj), collapse = ", ")
   }, FUN.VALUE = character(1))
 
-  paste0(names, ": ", values, sep = "", collapse = "\n")
+  paste0(
+    paste0(obj_names, ": ", values, sep = "", collapse = "\n"),
+    "\n"
+  )
 }
 
 # Given a string, indent every line by some number of spaces.

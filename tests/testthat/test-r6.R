@@ -194,10 +194,10 @@ test_that("Inheritance", {
   B <- BC$new(1, 2)
 
   # Environment checks
-  expect_identical(B, environment(B$getx))          # Overridden public method
-  expect_identical(B, environment(B$getx2))         # Inherited public method
-  expect_identical(B, environment(B$private$getz))  # Overridden private method
-  expect_identical(B, environment(B$private$getz2)) # Inherited private method
+  expect_identical(B, environment(B$getx))                      # Overridden public method
+  expect_identical(B, parent.env(environment(B$getx2)))         # Inherited public method
+  expect_identical(B, environment(B$private$getz))              # Overridden private method
+  expect_identical(B, parent.env(environment(B$private$getz2))) # Inherited private method
 
   # Behavioral tests
   # Overriding literals
@@ -315,27 +315,60 @@ test_that("Inheritance: superclass methods", {
   expect_identical(class(C), c("CC", "BC", "AC", "R6"))
 })
 
-test_that("print method", {
-  AC <- R6Class("AC",
-    public = list(
-      x = 1,
-      initialize = function(x, y) {
-        self$x <- getx() + x
-        private$y <- y
-      },
-      getx = function() x,
-      gety = function() private$y,
-      print = function(...) {
-        cat("<AC> x =", x, ", y =", private$y, "\n")
-      }
-    ),
-    private = list(
-      y = 2
-    )
-  )
-  A <- AC$new(2, 3)
 
-  expect_that(print(A), prints_text("^<AC> x = 3 , y = 3 $"))
+test_that("Inheritance hierarchy for super$ methods", {
+  AC <- R6Class("AC",
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC",
+    public = list(n = function() super$n() + 10),
+    inherit = AC
+  )
+  expect_identical(BC$new()$n(), 11)
+
+  CC <- R6Class("CC",
+    inherit = BC
+  )
+  # This should equal 11 because it inherits BC's n(), which adds 1 to AC's n()
+  expect_identical(CC$new()$n(), 11)
+
+  # Skipping one level of inheritance ---------------------------------
+  AC <- R6Class("AC",
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC",
+    inherit = AC
+  )
+  expect_identical(BC$new()$n(), 1)
+
+  CC <- R6Class("CC",
+    public = list(n = function() super$n() + 100),
+    inherit = BC
+  )
+  # This should equal 101 because BC inherits AC's n()
+  expect_identical(CC$new()$n(), 101)
+
+  DC <- R6Class("DC",
+    inherit = CC
+  )
+  # This should equal 101 because DC inherits CC's n(), and BC inherits AC's n()
+  expect_identical(DC$new()$n(), 101)
+
+  # Skipping two level of inheritance ---------------------------------
+  AC <- R6Class("AC",
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC", inherit = AC)
+  expect_identical(BC$new()$n(), 1)
+
+  CC <- R6Class("CC", inherit = BC)
+  expect_identical(CC$new()$n(), 1)
 })
 
 test_that("default print method has a trailing newline", {
