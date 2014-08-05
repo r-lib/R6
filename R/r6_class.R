@@ -210,14 +210,12 @@ R6Class <- function(classname = NULL, public = list(),
     if (!identical(portable, inherit$portable))
       stop("Sub and superclass must both be portable or non-portable.")
 
-    # Merge the new items over the inherited ones
-    public  <- merge_vectors(inherit$public,  public)
-    private <- merge_vectors(inherit$private, private)
-    active  <- merge_vectors(inherit$active,  active)
-
     # Do some preparation work on the superclass, so that we don't have to do
     # it each time an object is created.
-    super <- listify_superclass(inherit)
+    super <- listify_superclass(
+      inherit,
+      list(public = public, private = private, active = active)
+    )
   } else {
     super <- NULL
   }
@@ -233,7 +231,9 @@ R6Class <- function(classname = NULL, public = list(),
 
   structure(
     list(new = newfun, classname = classname, public = public,
-         private = private, active = active, inherit = inherit,
+         private = private, active = active,
+         inherit = inherit,
+         super = super,
          portable = portable, parent_env = parent_env, lock = lock),
     class = "R6ClassGenerator"
   )
@@ -266,12 +266,14 @@ R6_newfun <- function(classes, public, private, active, super,
 
     } else {
       # When portable==FALSE, the public binding environment is the same as the
-      # enclosing environment. If present, the private binding env is the parent
-      # of the public binding env.
+      # enclosing environment.
+      # If present, the private binding env is the parent of the public binding
+      # env.
       if (has_private) {
         private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
         public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
       } else {
+        private_bind_env <- NULL
         public_bind_env <- new.env(parent = parent_env, hash = (length(public) > 100))
       }
 
@@ -303,11 +305,13 @@ R6_newfun <- function(classes, public, private, active, super,
     }
 
     # Set up superclass objects ---------------------------------------
-    if (!is.null(super$functions) || !is.null(super$active)) {
-      if (portable)
+    if (!is.null(super)) {
+      if (portable) {
         enclos_env$super <- create_portable_super_env(super, public_bind_env, private_bind_env)
-      else
-        enclos_env$super <- create_super_env(super, public_bind_env)
+
+      } else {
+        enclos_env$super <- create_super_env(super, public_bind_env, private_bind_env)
+      }
     }
 
 
@@ -330,7 +334,7 @@ R6_newfun <- function(classes, public, private, active, super,
 
 
 # Create and populate the self$super environment, for non-portable case
-create_super_env <- function(super, public_bind_env) {
+create_super_env <- function(super, public_bind_env, private_bind_env = NULL) {
   functions <- super$functions
   active <- super$active
 
@@ -357,9 +361,15 @@ create_super_env <- function(super, public_bind_env) {
     makeActiveBinding(name, active[[name]], super_bind_env)
   }
 
+  # Copy the non-masked objects from super$public, $private, $active to the
+  # subclass's public and private bind env.
+  inherit_super_funs(super, super_enclos_env, public_bind_env, private_bind_env)
+
+
   # Recurse if there are more superclasses
   if (!is.null(super$super)) {
-    super_enclos_env$super <- create_super_env(super$super, public_bind_env)
+    super_enclos_env$super <- create_super_env(super$super, public_bind_env,
+                                               private_bind_env)
   }
 
   super_bind_env
@@ -403,13 +413,56 @@ create_portable_super_env <- function(super, public_bind_env, private_bind_env =
 
 # Given a R6ClassGenerator, recursively convert it into a list that's useful
 # for efficiently instantiating $super objects.
-listify_superclass <- function(class) {
-  if (is.null(class)) return(NULL)
+#
+# @param super An R6ClassGenerator object for the superclass.
+# @param sub A list containing lists of public, private, and active objects in
+#   the subclass. This is used to decide which of the functions from the
+#   superclass should be copied to the subclass's binding environment (while
+#   maintaining the superclass's enclosing environment). The reason that this is
+#   a list and not a full R6ClassGenerator object is because the object hasn't
+#   necessarily been created when this function is called.
+listify_superclass <- function(super, sub) {
+  if (is.null(super)) return(NULL)
 
   list(
-    functions = c(get_functions(class$public), get_functions(class$private)),
-    active = class$active,
-    parent_env = class$parent_env,
-    super = listify_superclass(class$inherit)
+    functions = c(get_functions(super$public), get_functions(super$private)),
+    active = super$active,
+    nonmasked_public = names_setdiff(get_functions(super$public),
+                                     get_functions(sub$public)),
+    nonmasked_private = names_setdiff(get_functions(super$private),
+                                      get_functions(sub$private)),
+    nonmasked_active = names_setdiff(get_functions(super$active),
+                                     get_functions(sub$active)),
+    parent_env = super$parent_env,
+    super = listify_superclass(super$inherit, super)
   )
+}
+
+# Populate a public_bind_env and private_bind_env from a super-list obj, and 
+# set the enclosing environment for the functions to super_enclos_env.
+# This function is used for its side-effects of modifying the public_bind_env
+# and private_bind_env.
+inherit_super_funs <- function(super, super_enclos_env, public_bind_env,
+                               private_bind_env) {
+  public <- super$nonmasked_public
+  private <- super$nonmasked_private
+  active <- super$nonmasked_active
+
+  # Set up public objects -------------------------------------------
+  public <- assign_func_envs(super$nonmasked_public, super_enclos_env)
+  list2env2(public, envir = public_bind_env)
+
+  # Set up private objects ------------------------------------------
+  if (length(private) != 0) {
+    private <- assign_func_envs(private, super_enclos_env)
+    list2env2(private, envir = private_bind_env)
+  }
+
+  # Set up active bindings ------------------------------------------
+  if (length(active) != 0) {
+    active <- assign_func_envs(active, super_enclos_env)
+    for (name in names(active)) {
+      makeActiveBinding(name, active[[name]], public_bind_env)
+    }
+  }
 }
