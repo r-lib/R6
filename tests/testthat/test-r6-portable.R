@@ -240,10 +240,15 @@ test_that("Inheritance", {
   expect_identical(super_eval_env$private, B$getprivateA())
   expect_identical(B$getprivateA(), B$getprivateB())
 
-  expect_identical(eval_env, environment(B$getx))                # Overridden public method
-  expect_identical(eval_env, environment(B$getx2))               # Inherited public method
-  expect_identical(eval_env, environment(B$getprivateA()$getz))  # Overridden private method
-  expect_identical(eval_env, environment(B$getprivateA()$getz2)) # Inherited private method
+  # Overridden public method
+  expect_identical(eval_env, environment(B$getx))
+  # Inherited public method
+  environment(B$getx2)
+  expect_identical(B, environment(B$getx2)$self)
+  # Overridden private method
+  expect_identical(eval_env, environment(B$getprivateA()$getz))
+  # Inherited private method - should have same eval env as inherited public
+  expect_identical(environment(B$getx2), environment(B$getprivateA()$getz2))
 
   # Behavioral tests
   # Overriding literals
@@ -463,7 +468,7 @@ test_that("Inheritance: enclosing environments for inherited methods", {
     inherit = AC
   )
   B <- BC$new()
-  # Since this inerhits A's get_n() method, it should also inherit the
+  # Since this inherits A's get_n() method, it should also inherit the
   # environment in which get_n() runs. This is necessary for inherited methods
   # to find methods from the correct namespace.
   expect_identical(B$get_n(), 1)
@@ -481,6 +486,62 @@ test_that("Inheritance: enclosing environments for inherited methods", {
   # should in turn run in A's environment, returning 1. Add C's value of n, and
   # the total is 301.
   expect_identical(C$get_n(), 301)
+})
+
+
+test_that("Inheritance hierarchy for super$ methods", {
+  AC <- R6Class("AC", portable = TRUE,
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC", portable = TRUE,
+    public = list(n = function() super$n() + 10),
+    inherit = AC
+  )
+  expect_identical(BC$new()$n(), 11)
+
+  CC <- R6Class("CC", portable = TRUE,
+    inherit = BC
+  )
+  # This should equal 11 because it inherits BC's n(), which adds 1 to AC's n()
+  expect_identical(CC$new()$n(), 11)
+
+  # Skipping one level of inheritance ---------------------------------
+  AC <- R6Class("AC", portable = TRUE,
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC", portable = TRUE,
+    inherit = AC
+  )
+  expect_identical(BC$new()$n(), 1)
+
+  CC <- R6Class("CC", portable = TRUE,
+    public = list(n = function() super$n() + 100),
+    inherit = BC
+  )
+  # This should equal 101 because BC inherits AC's n()
+  expect_identical(CC$new()$n(), 101)
+
+  DC <- R6Class("DC", portable = TRUE,
+    inherit = CC
+  )
+  # This should equal 101 because DC inherits CC's n(), and BC inherits AC's n()
+  expect_identical(DC$new()$n(), 101)
+
+  # Skipping two level of inheritance ---------------------------------
+  AC <- R6Class("AC", portable = TRUE,
+    public = list(n = function() 0 + 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC", portable = TRUE, inherit = AC)
+  expect_identical(BC$new()$n(), 1)
+
+  CC <- R6Class("CC", portable = TRUE, inherit = BC)
+  expect_identical(CC$new()$n(), 1)
 })
 
 test_that("sub and superclass must both be portable or non-portable", {
