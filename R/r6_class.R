@@ -209,6 +209,10 @@ R6Class <- function(classname = NULL, public = list(),
   public_methods <- get_functions(public)
   private_methods <- get_functions(private)
 
+  # Merge in fields from superclasses
+  public_fields <- merge_vectors(inherit$public_fields, public_fields)
+  private_fields <- merge_vectors(inherit$private_fields, private_fields)
+
   if (!is.null(inherit)) {
     if (!inherits(inherit, "R6ClassGenerator"))
       stop("`inherit` must be a R6ClassGenerator.")
@@ -220,7 +224,11 @@ R6Class <- function(classname = NULL, public = list(),
     # it each time an object is created.
     super <- listify_superclass(
       inherit,
-      list(public = public, private = private, active = active)
+      list(
+        public_methods = public_methods,
+        private_methods = private_methods,
+        active = active
+      )
     )
   } else {
     super <- NULL
@@ -448,14 +456,11 @@ listify_superclass <- function(super, sub) {
   if (is.null(super)) return(NULL)
 
   list(
-    functions = c(get_functions(super$public), get_functions(super$private)),
+    functions = c(super$public_methods, super$private_methods),
     active = super$active,
-    nonmasked_public = names_setdiff(get_functions(super$public),
-                                     get_functions(sub$public)),
-    nonmasked_private = names_setdiff(get_functions(super$private),
-                                      get_functions(sub$private)),
-    nonmasked_active = names_setdiff(get_functions(super$active),
-                                     get_functions(sub$active)),
+    nonmasked_public = names_setdiff(super$public_methods, sub$public_methods),
+    nonmasked_private = names_setdiff(super$private_methods, sub$private_methods),
+    nonmasked_active = names_setdiff(super$active, sub$active),
     parent_env = super$parent_env,
     super = listify_superclass(super$inherit, super)
   )

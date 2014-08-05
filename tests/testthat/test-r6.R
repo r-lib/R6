@@ -194,10 +194,10 @@ test_that("Inheritance", {
   B <- BC$new(1, 2)
 
   # Environment checks
-  expect_identical(B, environment(B$getx))          # Overridden public method
-  expect_identical(B, environment(B$getx2))         # Inherited public method
-  expect_identical(B, environment(B$private$getz))  # Overridden private method
-  expect_identical(B, environment(B$private$getz2)) # Inherited private method
+  expect_identical(B, environment(B$getx))                      # Overridden public method
+  expect_identical(B, parent.env(environment(B$getx2)))         # Inherited public method
+  expect_identical(B, environment(B$private$getz))              # Overridden private method
+  expect_identical(B, parent.env(environment(B$private$getz2))) # Inherited private method
 
   # Behavioral tests
   # Overriding literals
