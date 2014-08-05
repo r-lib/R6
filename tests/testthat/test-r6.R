@@ -318,7 +318,7 @@ test_that("Inheritance: superclass methods", {
 
 test_that("Inheritance hierarchy for super$ methods", {
   AC <- R6Class("AC",
-    public = list(n = function() 1)
+    public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 
@@ -336,7 +336,7 @@ test_that("Inheritance hierarchy for super$ methods", {
 
   # Skipping one level of inheritance ---------------------------------
   AC <- R6Class("AC",
-    public = list(n = function() 1)
+    public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 
@@ -360,7 +360,7 @@ test_that("Inheritance hierarchy for super$ methods", {
 
   # Skipping two level of inheritance ---------------------------------
   AC <- R6Class("AC",
-    public = list(n = function() 1)
+    public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 

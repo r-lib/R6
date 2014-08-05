@@ -295,31 +295,18 @@ R6_newfun <- function(classes, public_fields, public_methods,
       enclos_env <- public_bind_env
     }
 
-    # Set up public objects -------------------------------------------
-    # Fix environment for methods
-    public_methods <- assign_func_envs(public_methods, enclos_env)
-    # Copy objects to public bind environment
-    list2env2(public_methods, envir = public_bind_env)
-    list2env2(public_fields, envir = public_bind_env)
-    # Add self pointer
+    # Add self and private pointer ------------------------------------
     enclos_env$self <- public_bind_env
-
-    # Set up private objects ------------------------------------------
-    if (has_private) {
-      private_methods <- assign_func_envs(private_methods, enclos_env)
-      list2env2(private_methods, envir = private_bind_env)
-      list2env2(private_fields, envir = private_bind_env)
+    if (has_private)
       enclos_env$private <- private_bind_env
-    }
 
-    # Set up active bindings ------------------------------------------
-    if (!is.null(active)) {
+    # Fix environment for methods -------------------------------------
+    public_methods <- assign_func_envs(public_methods, enclos_env)
+    if (has_private)
+      private_methods <- assign_func_envs(private_methods, enclos_env)
+    if (!is.null(active))
       active <- assign_func_envs(active, enclos_env)
 
-      for (name in names(active)) {
-        makeActiveBinding(name, active[[name]], public_bind_env)
-      }
-    }
 
     # Set up superclass objects ---------------------------------------
     if (!is.null(inherit)) {
@@ -327,11 +314,35 @@ R6_newfun <- function(classes, public_fields, public_methods,
         enclos_env$super <- create_portable_super_env(inherit, public_bind_env, private_bind_env)
 
       } else {
-        enclos_env$super <- create_super_env(inherit, public_bind_env, private_bind_env)
+        # Set up the superclass objects
+        super_struct <- create_super_env(inherit, public_bind_env)
+        enclos_env$super <- super_struct$bind_env
+
+        # Merge this level's methods over the superclass methods
+        public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
+        private_methods <- merge_vectors(super_struct$private_methods, private_methods)
+        active          <- merge_vectors(super_struct$active, active)
       }
     }
 
+    # Copy objects to public bind environment -------------------------
+    list2env2(public_methods, envir = public_bind_env)
+    list2env2(public_fields, envir = public_bind_env)
 
+    # Copy objects to private bind environment ------------------------
+    if (has_private) {
+      list2env2(private_methods, envir = private_bind_env)
+      list2env2(private_fields, envir = private_bind_env)
+    }
+
+    # Set up active bindings ------------------------------------------
+    if (!is.null(active)) {
+      for (name in names(active)) {
+        makeActiveBinding(name, active[[name]], public_bind_env)
+      }
+    }
+
+    # Lock ------------------------------------------------------------
     if (lock) {
       if (has_private) lockEnvironment(private_bind_env)
       lockEnvironment(public_bind_env)
@@ -350,50 +361,62 @@ R6_newfun <- function(classes, public_fields, public_methods,
 }
 
 
-# Create and populate the self$super environment, for non-portable case
-create_super_env <- function(inherit, sub_bind_env, sub_private_bind_env = NULL) {
-  public_methods <- inherit$public_methods
+# Create and populate the self$super environment, for non-portable case.
+# In this function, we "climb to the top" of the superclass hierarchy by
+# recursing early on in the function, and then fill the methods downward by
+# doing the work for each level and passing the needed information down.
+create_super_env <- function(inherit, public_bind_env) {
+  public_methods  <- inherit$public_methods
   private_methods <- inherit$private_methods
-  active <- inherit$active
+  active          <- inherit$active
 
   use_hash <- length(public_methods) + length(private_methods) + length(active) > 100
 
-  # The environment in which functions evaluate is a child of the enclosing env
-  # (should be the self env). Though this is a child of self, self has no
-  # bindings that point to it. The only reason this environment is needed is so
-  # that if a function super$foo in turn calls super$bar, it will be able to
-  # find bar from the next superclass up.
-  super_enclos_env <- new.env(parent = sub_bind_env, hash = FALSE)
+  # Set up super enclosing and binding environments -------------------
+
+  # The environment in which functions run is a child of the public bind env
+  # (AKA self). Though this is a child of self, self has no bindings that point
+  # to it. The only reason this environment is needed is so that if a function
+  # super$foo in turn calls super$bar, it will be able to find bar from the next
+  # superclass up.
+  super_enclos_env <- new.env(parent = public_bind_env, hash = FALSE)
 
   # The binding environment is a new environment. Its parent doesn't matter
   # because it's not the enclosing environment for any functions.
   super_bind_env <- new.env(parent = emptyenv(), hash = use_hash)
 
-  # Set up methods. All the methods can be found in self$super (the binding
-  # env). Their enclosing env may or may not be self$super.
-  public_methods <- assign_func_envs(public_methods, super_enclos_env)
-  list2env2(public_methods, envir = super_bind_env)
-  private_methods <- assign_func_envs(private_methods, super_enclos_env)
-  list2env2(private_methods, envir = super_bind_env)
+  # Recurse if there are more superclasses ----------------------------
+  if (!is.null(inherit$inherit)) {
+    super_struct <- create_super_env(inherit$inherit, public_bind_env)
+    super_enclos_env$super <- super_struct$bind_env
 
-  # Set up active bindings
-  active <- assign_func_envs(active, super_enclos_env)
+    # Merge this level's methods over the superclass methods
+    public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
+    private_methods <- merge_vectors(super_struct$private_methods, private_methods)
+    active          <- merge_vectors(super_struct$active, active)
+  }
+
+  # Set up method environments ----------------------------------------
+  # All the methods can be found in self$super (the binding env).
+  # Their enclosing env is a different environment.
+  public_methods  <- assign_func_envs(public_methods, super_enclos_env)
+  private_methods <- assign_func_envs(private_methods, super_enclos_env)
+  active          <- assign_func_envs(active, super_enclos_env)
+
+  # Copy the methods into the binding environment ---------------------
+  list2env2(public_methods, envir = super_bind_env)
+  list2env2(private_methods, envir = super_bind_env)
   for (name in names(active)) {
     makeActiveBinding(name, active[[name]], super_bind_env)
   }
 
-  # Recurse if there are more superclasses
-  if (!is.null(inherit$inherit)) {
-    super_enclos_env$super <- create_super_env(inherit$inherit, super_bind_env)
-  }
-
-  # Copy the non-masked objects from super$public, $private, $active to the
-  # subclass's public and private bind env.
-  inherit_super_funs(public_methods, private_methods, active,
-                     sub_bind_env, sub_private_bind_env)
-
-
-  super_bind_env
+  # Return an object with all the information needed to merge down
+  list(
+    bind_env = super_bind_env,
+    public_methods = public_methods,
+    private_methods = private_methods,
+    active = active
+  )
 }
 
 
@@ -429,33 +452,4 @@ create_portable_super_env <- function(super, public_bind_env, private_bind_env =
   }
 
   super_bind_env
-}
-
-
-# Populate a public_bind_env and private_bind_env from a super-list obj, and
-# set the enclosing environment for the functions to super_enclos_env.
-# This function is used for its side-effects of modifying the public_bind_env
-# and private_bind_env.
-inherit_super_funs <- function(public_methods, private_methods, active,
-                               sub_bind_env, sub_private_bind_env) {
-  sub_names <- c(ls2(sub_bind_env), ls2(sub_private_bind_env))
-
-  public <- exclude_names(public_methods, sub_names)
-  private <- exclude_names(private_methods, sub_names)
-  active <- exclude_names(active, sub_names)
-
-  # Set up public objects -------------------------------------------
-  list2env2(public, envir = sub_bind_env)
-
-  # Set up private objects ------------------------------------------
-  if (length(private) != 0) {
-    list2env2(private, envir = sub_private_bind_env)
-  }
-
-  # Set up active bindings ------------------------------------------
-  if (length(active) != 0) {
-    for (name in names(active)) {
-      makeActiveBinding(name, active[[name]], sub_bind_env)
-    }
-  }
 }
