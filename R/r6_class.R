@@ -203,6 +203,12 @@ R6Class <- function(classname = NULL, public = list(),
   if (length(get_nonfunctions(active)) != 0)
     stop("All items in active must be functions.")
 
+  # Separate fields from methods
+  public_fields <- get_nonfunctions(public)
+  private_fields <- get_nonfunctions(private)
+  public_methods <- get_functions(public)
+  private_methods <- get_functions(private)
+
   if (!is.null(inherit)) {
     if (!inherits(inherit, "R6ClassGenerator"))
       stop("`inherit` must be a R6ClassGenerator.")
@@ -226,25 +232,40 @@ R6Class <- function(classname = NULL, public = list(),
     classes <- NULL
   }
 
-  newfun <- R6_newfun(classes, public, private, active, super,
-                      lock, portable, parent_env)
+  newfun <- R6_newfun(classes, public_fields, public_methods,
+                      private_fields, private_methods, active,
+                      super, lock, portable, parent_env)
 
   structure(
-    list(new = newfun, classname = classname, public = public,
-         private = private, active = active,
-         inherit = inherit,
-         super = super,
-         portable = portable, parent_env = parent_env, lock = lock),
+    list(
+      new = newfun,
+      classname = classname,
+      public_fields = public_fields,
+      private_fields = private_fields,
+      public_methods = public_methods,
+      private_methods = private_methods,
+      active = active,
+      inherit = inherit,
+      super = super,
+      portable = portable,
+      parent_env = parent_env,
+      lock = lock
+    ),
     class = "R6ClassGenerator"
   )
 }
 
 
 # Create the $new function for a R6ClassGenerator
-R6_newfun <- function(classes, public, private, active, super,
-                      lock, portable, parent_env) {
+R6_newfun <- function(classes, public_fields, public_methods,
+                      private_fields, private_methods, active,
+                      super, lock, portable, parent_env) {
 
-  has_private <- !is.null(private)
+  # Precompute some things that we'll use repeatedly
+  has_private <- !(is.null(private_fields) && is.null(private_methods))
+
+  hash_private <- length(private_fields) + length(private_methods) > 100
+  hash_public <- length(public_fields) + length(public_methods) > 100
 
   function(...) {
     # Create binding and enclosing environments -----------------------
@@ -254,12 +275,12 @@ R6_newfun <- function(classes, public, private, active, super,
 
       # Binding environment for private objects (where private objects are found)
       if (has_private)
-        private_bind_env <- new.env(parent = emptyenv(), hash = length(private) > 100)
+        private_bind_env <- new.env(parent = emptyenv(), hash = hash_private)
       else
         private_bind_env <- NULL
 
       # Binding environment for public objects (where public objects are found)
-      public_bind_env <- new.env(parent = emptyenv(), hash = length(public) > 100)
+      public_bind_env <- new.env(parent = emptyenv(), hash = hash_public)
 
       # The enclosing environment for methods
       enclos_env <- new.env(parent = parent_env, hash = FALSE)
@@ -270,11 +291,11 @@ R6_newfun <- function(classes, public, private, active, super,
       # If present, the private binding env is the parent of the public binding
       # env.
       if (has_private) {
-        private_bind_env <- new.env(parent = parent_env, hash = (length(private) > 100))
-        public_bind_env <- new.env(parent = private_bind_env, hash = (length(public) > 100))
+        private_bind_env <- new.env(parent = parent_env, hash = hash_private)
+        public_bind_env <- new.env(parent = private_bind_env, hash = hash_public)
       } else {
         private_bind_env <- NULL
-        public_bind_env <- new.env(parent = parent_env, hash = (length(public) > 100))
+        public_bind_env <- new.env(parent = parent_env, hash = hash_public)
       }
 
       enclos_env <- public_bind_env
@@ -282,16 +303,18 @@ R6_newfun <- function(classes, public, private, active, super,
 
     # Set up public objects -------------------------------------------
     # Fix environment for methods
-    public <- assign_func_envs(public, enclos_env)
-    # Copy objects to environments
-    list2env2(public, envir = public_bind_env)
+    public_methods <- assign_func_envs(public_methods, enclos_env)
+    # Copy objects to public bind environment
+    list2env2(public_methods, envir = public_bind_env)
+    list2env2(public_fields, envir = public_bind_env)
     # Add self pointer
     enclos_env$self <- public_bind_env
 
     # Set up private objects ------------------------------------------
     if (has_private) {
-      private <- assign_func_envs(private, enclos_env)
-      list2env2(private, envir = private_bind_env)
+      private_methods <- assign_func_envs(private_methods, enclos_env)
+      list2env2(private_methods, envir = private_bind_env)
+      list2env2(private_fields, envir = private_bind_env)
       enclos_env$private <- private_bind_env
     }
 
