@@ -32,7 +32,6 @@ print.R6ClassGenerator <- function(x, ...) {
     "  Public:\n",
     indent(object_summaries(x$public_fields), 4),
     indent(object_summaries(x$public_methods), 4),
-    "\n",
     sep = ""
   )
 
@@ -40,7 +39,6 @@ print.R6ClassGenerator <- function(x, ...) {
     cat(
       "  Active bindings:\n",
       indent(object_summaries(x$active), 4),
-      "\n",
       sep = ""
     )
   }
@@ -50,7 +48,6 @@ print.R6ClassGenerator <- function(x, ...) {
       "  Private:\n",
       indent(object_summaries(x$private_fields), 4),
       indent(object_summaries(x$private_methods), 4),
-      "\n",
       sep = ""
     )
   }
@@ -79,7 +76,10 @@ object_summaries <- function(x) {
     else paste(class(obj), collapse = ", ")
   }, FUN.VALUE = character(1))
 
-  paste0(obj_names, ": ", values, sep = "", collapse = "\n")
+  paste0(
+    paste0(obj_names, ": ", values, sep = "", collapse = "\n"),
+    "\n"
+  )
 }
 
 # Given a string, indent every line by some number of spaces.

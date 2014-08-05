@@ -225,9 +225,9 @@ R6Class <- function(classname = NULL, public = list(),
     super <- listify_superclass(
       inherit,
       list(
-        public_methods = public_methods,
-        private_methods = private_methods,
-        active = active
+        public_methods = names(public_methods),
+        private_methods = names(private_methods),
+        active = names(active)
       )
     )
   } else {
@@ -442,31 +442,43 @@ create_portable_super_env <- function(super, public_bind_env, private_bind_env =
 }
 
 
-# Given a R6ClassGenerator, recursively convert it into a list that's useful
-# for efficiently instantiating $super objects.
+# Given a R6ClassGenerator, recursively convert it into a list that's useful for
+# efficiently instantiating $super objects.
+#
+# When the subclass object is instantiated, all objects from the superclass
+# except the ones listed in `exclude` are copied to the subclass's binding
+# environment, while maintaining the superclass's enclosing environment.
 #
 # @param super An R6ClassGenerator object for the superclass.
-# @param sub A list containing lists of public, private, and active objects in
-#   the subclass. This is used to decide which of the functions from the
-#   superclass should be copied to the subclass's binding environment (while
-#   maintaining the superclass's enclosing environment). The reason that this is
-#   a list and not a full R6ClassGenerator object is because the object hasn't
-#   necessarily been created when this function is called.
-listify_superclass <- function(super, sub) {
+# @param exclude A list containing character vectors of names of public methods,
+#   private methods, and active bindings in the subclass.
+listify_superclass <- function(super, exclude) {
   if (is.null(super)) return(NULL)
+
+  # Methods to keep at this level
+  nonmasked_public <- exclude_names(super$public_methods, exclude$public_methods)
+  nonmasked_private <- exclude_names(super$private_methods, exclude$private_methods)
+  nonmasked_active <- exclude_names(super$active, exclude$active)
+
+  # Names of items to exclude at the next level up
+  exclude_next <- list(
+    public_methods = c(names(nonmasked_public), exclude$public_methods),
+    private_methods = c(names(nonmasked_private), exclude$private_methods),
+    active = c(names(nonmasked_active), exclude$active)
+  )
 
   list(
     functions = c(super$public_methods, super$private_methods),
     active = super$active,
-    nonmasked_public = names_setdiff(super$public_methods, sub$public_methods),
-    nonmasked_private = names_setdiff(super$private_methods, sub$private_methods),
-    nonmasked_active = names_setdiff(super$active, sub$active),
+    nonmasked_public = nonmasked_public,
+    nonmasked_private = nonmasked_private,
+    nonmasked_active = nonmasked_active,
     parent_env = super$parent_env,
-    super = listify_superclass(super$inherit, super)
+    super = listify_superclass(super$inherit, exclude_next)
   )
 }
 
-# Populate a public_bind_env and private_bind_env from a super-list obj, and 
+# Populate a public_bind_env and private_bind_env from a super-list obj, and
 # set the enclosing environment for the functions to super_enclos_env.
 # This function is used for its side-effects of modifying the public_bind_env
 # and private_bind_env.
