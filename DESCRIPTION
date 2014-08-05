@@ -13,7 +13,8 @@ Suggests:
     knitr,
     microbenchmark,
     pryr,
-    testthat
+    testthat,
+    ggplot2
 License: MIT + file LICENSE
 URL: https://github.com/wch/R6/
 Roxygen: list(wrap = FALSE)
