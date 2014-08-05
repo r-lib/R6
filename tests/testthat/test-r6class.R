@@ -315,27 +315,24 @@ test_that("Inheritance: superclass methods", {
   expect_identical(class(C), c("CC", "BC", "AC", "R6"))
 })
 
-test_that("print method", {
-  AC <- R6Class("AC",
-    public = list(
-      x = 1,
-      initialize = function(x, y) {
-        self$x <- getx() + x
-        private$y <- y
-      },
-      getx = function() x,
-      gety = function() private$y,
-      print = function(...) {
-        cat("<AC> x =", x, ", y =", private$y, "\n")
-      }
-    ),
-    private = list(
-      y = 2
-    )
-  )
-  A <- AC$new(2, 3)
 
-  expect_that(print(A), prints_text("^<AC> x = 3 , y = 3 $"))
+test_that("Inheritance hierarchy for super$ methods", {
+  AC <- R6Class("AC",
+    public = list(n = function() 1)
+  )
+  expect_identical(AC$new()$n(), 1)
+
+  BC <- R6Class("BC",
+    public = list(n = function() super$n() + 10),
+    inherit = AC
+  )
+  expect_identical(BC$new()$n(), 11)
+
+  CC <- R6Class("CC",
+    inherit = BC
+  )
+  # This should equal 21 because it inherits BC's n(), which adds 1 to AC's n()
+  expect_identical(CC$new()$n(), 11)
 })
 
 test_that("default print method has a trailing newline", {
