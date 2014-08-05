@@ -166,7 +166,7 @@ p <- P$new()
 
 # No error, but instead of setting private$y, this sets y in the global
 # environment! This is because of the sematics of <<-.
-np$sety(20)
+p$sety(20)
 y
 #> [1] 20
 
