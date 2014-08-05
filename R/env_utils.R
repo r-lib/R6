@@ -33,3 +33,14 @@ list2env2 <- function(x, envir = NULL, parent = emptyenv(),
   }
   list2env(x, envir)
 }
+
+# Wrapper around ls which returns NULL if the input is NULL.
+# This is faster than ls() because it supplies envir directly. It expects
+# an environment as input.
+# Also defaults to all.names = TRUE.
+ls2 <- function(envir, all.names = TRUE) {
+  if (is.null(envir))
+    return(NULL)
+
+  ls(envir = envir, all.names = all.names)
+}

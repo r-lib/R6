@@ -334,7 +334,7 @@ test_that("Inheritance hierarchy for super$ methods", {
   # This should equal 11 because it inherits BC's n(), which adds 1 to AC's n()
   expect_identical(CC$new()$n(), 11)
 
-
+  # Skipping one level of inheritance ---------------------------------
   AC <- R6Class("AC",
     public = list(n = function() 1)
   )
@@ -358,7 +358,17 @@ test_that("Inheritance hierarchy for super$ methods", {
   # This should equal 101 because DC inherits CC's n(), and BC inherits AC's n()
   expect_identical(DC$new()$n(), 101)
 
+  # Skipping two level of inheritance ---------------------------------
+  AC <- R6Class("AC",
+    public = list(n = function() 1)
+  )
+  expect_identical(AC$new()$n(), 1)
 
+  BC <- R6Class("BC", inherit = AC)
+  expect_identical(BC$new()$n(), 1)
+
+  CC <- R6Class("CC", inherit = BC)
+  expect_identical(CC$new()$n(), 1)
 })
 
 test_that("default print method has a trailing newline", {

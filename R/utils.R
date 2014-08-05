@@ -24,21 +24,12 @@ all_named <- function(x) {
 }
 
 
-# x and y are named lists. This returns objects in x for which there aren't
-# objects in y with corresponding names.
-names_setdiff <- function(x, y) {
-  if (length(x) == 0) return(y)
-  if (length(y) == 0) return(x)
-
-  diff <- setdiff(names(x), names(y))
-  x[diff]
-}
-
 # x is a named list, and exclude is a character vector of names of items that
 # will NOT be returned from x.
 exclude_names <- function(x, exclude) {
   x[setdiff(names(x), exclude)]
 }
+
 
 # Return all the functions in a list.
 get_functions <- function(x) {
