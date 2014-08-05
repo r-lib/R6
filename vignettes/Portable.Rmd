@@ -126,21 +126,24 @@ cc$foo()
 
 One important difference between non-portable and portable classes is that with non-portable classes, it's possible to access members with just the name of the member, and with portable classes, member access always requires using `self$` or `private$`. 
 
-Here's an example of a non-portable class with a method `getxy` that accesses the fields `x` and `y`:
+Here's an example of a non-portable class with two methods: `sety`, which sets the private field `y`, and `getxy`, which returns a vector with teh values of fields `x` and `y`:
 
 ```{r}
 NP <- R6Class("NP",
   portable = FALSE,
   public = list(
     x = 1,
-    getxy = function() c(x, y)
+    getxy = function() c(x, y),
+    sety = function(value) y <<- value
   ),
   private = list(
-    y = 2
+    y = NA
   )
 )
 
 np <- NP$new()
+
+np$sety(20)
 np$getxy()
 ```
 
@@ -151,34 +154,44 @@ P <- R6Class("P",
   portable = TRUE,
   public = list(
     x = 1,
-    getxy = function() c(x, y)
+    getxy = function() c(x, y),
+    sety = function(value) y <<- value
   ),
   private = list(
-    y = 2
+    y = NA
   )
 )
 
 p <- P$new()
+
+# No error, but instead of setting private$y, this sets y in the global
+# environment! This is because of the sematics of <<-.
+np$sety(20)
+y
+#> [1] 20
+
 p$getxy()
 #> Error in p$getxy() : object 'y' not found
 ```
 
 To make this work with a portable class, we need to use `self$x` and `private$y`:
 
-```{r eval=FALSE}
+```{r}
 P2 <- R6Class("P2",
   portable = TRUE,
   public = list(
     x = 1,
-    getxy = function() c(self$x, private$y)
+    getxy = function() c(self$x, private$y),
+    sety = function(value) private$y <- value
   ),
   private = list(
-    y = 2
+    y = NA
   )
 )
 
-p <- P2$new()
-p$getxy()
+p2 <- P2$new()
+p2$sety(20)
+p2$getxy()
 ```
 
 
