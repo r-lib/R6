@@ -1,82 +1,65 @@
 #' Create an R6 reference object generator
 #'
-#' Create a lightweight reference class: an environment containing functions.
-#'
-#' Classes created by this generator have the following properties:
-#' \itemize{
-#'   \item They have public members, and optionally have private members and
-#'     active bindings.
-#'   \item Public members reside in an environment. This environment is what
-#'     is returned by the generator, and is sometimes referred to as an R6
-#'     object.
-#'   \item If there are any private members, they are put in a private
-#'     environment, which is the parent of the public environment. The parent
-#'     of the private environment is set with the \code{parent_env} argument.
-#'   \item If there are no private members, then no private environment is
-#'     created, and the parent of the public environment is set with
-#'     \code{parent_env}.
-#'   \item If present, active bindings are put in the public environment.
-#'   \item The generator's \code{$new} method creates a new object and returns
-#'     its public environment.
-#'   \item Methods can directly access the public and private environments, by
-#'     using \code{private$x} or \code{self$x} (for public). Assignment to
-#'     either environment can be done with \code{<<-}, but it's more precise to
-#'     explicitly specify \code{private} or \code{self}.
-#'   \item The enclosing environment of all methods is set to the public
-#'     environment, even for private methods. In other words, private methods
-#'     are found in the private environment, but when they are called, the
-#'     public environment is the parent environment.
-#'   \item Each instance of the class has its own copy of each method. The
-#'     memory cost of this is small; it should be 56 bytes per method.
-#'   \item R6 objects have a class attribute so that thet may be used with S3
-#'     methods.
-#' }
+#' R6 objects are essentially environments, structured in a way that makes them
+#' look like an object in a more typical object-oriented language than R. They
+#' support public and private members, as well as inheritance across different
+#' packages.
 #'
 #' The \code{active} argument is a list of active binding functions. These
 #' functions take one argument. They look like regular variables, but when
-#' accessed, a function is called with an optional argument. For example,
-#' if \code{obj$x2} is an active binding, then when accessed as \code{obj$x2},
-#' it calls the \code{x2()} function that was in the \code{active} list, with
-#' no arguments. However, if a value is assigned to it, as in
-#' \code{obj$x2 <- 50}, then the function is called with the right-side value
-#' as its argument, as in \code{x2(50)}.
+#' accessed, a function is called with an optional argument. For example, if
+#' \code{obj$x2} is an active binding, then when accessed as \code{obj$x2}, it
+#' calls the \code{x2()} function that was in the \code{active} list, with no
+#' arguments. However, if a value is assigned to it, as in \code{obj$x2 <- 50},
+#' then the function is called with the right-side value as its argument, as in
+#' \code{x2(50)}.
 #'
 #' If the public or private lists contain any items that have reference
 #' semantics (for example, an environment), those items will be shared across
-#' all instances of the class. To avoid this, add an entry for that item with
-#' a \code{NULL} initial value, and then in the \code{intialize} method,
+#' all instances of the class. To avoid this, add an entry for that item with a
+#' \code{NULL} initial value, and then in the \code{intialize} method,
 #' instantiate the object and assign it.
 #'
 #' @section The \code{print} method:
 #'
-#' R6 object generators and R6 objects have a default \code{print} method
-#' to show them on the screen: they simply list the members and parameters
-#' (e.g. lock, portable, etc., see above) of the object.
+#'   R6 object generators and R6 objects have a default \code{print} method to
+#'   show them on the screen: they simply list the members and parameters (e.g.
+#'   lock, portable, etc., see above) of the object.
 #'
-#' The default \code{print} method of R6 objects can be redefined,
-#' by supplying a public \code{print} method. (\code{print} members that
-#' are not functions are ignored.) This method is automatically called
-#' whenever the object is printed, e.g. when the object's name is typed
-#' at the command prompt, or when \code{print(obj)} is called. It can also
-#' be called directly via \code{obj$print()}. All extra arguments from a
-#' \code{print(obj, ...)} call are passed on to the \code{obj$print(...)}
-#' method.
+#'   The default \code{print} method of R6 objects can be redefined, by
+#'   supplying a public \code{print} method. (\code{print} members that are not
+#'   functions are ignored.) This method is automatically called whenever the
+#'   object is printed, e.g. when the object's name is typed at the command
+#'   prompt, or when \code{print(obj)} is called. It can also be called directly
+#'   via \code{obj$print()}. All extra arguments from a \code{print(obj, ...)}
+#'   call are passed on to the \code{obj$print(...)} method.
+#'
+#' @section Portable and non-portable classes:
+#'
+#'   When R6 classes are portable (the default), they can be inherited across
+#'   packages without complication. However, when in portable mode, members must
+#'   be accessed with \code{self} and \code{private}, as in \code{self$x} and
+#'   \code{private$y}.
+#'
+#'   When used in non-portable mode, R6 classes behave more like reference
+#'   classes: inheritance across packages will not work well, and \code{self}
+#'   and \code{private} are not necessary for accessing fields.
 #'
 #' @section S3 details:
 #'
-#' Normally the public environment will have two classes: the one supplied in
-#' the \code{classname} argument, and \code{"R6Class"}. It is possible to
-#' get the public environment with no classes, by using \code{class = FALSE}.
-#' This will result in faster access speeds by avoiding class-based dispatch
-#' of \code{$}. The benefit is is negligible in most cases. With classes,
-#' accessing a member with \code{$} takes around 2 microseconds on a modern
-#' machine; without classes, it takes around 0.3 microseconds. This will make
-#' a noticeable difference in performance only when there are hundreds of
-#' thousands or more iterations.
+#'   Normally the public environment will have two classes: the one supplied in
+#'   the \code{classname} argument, and \code{"R6Class"}. It is possible to get
+#'   the public environment with no classes, by using \code{class = FALSE}. This
+#'   will result in faster access speeds by avoiding class-based dispatch of
+#'   \code{$}. The benefit is is negligible in most cases. With classes,
+#'   accessing a member with \code{$} takes around 2 microseconds on a modern
+#'   machine; without classes, it takes around 0.3 microseconds. This will make
+#'   a noticeable difference in performance only when there are hundreds of
+#'   thousands or more iterations.
 #'
-#' The primary difference in behavior when \code{class=FALSE} is that, without
-#' a class attribute, it won't be possible to use S3 methods with the objects,
-#' and so pretty printing (with \code{print.R6Class}) won't be used.
+#'   The primary difference in behavior when \code{class=FALSE} is that, without
+#'   a class attribute, it won't be possible to use S3 methods with the objects,
+#'   and so pretty printing (with \code{print.R6Class}) won't be used.
 #'
 #' @seealso \code{\link{makeActiveBinding}}
 #' @aliases R6
@@ -87,100 +70,195 @@
 #' @param private An optional list of private members, which can be functions
 #'   and non-functions.
 #' @param active An optional list of active binding functions.
-#' @param inherit A R6ClassGenerator object to inherit from; in other words,
-#'   a superclass.
-#' @param portable If \code{TRUE}, this class will work with inheritance across
-#'   different packages. Note that when this is enabled, fields and members must
-#'   be accessed with  \code{self$x} or \code{private$x}; they can't be
-#'   accessed with just \code{x}.
+#' @param inherit A R6ClassGenerator object to inherit from; in other words, a
+#'   superclass.
+#' @param portable If \code{TRUE} (the default), this class will work with
+#'   inheritance across different packages. Note that when this is enabled,
+#'   fields and members must be accessed with  \code{self$x} or
+#'   \code{private$x}; they can't be accessed with just \code{x}.
 #' @param parent_env An environment to use as the parent of newly-created
 #'   objects.
 #' @param class Should a class attribute be added to the public environment?
 #'   Default is \code{TRUE}.
-#' @param lock Should the environments of the generated objects be locked?
-#'   If lcoked, new members can't be added to the objects.
+#' @param lock Should the environments of the generated objects be locked? If
+#'   lcoked, new members can't be added to the objects.
 #' @examples
-#' # A simple class
-#' AnimalHerd <- R6Class("AnimalHerd",
+#' # A queue ---------------------------------------------------------
+#' Queue <- R6Class("Queue",
 #'   public = list(
-#'     animal = "buffalo",
-#'     count = 2,
-#'     view = function() {
-#'       paste(rep(animal, count), collapse = " ")
+#'     initialize = function(...) {
+#'       for (item in list(...)) {
+#'         self$add(item)
+#'       }
 #'     },
-#'     reproduce = function(mult = 2) {
-#'       count <<- count * mult
+#'     add = function(x) {
+#'       private$queue <- c(private$queue, list(x))
 #'       invisible(self)
+#'     },
+#'     remove = function() {
+#'       if (private$length() == 0) return(NULL)
+#'       # Can use private$queue for explicit access
+#'       head <- private$queue[[1]]
+#'       private$queue <- private$queue[-1]
+#'       head
 #'     }
+#'   ),
+#'   private = list(
+#'     queue = list(),
+#'     length = function() base::length(private$queue)
 #'   )
 #' )
 #'
-#' herd <- AnimalHerd$new()
-#' herd$view()
-#' # "buffalo buffalo"
+#' q <- Queue$new(5, 6, "foo")
 #'
-#' herd$reproduce()
-#' herd$view()
-#' # "buffalo buffalo buffalo buffalo"
+#' # Add and remove items
+#' q$add("something")
+#' q$add("another thing")
+#' q$add(17)
+#' q$remove()
+#' #> [1] 5
+#' q$remove()
+#' #> [1] 6
 #'
-#' # Methods that return self are chainable
-#' herd$reproduce()$view()
-#' "buffalo buffalo buffalo buffalo buffalo buffalo buffalo buffalo"
+#' # Private members can't be accessed directly
+#' q$queue
+#' #> NULL
+#' # q$length()
+#' #> Error: attempt to apply non-function
+#'
+#' # add() returns self, so it can be chained
+#' q$add(10)$add(11)$add(12)
+#'
+#' # remove() returns the value removed, so it’s not chainable
+#' q$remove()
+#' #> [1] "foo"
+#' q$remove()
+#' #> [1] "something"
+#' q$remove()
+#' #> [1] "another thing"
+#' q$remove()
+#' #> [1] 17
 #'
 #'
-#' # An example that demonstrates private members and active bindings
-#' MyClass <- R6Class("MyClass",
-#'   private = list(
-#'     x = 2,
-#'     # Private methods can access public members
-#'     prod_xy = function() x * y
-#'   ),
+#' # Active bindings -------------------------------------------------
+#' Numbers <- R6Class("Numbers",
 #'   public = list(
-#'     y = 3,
-#'     initialize = function(x, y) {
-#'       if (!missing(x)) private$x <- x
-#'       if (!missing(y)) self$y <- y
-#'     },
-#'     # Set a private variable
-#'     set_x = function(value) private$x <- value,
-#'     # Increment y, and return self
-#'     inc_y = function(n = 1) {
-#'       y <<- y + n
-#'       invisible(self)
-#'     },
-#'     # Access private and public members
-#'     sum_xy = function() x + y,
-#'     # Access a private variable and private method
-#'     sumprod = function() x + prod_xy()
+#'     x = 100
 #'   ),
 #'   active = list(
-#'     y2 = function(value) {
-#'       if (missing(value)) return(y * 2)
-#'       else self$y <- value/2
-#'     }
+#'     x2 = function(value) {
+#'       if (missing(value)) return(self$x * 2)
+#'       else self$x <- value/2
+#'     },
+#'     rand = function() rnorm(1)
 #'   )
 #' )
 #'
-#' z <- MyClass$new(5)
+#' n <- Numbers$new()
+#' n$x
+#' #> [1] 100
+#' n$x2
+#' #> [1] 200
+#' n$x2 <- 1000
+#' n$x
+#' #> [1] 500
 #'
-#' z$sum_xy()   # 8
-#' z$sumprod()  # 20
-#' # z$x <- 20  # Error - can't access private member directly
-#' z$set_x(20)
-#' z$sum_xy()   # 23
-#' z$y <- 100   # Can set public members directly
-#' z$sum_xy()   # 120
+#' # If the function takes no arguments, it’s not possible to use it with <-:
+#' n$rand
+#' #> [1] 0.2648
+#' n$rand
+#' #> [1] 2.171
+#' # n$rand <- 3
+#' #> Error: unused argument (quote(3))
 #'
-#' z$y2         # An active binding that returns y*2
-#' z$y2 <- 1000 # Setting an active binding
-#' z$y          # 500
 #'
-#' # Methods that return self allow chaining
-#' z$inc_y()$inc_y()
-#' z$y          # 502
+#' # Inheritance -----------------------------------------------------
+#' # Note that this isn't very efficient - it's just for illustrating inheritance.
+#' HistoryQueue <- R6Class("HistoryQueue",
+#'   inherit = Queue,
+#'   public = list(
+#'     show = function() {
+#'       cat("Next item is at index", private$head_idx + 1, "\n")
+#'       for (i in seq_along(private$queue)) {
+#'         cat(i, ": ", private$queue[[i]], "\n", sep = "")
+#'       }
+#'     },
+#'     remove = function() {
+#'       if (private$length() - private$head_idx == 0) return(NULL)
+#'       private$head_idx <<- private$head_idx + 1
+#'       private$queue[[private$head_idx]]
+#'     }
+#'   ),
+#'   private = list(
+#'     head_idx = 0
+#'   )
+#' )
 #'
-#' # Print, using the print.R6Class method:
-#' print(z)
+#' hq <- HistoryQueue$new(5, 6, "foo")
+#' hq$show()
+#' #> Next item is at index 1
+#' #> 1: 5
+#' #> 2: 6
+#' #> 3: foo
+#' hq$remove()
+#' #> [1] 5
+#' hq$show()
+#' #> Next item is at index 2
+#' #> 1: 5
+#' #> 2: 6
+#' #> 3: foo
+#' hq$remove()
+#' #> [1] 6
+#'
+#'
+#'
+#' # Calling superclass methods with super$ --------------------------
+#' CountingQueue <- R6Class("CountingQueue",
+#'   inherit = Queue,
+#'   public = list(
+#'     add = function(x) {
+#'       private$total <<- private$total + 1
+#'       super$add(x)
+#'     },
+#'     get_total = function() private$total
+#'   ),
+#'   private = list(
+#'     total = 0
+#'   )
+#' )
+#'
+#' cq <- CountingQueue$new("x", "y")
+#' cq$get_total()
+#' #> [1] 2
+#' cq$add("z")
+#' cq$remove()
+#' #> [1] "x"
+#' cq$remove()
+#' #> [1] "y"
+#' cq$get_total()
+#' #> [1] 3
+#'
+#'
+#' # Non-portable classes --------------------------------------------
+#' # By default, R6 classes are portable, which means they can be inherited
+#' # across different packages. Portable classes require using self$ and
+#' # private$ to access members.
+#' # When used in non-portable mode, members can be accessed without self$,
+#' # and assignments can be made with <<-.
+#'
+#' NP <- R6Class("NP",
+#'   portable = FALSE,
+#'   public = list(
+#'     x = NA,
+#'     getx = function() x,
+#'     setx = function(value) x <<- value
+#'   )
+#' )
+#'
+#' np <- NP$new()
+#' np$setx(10)
+#' np$getx()
+#' #> [1] 10
 R6Class <- function(classname = NULL, public = list(),
                     private = NULL, active = NULL,
                     inherit = NULL, lock = TRUE, class = TRUE,
