@@ -1,5 +1,5 @@
 ---
-title: "Portable R6 classes"
+title: "Portable and non-portable R6 classes"
 output:
   html_document:
     theme: null
@@ -22,7 +22,7 @@ One limitation to R's reference classes is that class inheritance across package
 
 Suppose you have ClassA in pkgA, and ClassB in pkgB which inherits from ClassA. ClassA has a method `foo` which calls a non-exported function `fun` in pkgA. If ClassB inherits `foo`, it will try to call `fun` -- but since ClassB objects are created in pkgB namespace (which is an environment) instead of the pkgA namespace, it won't be able to find `fun`.
 
-With R6, something similar happens, when the default `portable=FALSE` option is used:
+With R6, something similar happens, when the `portable=FALSE` option is used:
 
 ```{r}
 library(R6)
@@ -33,7 +33,7 @@ pkgB <- new.env()
 pkgA$fun <- function() 10
 
 ClassA <- R6Class("ClassA",
-  portable = FALSE,  # This is the default
+  portable = FALSE,
   public = list(
     foo = function() fun()
   ),
@@ -41,6 +41,7 @@ ClassA <- R6Class("ClassA",
 )
 
 ClassB <- R6Class("ClassB",
+  portable = FALSE,
   inherit = ClassA,
   parent_env = pkgB
 )
@@ -64,7 +65,7 @@ b$foo()
 
 ## Portable R6
 
-R6 does support inheritance across different packages, with the `portable=TRUE` option. In this example, we'll again simulate different packages by creating separate parent environments for the classes.
+R6 does support inheritance across different packages, with the default `portable=TRUE` option. In this example, we'll again simulate different packages by creating separate parent environments for the classes.
 
 ```{r}
 pkgA <- new.env()
@@ -75,7 +76,7 @@ pkgA$fun <- function() {
 }
 
 ClassA <- R6Class("ClassA",
-  portable = TRUE,
+  portable = TRUE,  # The default
   public = list(
     foo = function() fun()
   ),
@@ -124,9 +125,9 @@ cc$foo()
 
 ## Using `self`
 
-One important difference between non-portable and portable classes is that with non-portable classes, it's possible to access members with just the name of the member, and with portable classes, member access always requires using `self$` or `private$`. 
+One important difference between non-portable and portable classes is that with non-portable classes, it's possible to access members with just the name of the member, and with portable classes, member access always requires using `self$` or `private$`. This is a consequence of the inheritance implementation.
 
-Here's an example of a non-portable class with two methods: `sety`, which sets the private field `y`, and `getxy`, which returns a vector with teh values of fields `x` and `y`:
+Here's an example of a non-portable class with two methods: `sety`, which sets the private field `y` using the `<<-` operator, and `getxy`, which returns a vector with teh values of fields `x` and `y`:
 
 ```{r}
 NP <- R6Class("NP",
@@ -203,4 +204,4 @@ There is a small performance penalty for using `self$x` as opposed to `x`. In mo
 In summary:
 
 * Portable classes allow inheritance across different packages.
-* Portable classes always require the use of `self` or `private` to access members.
+* Portable classes always require the use of `self` or `private` to access members. This can incur a small performance penalty, since using `self$x` is slower than just `x`.
