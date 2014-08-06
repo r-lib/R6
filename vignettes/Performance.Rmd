@@ -392,7 +392,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_point(size = 2) +
   scale_x_continuous(limits = c(0, max(speed$median) * 1.05), expand = c(0, 0)) +
   my_theme +
-  ggtitle("Median time to instantiate object (µs)")
+  ggtitle("Median time to instantiate object (\u0b5s)")
 
 p
 ```
@@ -443,7 +443,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_point(size = 2) +
   scale_x_continuous(limits = c(0, max(speed$median) * 1.05), expand = c(0, 0)) +
   my_theme +
-  ggtitle("Median time to access field (µs)")
+  ggtitle("Median time to access field (\u0b5s)")
 
 p
 ```
@@ -481,7 +481,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_point(size = 2) +
   scale_x_continuous(limits = c(0, max(speed$median) * 1.05), expand = c(0, 0)) +
   my_theme +
-  ggtitle("Median time to set field (µs)")
+  ggtitle("Median time to set field (\u0b5s)")
 
 p
 ```
@@ -517,7 +517,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_segment(aes(yend = name), xend = 0, colour = "gray80") +
   geom_point(size = 2) +
   my_theme +
-  ggtitle("Median time to call a method that accesses a field (µs)")
+  ggtitle("Median time to call a method that accesses a field (\u0b5s)")
 
 p
 ```
@@ -596,7 +596,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_segment(aes(yend = name), xend = 0, colour = "gray80") +
   geom_point(size = 2) +
   my_theme +
-  ggtitle("Assignment to a field using self vs <<- (µs)")
+  ggtitle("Assignment to a field using self vs <<- (\u0b5s)")
 
 p
 ```
