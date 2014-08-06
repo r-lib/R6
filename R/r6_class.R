@@ -184,7 +184,7 @@
 R6Class <- function(classname = NULL, public = list(),
                     private = NULL, active = NULL,
                     inherit = NULL, lock = TRUE, class = TRUE,
-                    portable = FALSE,
+                    portable = TRUE,
                     parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
