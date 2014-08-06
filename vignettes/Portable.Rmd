@@ -20,12 +20,15 @@ One limitation to R's reference classes is that class inheritance across package
 
 ## The problem
 
-Suppose you have ClassA in pkgA, and ClassB in pkgB which inherits from ClassA. ClassA has a method `foo` which calls a non-exported function `fun` in pkgA. If ClassB inherits `foo`, it will try to call `fun` -- but since ClassB objects are created in pkgB namespace (which is an environment) instead of the pkgA namespace, it won't be able to find `fun`.
+Here is an example of the cross-pacakge inheritance problem with reference classes: Suppose you have ClassA in pkgA, and ClassB in pkgB, which inherits from ClassA. ClassA has a method `foo` which calls a non-exported function `fun` in pkgA.
 
-With R6, something similar happens, when the `portable=FALSE` option is used:
+If ClassB inherits `foo`, it will try to call `fun` -- but since ClassB objects are created in pkgB namespace (which is an environment) instead of the pkgA namespace, it won't be able to find `fun`.
+
+Something similar happens with R6 when the `portable=FALSE` option is used. For example:
 
 ```{r}
 library(R6)
+# Simulate packages by creating environments
 pkgA <- new.env()
 pkgB <- new.env()
 
@@ -40,6 +43,7 @@ ClassA <- R6Class("ClassA",
   parent_env = pkgA
 )
 
+# ClassB inherits from ClassA
 ClassB <- R6Class("ClassB",
   portable = FALSE,
   inherit = ClassA,
@@ -65,7 +69,7 @@ b$foo()
 
 ## Portable R6
 
-R6 does support inheritance across different packages, with the default `portable=TRUE` option. In this example, we'll again simulate different packages by creating separate parent environments for the classes.
+R6 supports inheritance across different packages, with the default `portable=TRUE` option. In this example, we'll again simulate different packages by creating separate parent environments for the classes.
 
 ```{r}
 pkgA <- new.env()
@@ -127,7 +131,7 @@ cc$foo()
 
 One important difference between non-portable and portable classes is that with non-portable classes, it's possible to access members with just the name of the member, and with portable classes, member access always requires using `self$` or `private$`. This is a consequence of the inheritance implementation.
 
-Here's an example of a non-portable class with two methods: `sety`, which sets the private field `y` using the `<<-` operator, and `getxy`, which returns a vector with teh values of fields `x` and `y`:
+Here's an example of a non-portable class with two methods: `sety`, which sets the private field `y` using the `<<-` operator, and `getxy`, which returns a vector with the values of fields `x` and `y`:
 
 ```{r}
 NP <- R6Class("NP",

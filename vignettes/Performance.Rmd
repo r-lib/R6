@@ -32,6 +32,8 @@ assignInNamespace("print.microbenchmark", print_microbenchmark,
 
 This document compares the memory costs and speed of R's reference classes against R6 classes and simple environments. For must uses, R6 and reference classes have comparable features, but as we'll see, R6 classes are faster and lighter weight.
 
+This document tests reference classes against R6 classes (in many variations), as well as against very simple reference objects: environments created by closures.
+
 *****
 
 First we'll load some packages which will be used below:
@@ -62,7 +64,7 @@ my_theme <- theme_bw(base_size = 10) +
 Class definitions
 =================
 
-We'll start by defining a number of classes or class-like entities, using reference classes, R6 classes, and simple environments that are created directly by functions. These classes will be used for the speed and memory tests that follow.
+We'll start by defining a number of classes or class-like entities, using reference classes, R6 classes, and simple environments that are created directly by functions. These classes will be used for the speed and memory tests that follow. This is a lot of boring code, so you may want to skip ahead to the results.
 
 All of these classes have the same basic characteristics:
 
@@ -517,7 +519,7 @@ p <- ggplot(speed, aes(y = name, x = median)) +
   geom_segment(aes(yend = name), xend = 0, colour = "gray80") +
   geom_point(size = 2) +
   my_theme +
-  ggtitle("Median time to call a method that accesses a field (\u0b5s)")
+  ggtitle("Median time to call method that accesses field (\u0b5s)")
 
 p
 ```
@@ -677,9 +679,10 @@ The `[[` operator is slightly faster than `$`, probably because it doesn't need 
 Wrap-up
 =======
 
-R6 objects take less memory and are significantly faster than R's reference class objects, and they also have some options that provide for even more speed. Reference classes do provide additional features, such as type checking of fields, but they also have other drawbacks --- notably, they are built using S4 classes and so they bring with them issues with using S4.
+R6 objects take less memory and are significantly faster than R's reference class objects, and they also have some options that provide for even more speed.
 
-Another major advantage of R6 objects is that they are much simpler than R's reference class objects: they are essentially just environments.
+In these tests, the biggest speedup for R6 classes comes from not using a class attribute; this speeds up the use of `$`. Non-portable R6 classes can also access fields without `$` at all, which provides another modest speed boost. In most cases, these speed increases are negligible -- they are on the order of microseconds and will be noticeable only when tens or even hundreds of thousands of class member accesses are performed.
+
 
 *****
 
