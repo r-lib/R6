@@ -1,7 +1,7 @@
 # R6 1.0.1.99
 
-* Added `portable` option, which allows inheritance across different package
-  namespaces.
+* [BREAKING CHANGE] Added `portable` option, which allows inheritance across
+  different package namespaces, and made it the default.
 
 * Added trailing newline when printing R6 objects. (Thanks to Gabor Csardi)
 
