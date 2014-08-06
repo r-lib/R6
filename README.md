@@ -29,7 +29,7 @@ To install this package in R:
 To install the development version (requires the devtools package):
 
 ```R
-devtools::install_github('wch/R6')
+devtools::install_github('wch/R6', build_vignettes = FALSE)
 ```
 
 
