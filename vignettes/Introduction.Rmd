@@ -35,7 +35,7 @@ The name R5 was also a code-name used for a different object system started by S
 
 ### Basics
 
-Here's how to create a simple R6 class. The `public` argument is a list of items, which can be functions and non-functions. Functions will be used as class methods.
+Here's how to create a simple R6 class. The `public` argument is a list of items, which can be functions and fields (non-functions). Functions will be used as methods.
 
 ```{r}
 library(R6)
@@ -68,7 +68,7 @@ ann
 
 The `$new()` method creates the object and calls the `initialize()` method, if it exists. 
 
-Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`.
+Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`. Note that by default, `self` is required to access members, although for non-portable classes which we'll see later, it is optional.
 
 Once the object is instantiated, you can access values and methods with `$`:
 
@@ -113,6 +113,8 @@ Queue <- R6Class("Queue",
 
 q <- Queue$new(5, 6, "foo")
 ```
+
+Whereas public members are accessed with `self`, like `self$add()`, private members are accessed with `private`, like `private$queue`.
 
 The public members can be accessed as usual:
 
