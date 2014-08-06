@@ -151,7 +151,7 @@ q$queue
 # add() returns self, so it can be chained
 q$add(10)$add(11)$add(12)
 
-# remove() returns the value removed, so it’s not chainable
+# remove() returns the value removed, so it's not chainable
 q$remove()
 #> [1] "foo"
 q$remove()
@@ -185,7 +185,7 @@ n$x2 <- 1000
 n$x
 #> [1] 500
 
-# If the function takes no arguments, it’s not possible to use it with <-:
+# If the function takes no arguments, it's not possible to use it with <-:
 n$rand
 #> [1] 0.2648
 n$rand
