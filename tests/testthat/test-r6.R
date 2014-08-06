@@ -2,6 +2,7 @@ context("R6")
 
 test_that("initialization", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(
       x = 1,
       initialize = function(x, y) {
@@ -20,19 +21,20 @@ test_that("initialization", {
   expect_identical(A$gety(), 3)
 
   # No initialize method: throw error if arguments are passed in
-  AC <- R6Class("AC", public = list(x = 1))
+  AC <- R6Class("AC", portable = FALSE, public = list(x = 1))
   expect_error(AC$new(3))
 })
 
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
-  AC <- R6Class("AC")
+  AC <- R6Class("AC", portable = FALSE)
   expect_that(AC$new(), not(throws_error()))
 })
 
 
 test_that("Private members are private, and self/private environments", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(
       x = 1,
       gety = function() private$y,
@@ -73,6 +75,7 @@ test_that("Private members are private, and self/private environments", {
 
 test_that("Active bindings work", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(
       x = 5
     ),
@@ -96,6 +99,7 @@ test_that("Active bindings work", {
 
 test_that("Locking works", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(x = 1),
     private = list(y = 2),
     lock = TRUE
@@ -109,6 +113,7 @@ test_that("Locking works", {
 
   # Not locked
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(x = 1),
     private = list(y = 2),
     lock = FALSE
@@ -148,6 +153,7 @@ test_that("Validity checks on creation", {
 
 test_that("Inheritance", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(
       x = 0,
       z = 0,
@@ -171,6 +177,7 @@ test_that("Inheritance", {
     )
   )
   BC <- R6Class("BC",
+    portable = FALSE,
     inherit = AC,
     public = list(
       y = 0,
@@ -221,6 +228,7 @@ test_that("Inheritance", {
 
 test_that("Inheritance: superclass methods", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(
       x = 0,
       initialize = function() {
@@ -249,6 +257,7 @@ test_that("Inheritance: superclass methods", {
     )
   )
   BC <- R6Class("BC",
+    portable = FALSE,
     inherit = AC,
     public = list(
       inc_x = function() x <<- x + 2,
@@ -284,6 +293,7 @@ test_that("Inheritance: superclass methods", {
 
   # Multi-level inheritance
   CC <- R6Class("CC",
+    portable = FALSE,
     inherit = BC,
     public = list(
       inc_x = function() x <<- x + 3,
@@ -318,17 +328,20 @@ test_that("Inheritance: superclass methods", {
 
 test_that("Inheritance hierarchy for super$ methods", {
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 
   BC <- R6Class("BC",
+    portable = FALSE,
     public = list(n = function() super$n() + 10),
     inherit = AC
   )
   expect_identical(BC$new()$n(), 11)
 
   CC <- R6Class("CC",
+    portable = FALSE,
     inherit = BC
   )
   # This should equal 11 because it inherits BC's n(), which adds 1 to AC's n()
@@ -336,16 +349,19 @@ test_that("Inheritance hierarchy for super$ methods", {
 
   # Skipping one level of inheritance ---------------------------------
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 
   BC <- R6Class("BC",
+    portable = FALSE,
     inherit = AC
   )
   expect_identical(BC$new()$n(), 1)
 
   CC <- R6Class("CC",
+    portable = FALSE,
     public = list(n = function() super$n() + 100),
     inherit = BC
   )
@@ -353,6 +369,7 @@ test_that("Inheritance hierarchy for super$ methods", {
   expect_identical(CC$new()$n(), 101)
 
   DC <- R6Class("DC",
+    portable = FALSE,
     inherit = CC
   )
   # This should equal 101 because DC inherits CC's n(), and BC inherits AC's n()
@@ -360,14 +377,15 @@ test_that("Inheritance hierarchy for super$ methods", {
 
   # Skipping two level of inheritance ---------------------------------
   AC <- R6Class("AC",
+    portable = FALSE,
     public = list(n = function() 0 + 1)
   )
   expect_identical(AC$new()$n(), 1)
 
-  BC <- R6Class("BC", inherit = AC)
+  BC <- R6Class("BC", portable = FALSE, inherit = AC)
   expect_identical(BC$new()$n(), 1)
 
-  CC <- R6Class("CC", inherit = BC)
+  CC <- R6Class("CC", portable = FALSE, inherit = BC)
   expect_identical(CC$new()$n(), 1)
 })
 

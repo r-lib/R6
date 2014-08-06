@@ -26,9 +26,11 @@ Unlike many objects in R, instances (objects) of R6 classes have reference seman
 
 * public and private methods
 * active bindings
-* inheritance (superclasses)
+* inheritance (superclasses) which works across packages
 
 Why the name R6? When R's reference classes were introduced, some users, following the names of R's existing class systems S3 and S4, called the new class system R5 in jest. Although reference classes are not actually called R5, the name of this package and its classes takes inspiration from that name.
+
+The name R5 was also a code-name used for a different object system started by Simon Urbanek, meant to solve some issues with S4 relating to syntax and performance. However, the R5 branch was shelved after a little development, and it was never released.
 
 
 ### Basics
@@ -45,13 +47,13 @@ Person <- R6Class("Person",
     initialize = function(name, hair) {
       if (!missing(name)) self$name <- name
       if (!missing(hair)) self$hair <- hair
-      greet()
+      self$greet()
     },
     set_hair = function(val) {
-      hair <<- val
+      self$hair <- val
     },
     greet = function() {
-      cat(paste0("Hello, my name is ", name, ".\n"))
+      cat(paste0("Hello, my name is ", self$name, ".\n"))
     }
   )
 )
@@ -66,7 +68,7 @@ ann
 
 The `$new()` method creates the object and calls the `initialize()` method, if it exists. 
 
-Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`. Assignment can also be done with `<<-`, as in `x <<- y` -- but in this case, the object member's name must be different from the names of variables in the method.
+Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) can be referred to with `self$x`, and assignment can be done with `self$x <- y`.
 
 Once the object is instantiated, you can access values and methods with `$`:
 
@@ -88,15 +90,15 @@ Queue <- R6Class("Queue",
   public = list(
     initialize = function(...) {
       for (item in list(...)) {
-        add(item)
+        self$add(item)
       }
     },
     add = function(x) {
-      queue <<- c(queue, list(x))
+      private$queue <- c(private$queue, list(x))
       invisible(self)
     },
     remove = function() {
-      if (length() == 0) return(NULL)
+      if (private$length() == 0) return(NULL)
       # Can use private$queue for explicit access
       head <- private$queue[[1]]
       private$queue <- private$queue[-1]
@@ -105,7 +107,7 @@ Queue <- R6Class("Queue",
   ),
   private = list(
     queue = list(),
-    length = function() base::length(queue)
+    length = function() base::length(private$queue)
   )
 )
 
@@ -130,23 +132,9 @@ q$queue
 #> NULL
 q$length()
 #> Error: attempt to apply non-function
-
-# Actually, there is a way:
-q$private$queue
-#> [[1]]
-#> [1] "foo"
-#> 
-#> [[2]]
-#> [1] "something"
-#> 
-#> [[3]]
-#> [1] "another thing"
-#> 
-#> [[4]]
-#> [1] 17
 ```
 
-Unless there's a compelling reason otherwise, methods should return `self` because it makes them chainable. For example, the `add()` method returns `self` so you can chain them together:
+Unless there is a compelling reason otherwise, methods should return `self` (invisibly) because it makes them chainable. For example, the `add()` method returns `self` so you can chain them together:
 
 ```{r}
 q$add(10)$add(11)$add(12)
@@ -174,7 +162,7 @@ Numbers <- R6Class("Numbers",
   ),
   active = list(
     x2 = function(value) {
-      if (missing(value)) return(x * 2)
+      if (missing(value)) return(self$x * 2)
       else self$x <- value/2
     },
     rand = function() rnorm(1)
@@ -202,11 +190,11 @@ If the function takes no arguments, it's not possible to use it with `<-`:
 
 ```{r eval=FALSE}
 n$rand
-## [1] 0.2648
+#> [1] 0.2648
 n$rand
-## [1] 2.171
+#> [1] 2.171
 n$rand <- 3
-## Error: unused argument (quote(3))
+#> Error: unused argument (quote(3))
 ```
 
 Implementation note: Active bindings are bound in the public environment. The enclosing environment for these functions is also the public environment.
@@ -223,15 +211,15 @@ HistoryQueue <- R6Class("HistoryQueue",
   inherit = Queue,
   public = list(
     show = function() {
-      cat("Next item is at index", head_idx + 1, "\n")
-      for (i in seq_along(queue)) {
-        cat(i, ": ", queue[[i]], "\n", sep = "")
+      cat("Next item is at index", private$head_idx + 1, "\n")
+      for (i in seq_along(private$queue)) {
+        cat(i, ": ", private$queue[[i]], "\n", sep = "")
       }
     },
     remove = function() {
-      if (length() - head_idx == 0) return(NULL)
-      head_idx <<- head_idx + 1
-      queue[[head_idx]]
+      if (private$length() - private$head_idx == 0) return(NULL)
+      private$head_idx <<- private$head_idx + 1
+      private$queue[[private$head_idx]]
     }
   ),
   private = list(
@@ -253,10 +241,10 @@ CountingQueue <- R6Class("CountingQueue",
   inherit = Queue,
   public = list(
     add = function(x) {
-      total <<- total + 1
+      private$total <<- private$total + 1
       super$add(x)
     },
-    get_total = function() total
+    get_total = function() private$total
   ),
   private = list(
     total = 0
@@ -318,6 +306,70 @@ n1$e$x
 ```
 
 
+## Portable and non-portable classes
+
+In R6 version 1.0.1, the default was to create **non-portable** classes. In subsequent versions, the default is to create **portable** classes. The two most noticeable differences are that portable classes:
+
+* Support inheritance across different packages. Non-portable classes do not do this very well.
+* Always require the use of `self` and `private` to access members, as in `self$x` and `private$y`. Non-portable classes can access these members with just `x` and `y`, and do assignment to these members with the `<<-` operator.
+
+The implementation of the first point is such that it makes the second point necessary.
+
+### Using `self` and `<<-`
+
+With reference classes, you can access the field without `self`, and assign to fields using `<<-`. For example:
+
+```{r}
+RC <- setRefClass("RC",
+  fields = list(x = 'ANY'),
+  methods = list(
+    getx = function() x,
+    setx = function(value) x <<- value
+  )
+)
+
+rc <- RC$new()
+rc$setx(10)
+rc$getx()
+```
+
+The same is true for non-portable R6 classes:
+
+```{r}
+NP <- R6Class("NP",
+  portable = FALSE,
+  public = list(
+    x = NA,
+    getx = function() x,
+    setx = function(value) x <<- value
+  )
+)
+
+np <- NP$new()
+np$setx(10)
+np$getx()
+```
+
+But for portable R6 classes (this is the default), you must use `self` and/or `private`, and `<<-` assignment doesn't work -- unless you use `self`, of course:
+
+
+```{r}
+P <- R6Class("P",
+  portable = TRUE,  # This is default
+  public = list(
+    x = NA,
+    getx = function() self$x,
+    setx = function(value) self$x <- value
+  )
+)
+
+p <- P$new()
+p$setx(10)
+p$getx()
+```
+
+For more information, see the Portable vignette.
+
 ### Other topics
 
 #### Printing R6 objects to the screen
@@ -330,7 +382,7 @@ PrettyCountingQueue <- R6Class("PrettyCountingQueue",
   inherit = CountingQueue,
   public = list(
     print = function(...) {
-      cat("<PrettyCountingQueue> of ", get_total(), " elements\n", sep="")
+      cat("<PrettyCountingQueue> of ", self$get_total(), " elements\n", sep = "")
       invisible(self)
     }
   )
@@ -344,4 +396,4 @@ pq
 
 ### Summary
 
-R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster.
+R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster, and they allow inheritance across packages.
