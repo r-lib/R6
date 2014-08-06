@@ -154,30 +154,6 @@ test_that("Locking works", {
 })
 
 
-# test_that("Validity checks on creation", {
-#   fun <- function() 1  # Dummy function for tests
-
-#   # All arguments must be named
-#   expect_error(R6Class("AC", public = list(1)))
-#   expect_error(R6Class("AC", private = list(1)))
-#   expect_error(R6Class("AC", active = list(fun)))
-
-#   # Names can't be duplicated
-#   expect_error(R6Class("AC", public = list(a=1, a=2)))
-#   expect_error(R6Class("AC", public = list(a=1), private = list(a=1)))
-#   expect_error(R6Class("AC", private = list(a=1), active = list(a=fun)))
-
-#   # Reserved names
-#   expect_error(R6Class("AC", public = list(self = 1)))
-#   expect_error(R6Class("AC", private = list(private = 1)))
-#   expect_error(R6Class("AC", active = list(super = 1)))
-
-#   # `initialize` only allowed in public
-#   expect_error(R6Class("AC", private = list(initialize = fun)))
-#   expect_error(R6Class("AC", active = list(initialize = fun)))
-# })
-
-
 test_that("Inheritance", {
   AC <- R6Class("AC",
     portable = TRUE,
