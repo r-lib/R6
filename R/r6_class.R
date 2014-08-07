@@ -287,16 +287,19 @@ R6Class <- function(classname = NULL, public = list(),
   public_methods <- get_functions(public)
   private_methods <- get_functions(private)
 
+  # Capture the unevaluated expression for the superclass; when evaluated in
+  # the parent_env, it should return the superclass object.
+  inherit <- substitute(inherit)
 
-  if (class) {
-    classes <- c(classname, get_superclassnames(inherit), "R6")
-  } else {
-    classes <- NULL
+  # This function returns the superclass object
+  get_inherit <- function() {
+    # The baseenv() arg speeds up eval a tiny bit
+    eval(inherit, parent_env, baseenv())
   }
 
-  newfun <- R6_newfun(classes, public_fields, public_methods,
+  newfun <- R6_newfun(classname, public_fields, public_methods,
                       private_fields, private_methods, active,
-                      inherit, lock, portable, parent_env)
+                      get_inherit, lock, portable, parent_env, class)
 
   structure(
     list(
@@ -308,6 +311,7 @@ R6Class <- function(classname = NULL, public = list(),
       private_methods = private_methods,
       active = active,
       inherit = inherit,
+      get_inherit = get_inherit,
       portable = portable,
       parent_env = parent_env,
       lock = lock
@@ -318,11 +322,14 @@ R6Class <- function(classname = NULL, public = list(),
 
 
 # Create the $new function for a R6ClassGenerator
-R6_newfun <- function(classes, public_fields, public_methods,
+R6_newfun <- function(classname, public_fields, public_methods,
                       private_fields, private_methods, active,
-                      inherit, lock, portable, parent_env) {
+                      get_inherit, lock, portable, parent_env, class) {
 
   function(...) {
+    # Get superclass object -------------------------------------------
+    inherit <- get_inherit()
+
     # Some checks on superclass ---------------------------------------
     if (!is.null(inherit)) {
       if (!inherits(inherit, "R6ClassGenerator"))
@@ -330,6 +337,12 @@ R6_newfun <- function(classes, public_fields, public_methods,
 
       if (!identical(portable, inherit$portable))
         stop("Sub and superclass must both be portable or non-portable.")
+    }
+
+    if (class) {
+      classes <- c(classname, get_superclassnames(inherit), "R6")
+    } else {
+      classes <- NULL
     }
 
     # Precompute some things ------------------------------------------
@@ -403,7 +416,7 @@ R6_newfun <- function(classes, public_fields, public_methods,
       # Merge fields over superclass fields, recursively --------------
       recursive_merge <- function(obj, which) {
         if (is.null(obj)) return(NULL)
-        merge_vectors(recursive_merge(obj$inherit, which), obj[[which]])
+        merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
       }
       public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
                                       public_fields)
@@ -492,8 +505,9 @@ create_super_env <- function(inherit, public_bind_env, private_bind_env = NULL,
   active          <- assign_func_envs(active, super_enclos_env)
 
   # Recurse if there are more superclasses ----------------------------
-  if (!is.null(inherit$inherit)) {
-    super_struct <- create_super_env(inherit$inherit, public_bind_env,
+  inherit_inherit <- inherit$get_inherit()
+  if (!is.null(inherit_inherit)) {
+    super_struct <- create_super_env(inherit_inherit, public_bind_env,
                                      private_bind_env, portable)
     super_enclos_env$super <- super_struct$bind_env
 
