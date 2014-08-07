@@ -297,6 +297,9 @@ R6Class <- function(classname = NULL, public = list(),
     eval(inherit, parent_env, baseenv())
   }
 
+  if (!is.null(inherit) && !inherits(get_inherit(), "R6ClassGenerator"))
+    stop("`inherit` must be a R6ClassGenerator.")
+
   newfun <- R6_newfun(classname, public_fields, public_methods,
                       private_fields, private_methods, active,
                       get_inherit, lock, portable, parent_env, class)
