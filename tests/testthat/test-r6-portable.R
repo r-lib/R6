@@ -520,6 +520,7 @@ test_that("Inheritance hierarchy for super$ methods", {
   expect_identical(CC$new()$n(), 1)
 })
 
+
 test_that("sub and superclass must both be portable or non-portable", {
   AC <- R6Class("AC", portable = FALSE, public = list(x=1))
   BC <- R6Class("BC", portable = TRUE, inherit = AC)
@@ -528,4 +529,22 @@ test_that("sub and superclass must both be portable or non-portable", {
   AC <- R6Class("AC", portable = TRUE, public = list(x=1))
   BC <- R6Class("BC", portable = FALSE, inherit = AC)
   expect_error(BC$new())
+})
+
+
+test_that("Inheritance is dynamic", {
+  AC <- R6Class("AC",
+    public = list(x = 1, initialize = function() self$x <<- self$x + 10)
+  )
+  BC <- R6Class("BC", inherit = AC)
+  expect_identical(BC$new()$x, 11)
+
+  AC <- R6Class("AC",
+    public = list(x = 2, initialize = function() self$x <<- self$x + 20)
+  )
+  expect_identical(BC$new()$x, 22)
+
+  # BC doesn't contain AC, and it has less stuff in it, so it should be smaller
+  # than AC.
+  expect_true(object.size(BC) < object.size(AC))
 })
