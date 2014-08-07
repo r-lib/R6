@@ -522,8 +522,10 @@ test_that("Inheritance hierarchy for super$ methods", {
 
 test_that("sub and superclass must both be portable or non-portable", {
   AC <- R6Class("AC", portable = FALSE, public = list(x=1))
-  expect_error(R6Class("BC", portable = TRUE, inherit = AC))
+  BC <- R6Class("BC", portable = TRUE, inherit = AC)
+  expect_error(BC$new())
 
   AC <- R6Class("AC", portable = TRUE, public = list(x=1))
-  expect_error(R6Class("BC", portable = FALSE, inherit = AC))
+  BC <- R6Class("BC", portable = FALSE, inherit = AC)
+  expect_error(BC$new())
 })
