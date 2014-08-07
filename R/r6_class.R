@@ -288,14 +288,6 @@ R6Class <- function(classname = NULL, public = list(),
   private_methods <- get_functions(private)
 
 
-  if (!is.null(inherit)) {
-    if (!inherits(inherit, "R6ClassGenerator"))
-      stop("`inherit` must be a R6ClassGenerator.")
-
-    if (!identical(portable, inherit$portable))
-      stop("Sub and superclass must both be portable or non-portable.")
-  }
-
   if (class) {
     classes <- c(classname, get_superclassnames(inherit), "R6")
   } else {
@@ -331,6 +323,15 @@ R6_newfun <- function(classes, public_fields, public_methods,
                       inherit, lock, portable, parent_env) {
 
   function(...) {
+    # Some checks on superclass ---------------------------------------
+    if (!is.null(inherit)) {
+      if (!inherits(inherit, "R6ClassGenerator"))
+        stop("`inherit` must be a R6ClassGenerator.")
+
+      if (!identical(portable, inherit$portable))
+        stop("Sub and superclass must both be portable or non-portable.")
+    }
+
     # Precompute some things ------------------------------------------
     has_private <- !(is.null(private_fields) && is.null(private_methods))
 
