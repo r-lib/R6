@@ -9,7 +9,8 @@ R6Class(classname = NULL, public = list(), private = NULL,
   portable = TRUE, parent_env = parent.frame())
 }
 \arguments{
-\item{classname}{Name of the class.}
+\item{classname}{Name of the class. The class name is useful primarily for S3
+method dispatch.}
 
 \item{public}{A list of public members, which can be functions (methods) and
 non-functions (fields).}
@@ -30,8 +31,9 @@ fields and members must be accessed with  \code{self$x} or
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
 
-\item{class}{Should a class attribute be added to the public environment?
-Default is \code{TRUE}.}
+\item{class}{Should a class attribute be added to the object? Default is
+\code{TRUE}. If \code{FALSE}, the objects will simply look like
+environments, which is what they are.}
 
 \item{lock}{Should the environments of the generated objects be locked? If
 lcoked, new members can't be added to the objects.}
@@ -43,6 +45,12 @@ support public and private members, as well as inheritance across different
 packages.
 }
 \details{
+An R6 object consists of a public environment, and may also contain a private
+environment, as well as environments for superclasses. In one sense, the
+object and the public environment are the same; a reference to the object is
+identical to a reference to the public environment. But in another sense, the
+object also consists of the fields, methods, private environment and so on.
+
 The \code{active} argument is a list of active binding functions. These
 functions take one argument. They look like regular variables, but when
 accessed, a function is called with an optional argument. For example, if
@@ -50,7 +58,7 @@ accessed, a function is called with an optional argument. For example, if
 calls the \code{x2()} function that was in the \code{active} list, with no
 arguments. However, if a value is assigned to it, as in \code{obj$x2 <- 50},
 then the function is called with the right-side value as its argument, as in
-\code{x2(50)}.
+\code{x2(50)}. See \code{\link{makeActiveBinding}} for more information.
 
 If the public or private lists contain any items that have reference
 semantics (for example, an environment), those items will be shared across
@@ -91,18 +99,17 @@ instantiate the object and assign it.
 
 
   Normally the public environment will have two classes: the one supplied in
-  the \code{classname} argument, and \code{"R6Class"}. It is possible to get
-  the public environment with no classes, by using \code{class = FALSE}. This
-  will result in faster access speeds by avoiding class-based dispatch of
-  \code{$}. The benefit is is negligible in most cases. With classes,
-  accessing a member with \code{$} takes around 2 microseconds on a modern
-  machine; without classes, it takes around 0.3 microseconds. This will make
-  a noticeable difference in performance only when there are hundreds of
-  thousands or more iterations.
+  the \code{classname} argument, and \code{"R6"}. It is possible to get the
+  public environment with no classes, by using \code{class=FALSE}. This will
+  result in faster access speeds by avoiding class-based dispatch of
+  \code{$}. The benefit is is negligible in most cases.
+
+  If a class is a subclass of another, the object will have as its classes
+  the \code{classname}, the superclass's \code{classname}, and \code{"R6"}
 
   The primary difference in behavior when \code{class=FALSE} is that, without
-  a class attribute, it won't be possible to use S3 methods with the objects,
-  and so pretty printing (with \code{print.R6Class}) won't be used.
+  a class attribute, it won't be possible to use S3 methods with the objects.
+  So, for example, pretty printing (with \code{print.R6Class}) won't be used.
 }
 \examples{
 # A queue ---------------------------------------------------------
@@ -281,8 +288,5 @@ np <- NP$new()
 np$setx(10)
 np$getx()
 #> [1] 10
-}
-\seealso{
-\code{\link{makeActiveBinding}}
 }
 
