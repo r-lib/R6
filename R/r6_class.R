@@ -337,6 +337,16 @@ R6_newfun <- function(classname, public_fields, public_methods,
 
       if (!identical(portable, inherit$portable))
         stop("Sub and superclass must both be portable or non-portable.")
+
+      # Merge fields over superclass fields, recursively --------------
+      recursive_merge <- function(obj, which) {
+        if (is.null(obj)) return(NULL)
+        merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
+      }
+      public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
+                                      public_fields)
+      private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
+                                      private_fields)
     }
 
     if (class) {
@@ -347,6 +357,7 @@ R6_newfun <- function(classname, public_fields, public_methods,
 
     # Precompute some things ------------------------------------------
     has_private <- !(is.null(private_fields) && is.null(private_methods))
+
 
     # Create binding and enclosing environments -----------------------
     if (portable) {
@@ -411,17 +422,6 @@ R6_newfun <- function(classname, public_fields, public_methods,
       public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
       private_methods <- merge_vectors(super_struct$private_methods, private_methods)
       active          <- merge_vectors(super_struct$active, active)
-
-
-      # Merge fields over superclass fields, recursively --------------
-      recursive_merge <- function(obj, which) {
-        if (is.null(obj)) return(NULL)
-        merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
-      }
-      public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
-                                      public_fields)
-      private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
-                                      private_fields)
     }
 
     # Copy objects to public bind environment -------------------------

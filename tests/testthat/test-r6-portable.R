@@ -548,3 +548,13 @@ test_that("Inheritance is dynamic", {
   # than AC.
   expect_true(object.size(BC) < object.size(AC))
 })
+
+
+test_that("Private env is created when all private members are inherited", {
+  AC <- R6Class("AC",
+    public = list(getx = function() private$x),
+    private = list(x = 1)
+  )
+  BC <- R6Class("BC", inherit = AC)
+  expect_identical(BC$new()$getx(), 1)
+})
