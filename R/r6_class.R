@@ -287,9 +287,6 @@ R6Class <- function(classname = NULL, public = list(),
   public_methods <- get_functions(public)
   private_methods <- get_functions(private)
 
-  # Merge in fields from superclasses
-  public_fields <- merge_vectors(inherit$public_fields, public_fields)
-  private_fields <- merge_vectors(inherit$private_fields, private_fields)
 
   if (!is.null(inherit)) {
     if (!inherits(inherit, "R6ClassGenerator"))
@@ -333,13 +330,10 @@ R6_newfun <- function(classes, public_fields, public_methods,
                       private_fields, private_methods, active,
                       inherit, lock, portable, parent_env) {
 
-  # Precompute some things that we'll use repeatedly
-  has_private <- !(is.null(private_fields) && is.null(private_methods))
-
-  hash_private <- length(private_fields) + length(private_methods) > 100
-  hash_public <- length(public_fields) + length(public_methods) > 100
-
   function(...) {
+    # Precompute some things ------------------------------------------
+    has_private <- !(is.null(private_fields) && is.null(private_methods))
+
     # Create binding and enclosing environments -----------------------
     if (portable) {
       # When portable==TRUE, the public binding environment is separate from the
@@ -347,12 +341,12 @@ R6_newfun <- function(classes, public_fields, public_methods,
 
       # Binding environment for private objects (where private objects are found)
       if (has_private)
-        private_bind_env <- new.env(parent = emptyenv(), hash = hash_private)
+        private_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
       else
         private_bind_env <- NULL
 
       # Binding environment for public objects (where public objects are found)
-      public_bind_env <- new.env(parent = emptyenv(), hash = hash_public)
+      public_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
 
       # The enclosing environment for methods
       enclos_env <- new.env(parent = parent_env, hash = FALSE)
@@ -363,11 +357,11 @@ R6_newfun <- function(classes, public_fields, public_methods,
       # If present, the private binding env is the parent of the public binding
       # env.
       if (has_private) {
-        private_bind_env <- new.env(parent = parent_env, hash = hash_private)
-        public_bind_env <- new.env(parent = private_bind_env, hash = hash_public)
+        private_bind_env <- new.env(parent = parent_env, hash = FALSE)
+        public_bind_env <- new.env(parent = private_bind_env, hash = FALSE)
       } else {
         private_bind_env <- NULL
-        public_bind_env <- new.env(parent = parent_env, hash = hash_public)
+        public_bind_env <- new.env(parent = parent_env, hash = FALSE)
       }
 
       enclos_env <- public_bind_env
@@ -403,6 +397,17 @@ R6_newfun <- function(classes, public_fields, public_methods,
       public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
       private_methods <- merge_vectors(super_struct$private_methods, private_methods)
       active          <- merge_vectors(super_struct$active, active)
+
+
+      # Merge fields over superclass fields, recursively --------------
+      recursive_merge <- function(obj, which) {
+        if (is.null(obj)) return(NULL)
+        merge_vectors(recursive_merge(obj$inherit, which), obj[[which]])
+      }
+      public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
+                                      public_fields)
+      private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
+                                      private_fields)
     }
 
     # Copy objects to public bind environment -------------------------
@@ -451,8 +456,6 @@ create_super_env <- function(inherit, public_bind_env, private_bind_env = NULL,
   private_methods <- inherit$private_methods
   active          <- inherit$active
 
-  use_hash <- length(public_methods) + length(private_methods) + length(active) > 100
-
   # Set up super enclosing and binding environments -------------------
 
   # The environment in which functions run is a child of the public bind env
@@ -471,7 +474,7 @@ create_super_env <- function(inherit, public_bind_env, private_bind_env = NULL,
 
   # The binding environment is a new environment. Its parent doesn't matter
   # because it's not the enclosing environment for any functions.
-  super_bind_env <- new.env(parent = emptyenv(), hash = use_hash)
+  super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
 
   # Add self/private pointers -----------------------------------------
   if (portable) {
