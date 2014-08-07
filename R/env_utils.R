@@ -12,7 +12,7 @@ assign_func_envs <- function(objs, target_env) {
 # Get names of all superclasses
 get_superclassnames <- function(inherit) {
   if (is.null(inherit)) return(NULL)
-  c(inherit$classname, get_superclassnames(inherit$inherit))
+  c(inherit$classname, get_superclassnames(inherit$get_inherit()))
 }
 
 # Wrapper around list2env with a NULL check

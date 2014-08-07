@@ -419,3 +419,19 @@ test_that("default print method has a trailing newline", {
   A <- AC$new()
   expect_output_n(print(A))
 })
+
+
+test_that("Private env is created when all private members are inherited", {
+  AC <- R6Class("AC",
+    portable = FALSE,
+    public = list(
+      getx = function() x,
+      getx2 = function() private$x
+    ),
+    private = list(x = 1)
+  )
+  BC <- R6Class("BC", portable = FALSE, inherit = AC)
+
+  expect_identical(BC$new()$getx(), 1)
+  expect_identical(BC$new()$getx2(), 1)
+})
