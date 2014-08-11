@@ -128,29 +128,52 @@ test_that("Active bindings work", {
 
 test_that("Locking works", {
   AC <- R6Class("AC",
-    portable = TRUE,
-    public = list(x = 1),
-    private = list(y = 2),
+    portable = FALSE,
+    public = list(x = 1, getx = function() self$x),
+    private = list(y = 2, gety = function() self$y),
     lock = TRUE
   )
   A <- AC$new()
 
+  # Can modify fields
   expect_that(A$x <- 5, not(throws_error()))
   expect_identical(A$x, 5)
+  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_identical(A$private$y, 5)
+
+  # Can't modify methods
+  expect_error(A$getx <- function() 1)
+  expect_error(A$gety <- function() 2)
+
+  # Can't add members
   expect_error(A$z <- 1)
+  expect_error(A$private$z <- 1)
+
 
   # Not locked
   AC <- R6Class("AC",
-    portable = TRUE,
-    public = list(x = 1),
-    private = list(y = 2),
+    portable = FALSE,
+    public = list(x = 1, getx = function() x),
+    private = list(y = 2, gety = function() y),
     lock = FALSE
   )
   A <- AC$new()
 
+  # Can modify fields
   expect_that(A$x <- 5, not(throws_error()))
   expect_identical(A$x, 5)
+  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_identical(A$private$y, 5)
+
+  # Can't modify methods
+  expect_error(A$getx <- function() 1)
+  expect_error(A$private$gety <- function() 2)
+
+  # Can add members
   expect_that(A$z <- 1, not(throws_error()))
+  expect_identical(A$z, 1)
+  expect_that(A$private$z <- 1, not(throws_error()))
+  expect_identical(A$private$z, 1)
 })
 
 

@@ -456,6 +456,14 @@ R6_newfun <- function(classname, public_fields, public_methods,
       lockEnvironment(public_bind_env)
     }
 
+    # Always lock methods
+    if (has_private) {
+      for (name in names(private_methods))
+        lockBinding(name, private_bind_env)
+    }
+    for (name in names(public_methods))
+      lockBinding(name, public_bind_env)
+
     class(public_bind_env) <- classes
 
     # Initialize ------------------------------------------------------
