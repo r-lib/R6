@@ -3,6 +3,14 @@
 * [BREAKING CHANGE] Added `portable` option, which allows inheritance across
   different package namespaces, and made it the default.
 
+* All of the functions involved in instantiating objects are encapsulated in
+  an environment separate from the R6 namespace. This means that if a
+  generator is created with one version of R6, saved, then restored in a new R
+  session tha thas a different version of R6, there shouldn't be any problems
+  with compatibility.
+
+* Methods are locked so that they can't be changed. (Fixes #19)
+
 * Inheritance of superclasses is dynamic; instead of reading in the superclass
   when a class is created, this happens each time an object is instantiated.
   (Fixes #12)
