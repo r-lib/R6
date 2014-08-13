@@ -21,3 +21,8 @@ URL: https://github.com/wch/R6/
 Roxygen: list(wrap = FALSE)
 LazyData: true
 VignetteBuilder: knitr
+Collate:
+    'utils.R'
+    'env_utils.R'
+    'r6_class.R'
+    'print.R'
