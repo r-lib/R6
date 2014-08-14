@@ -8,6 +8,7 @@
 # object also saves and restores the capsule environment (but not the R6
 # namespace).
 capsule <- new.env(hash = FALSE)
+attr(capsule, "name") <- "R6_capsule"
 
 # This function takes an expression and evaluates it in the capsule environment.
 encapsulate <- function(expr) {
