@@ -1,5 +1,26 @@
 library(pryr)
 library(testthat)
+library(inline)
+
+unlockEnvironment <- cfunction(signature(env = "environment"), body = '
+  #define FRAME_LOCK_MASK (1<<14)
+  #define FRAME_IS_LOCKED(e) (ENVFLAGS(e) & FRAME_LOCK_MASK)
+  #define UNLOCK_FRAME(e) SET_ENVFLAGS(e, ENVFLAGS(e) & (~ FRAME_LOCK_MASK))
+
+  if (TYPEOF(env) == NILSXP)
+    error("use of NULL environment is defunct");
+  if (TYPEOF(env) != ENVSXP)
+    error("not an environment");
+
+  UNLOCK_FRAME(env);
+
+  // Return TRUE if unlocked; FALSE otherwise
+  SEXP result = PROTECT( Rf_allocVector(LGLSXP, 1) );
+  LOGICAL(result)[0] = FRAME_IS_LOCKED(env) == 0;
+  UNPROTECT(1);
+
+  return result;
+')
 
 # To make sure these tests actually work:
 #   * Un-encapsulate one or more of the encapsulated functions.
@@ -53,8 +74,13 @@ test_that("R6 objects can be instantiated even when R6 isn't loaded", {
   )
 
   # Remove everything from the R6 namespace
-  # (Previously tried to unload R6, but it would automatically get re-loaded
-  # when $new() is called.)
+  r6ns <- .getNamespace('R6')
+  unlockEnvironment(r6ns)
+  rm(list = ls(r6ns), envir = r6ns)
+
+  # Also try unloading R6 namespace. Even this set of commands may not be enough
+  # to fully unload the R6 namespace environment, because AC and BC are children
+  # of the R6 namespace.
   detach('package:R6', unload = TRUE)
   expect_null(.getNamespace('R6'))
   expect_error(as.environment('package:R6'))
@@ -91,12 +117,12 @@ test_that("R6 objects can be instantiated even when R6 isn't loaded", {
     )
   )
 
-  # Set parent env to global env, to help make sure that we won't find
-  # functions from the R6 namespace or package env.
-#   parent.env(environment(CC$new)) <- .GlobalEnv
+  # Remove everything from the R6 namespace
+  r6ns <- .getNamespace('R6')
+  unlockEnvironment(r6ns)
+  rm(list = ls(r6ns), envir = r6ns)
 
   # Detach and unload R6, then run the tests as usual
-  # We have extra checks to make sure the namespace really is unloaded
   detach('package:R6', unload = TRUE)
   expect_null(.getNamespace('R6'))
   expect_error(as.environment('package:R6'))
@@ -144,10 +170,10 @@ save(AC, BC, file = 'test.rda')
 
 #### Restart R ####
 
+library(testthat)
 load('test.rda')
 # R6 will be loaded
 expect_true("R6" %in% loadedNamespaces())
-library(testthat)
 
 A <- AC$new()
 B <- BC$new()
