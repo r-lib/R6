@@ -289,193 +289,188 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (length(get_nonfunctions(active)) != 0)
     stop("All items in active must be functions.")
 
+
+  # Create the generator object, which is an environment
+  generator <- new.env(parent = capsule)
+  attr(generator, "name") <- paste0(classname, "_generator")
+  class(generator) <- "R6ClassGenerator"
+
+  generator$classname  <- classname
+  generator$active     <- active
+  generator$portable   <- portable
+  generator$parent_env <- parent_env
+  generator$lock       <- lock
+  generator$class      <- class
+
   # Separate fields from methods
-  public_fields <- get_nonfunctions(public)
-  private_fields <- get_nonfunctions(private)
-  public_methods <- get_functions(public)
-  private_methods <- get_functions(private)
+  generator$public_fields   <- get_nonfunctions(public)
+  generator$private_fields  <- get_nonfunctions(private)
+  generator$public_methods  <- get_functions(public)
+  generator$private_methods <- get_functions(private)
 
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.
-  inherit <- substitute(inherit)
-
+  generator$inherit <- substitute(inherit)
   # This function returns the superclass object
-  get_inherit <- function() {
+  generator$get_inherit <- function() {
     # The baseenv() arg speeds up eval a tiny bit
     eval(inherit, parent_env, baseenv())
   }
+  environment(generator$get_inherit) <- generator
 
-  if (!is.null(inherit) && !inherits(get_inherit(), "R6ClassGenerator"))
+  if (!is.null(inherit) && !inherits(generator$get_inherit(), "R6ClassGenerator")) {
     stop("`inherit` must be a R6ClassGenerator.")
+  }
 
-  newfun <- R6_newfun(classname, public_fields, public_methods,
-                      private_fields, private_methods, active,
-                      get_inherit, lock, portable, parent_env, class)
+  # Copy the $new function and set it to eval in the right environment
+  generator$new <- R6_newfun
+  environment(generator$new) <- generator
 
-  structure(
-    list(
-      new = newfun,
-      classname = classname,
-      public_fields = public_fields,
-      private_fields = private_fields,
-      public_methods = public_methods,
-      private_methods = private_methods,
-      active = active,
-      inherit = inherit,
-      get_inherit = get_inherit,
-      portable = portable,
-      parent_env = parent_env,
-      lock = lock
-    ),
-    class = "R6ClassGenerator"
-  )
+  generator
 })
 
 encapsulate({
-  # Create the $new function for a R6ClassGenerator
-  R6_newfun <- function(classname, public_fields, public_methods,
-                        private_fields, private_methods, active,
-                        get_inherit, lock, portable, parent_env, class) {
+  # This is the $new function for a R6ClassGenerator. This copy of it won't run
+  # properly; it needs to be copied, and its parent environment set to the
+  # generator object environment.
+  R6_newfun <- function(...) {
+    # Get superclass object -------------------------------------------
+    inherit <- get_inherit()
 
-    function(...) {
-      # Get superclass object -------------------------------------------
-      inherit <- get_inherit()
+    # Some checks on superclass ---------------------------------------
+    if (!is.null(inherit)) {
+      if (!inherits(inherit, "R6ClassGenerator"))
+        stop("`inherit` must be a R6ClassGenerator.")
 
-      # Some checks on superclass ---------------------------------------
-      if (!is.null(inherit)) {
-        if (!inherits(inherit, "R6ClassGenerator"))
-          stop("`inherit` must be a R6ClassGenerator.")
+      if (!identical(portable, inherit$portable))
+        stop("Sub and superclass must both be portable or non-portable.")
 
-        if (!identical(portable, inherit$portable))
-          stop("Sub and superclass must both be portable or non-portable.")
-
-        # Merge fields over superclass fields, recursively --------------
-        recursive_merge <- function(obj, which) {
-          if (is.null(obj)) return(NULL)
-          merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
-        }
-        public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
-                                        public_fields)
-        private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
-                                        private_fields)
+      # Merge fields over superclass fields, recursively --------------
+      recursive_merge <- function(obj, which) {
+        if (is.null(obj)) return(NULL)
+        merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
       }
-
-      if (class) {
-        classes <- c(classname, get_superclassnames(inherit), "R6")
-      } else {
-        classes <- NULL
-      }
-
-      # Precompute some things ------------------------------------------
-      has_private <- !(is.null(private_fields) && is.null(private_methods))
-
-
-      # Create binding and enclosing environments -----------------------
-      if (portable) {
-        # When portable==TRUE, the public binding environment is separate from the
-        # enclosing environment.
-
-        # Binding environment for private objects (where private objects are found)
-        if (has_private)
-          private_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
-        else
-          private_bind_env <- NULL
-
-        # Binding environment for public objects (where public objects are found)
-        public_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
-
-        # The enclosing environment for methods
-        enclos_env <- new.env(parent = parent_env, hash = FALSE)
-
-      } else {
-        # When portable==FALSE, the public binding environment is the same as the
-        # enclosing environment.
-        # If present, the private binding env is the parent of the public binding
-        # env.
-        if (has_private) {
-          private_bind_env <- new.env(parent = parent_env, hash = FALSE)
-          public_bind_env <- new.env(parent = private_bind_env, hash = FALSE)
-        } else {
-          private_bind_env <- NULL
-          public_bind_env <- new.env(parent = parent_env, hash = FALSE)
-        }
-
-        enclos_env <- public_bind_env
-      }
-
-      # Add self and private pointer ------------------------------------
-      enclos_env$self <- public_bind_env
-      if (has_private)
-        enclos_env$private <- private_bind_env
-
-      # Fix environment for methods -------------------------------------
-      public_methods <- assign_func_envs(public_methods, enclos_env)
-      if (has_private)
-        private_methods <- assign_func_envs(private_methods, enclos_env)
-      if (!is.null(active))
-        active <- assign_func_envs(active, enclos_env)
-
-
-      # Set up superclass objects ---------------------------------------
-      if (!is.null(inherit)) {
-        if (portable) {
-          # Set up the superclass objects
-          super_struct <- create_super_env(inherit, public_bind_env,
-                                           private_bind_env, portable = TRUE)
-        } else {
-          # Set up the superclass objects
-          super_struct <- create_super_env(inherit, public_bind_env, portable = FALSE)
-        }
-
-        enclos_env$super <- super_struct$bind_env
-
-        # Merge this level's methods over the superclass methods
-        public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
-        private_methods <- merge_vectors(super_struct$private_methods, private_methods)
-        active          <- merge_vectors(super_struct$active, active)
-      }
-
-      # Copy objects to public bind environment -------------------------
-      list2env2(public_methods, envir = public_bind_env)
-      list2env2(public_fields, envir = public_bind_env)
-
-      # Copy objects to private bind environment ------------------------
-      if (has_private) {
-        list2env2(private_methods, envir = private_bind_env)
-        list2env2(private_fields, envir = private_bind_env)
-      }
-
-      # Set up active bindings ------------------------------------------
-      if (!is.null(active)) {
-        for (name in names(active)) {
-          makeActiveBinding(name, active[[name]], public_bind_env)
-        }
-      }
-
-      # Lock ------------------------------------------------------------
-      if (lock) {
-        if (has_private) lockEnvironment(private_bind_env)
-        lockEnvironment(public_bind_env)
-      }
-
-      # Always lock methods
-      if (has_private) {
-        for (name in names(private_methods))
-          lockBinding(name, private_bind_env)
-      }
-      for (name in names(public_methods))
-        lockBinding(name, public_bind_env)
-
-      class(public_bind_env) <- classes
-
-      # Initialize ------------------------------------------------------
-      if (is.function(public_bind_env$initialize)) {
-        public_bind_env$initialize(...)
-      } else if (length(list(...)) != 0 ) {
-        stop("Called new() with arguments, but there is no initialize method.")
-      }
-      public_bind_env
+      public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
+                                      public_fields)
+      private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
+                                      private_fields)
     }
+
+    if (class) {
+      classes <- c(classname, get_superclassnames(inherit), "R6")
+    } else {
+      classes <- NULL
+    }
+
+    # Precompute some things ------------------------------------------
+    has_private <- !(is.null(private_fields) && is.null(private_methods))
+
+
+    # Create binding and enclosing environments -----------------------
+    if (portable) {
+      # When portable==TRUE, the public binding environment is separate from the
+      # enclosing environment.
+
+      # Binding environment for private objects (where private objects are found)
+      if (has_private)
+        private_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+      else
+        private_bind_env <- NULL
+
+      # Binding environment for public objects (where public objects are found)
+      public_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+
+      # The enclosing environment for methods
+      enclos_env <- new.env(parent = parent_env, hash = FALSE)
+
+    } else {
+      # When portable==FALSE, the public binding environment is the same as the
+      # enclosing environment.
+      # If present, the private binding env is the parent of the public binding
+      # env.
+      if (has_private) {
+        private_bind_env <- new.env(parent = parent_env, hash = FALSE)
+        public_bind_env <- new.env(parent = private_bind_env, hash = FALSE)
+      } else {
+        private_bind_env <- NULL
+        public_bind_env <- new.env(parent = parent_env, hash = FALSE)
+      }
+
+      enclos_env <- public_bind_env
+    }
+
+    # Add self and private pointer ------------------------------------
+    enclos_env$self <- public_bind_env
+    if (has_private)
+      enclos_env$private <- private_bind_env
+
+    # Fix environment for methods -------------------------------------
+    public_methods <- assign_func_envs(public_methods, enclos_env)
+    if (has_private)
+      private_methods <- assign_func_envs(private_methods, enclos_env)
+    if (!is.null(active))
+      active <- assign_func_envs(active, enclos_env)
+
+
+    # Set up superclass objects ---------------------------------------
+    if (!is.null(inherit)) {
+      if (portable) {
+        # Set up the superclass objects
+        super_struct <- create_super_env(inherit, public_bind_env,
+                                         private_bind_env, portable = TRUE)
+      } else {
+        # Set up the superclass objects
+        super_struct <- create_super_env(inherit, public_bind_env, portable = FALSE)
+      }
+
+      enclos_env$super <- super_struct$bind_env
+
+      # Merge this level's methods over the superclass methods
+      public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
+      private_methods <- merge_vectors(super_struct$private_methods, private_methods)
+      active          <- merge_vectors(super_struct$active, active)
+    }
+
+    # Copy objects to public bind environment -------------------------
+    list2env2(public_methods, envir = public_bind_env)
+    list2env2(public_fields, envir = public_bind_env)
+
+    # Copy objects to private bind environment ------------------------
+    if (has_private) {
+      list2env2(private_methods, envir = private_bind_env)
+      list2env2(private_fields, envir = private_bind_env)
+    }
+
+    # Set up active bindings ------------------------------------------
+    if (!is.null(active)) {
+      for (name in names(active)) {
+        makeActiveBinding(name, active[[name]], public_bind_env)
+      }
+    }
+
+    # Lock ------------------------------------------------------------
+    if (lock) {
+      if (has_private) lockEnvironment(private_bind_env)
+      lockEnvironment(public_bind_env)
+    }
+
+    # Always lock methods
+    if (has_private) {
+      for (name in names(private_methods))
+        lockBinding(name, private_bind_env)
+    }
+    for (name in names(public_methods))
+      lockBinding(name, public_bind_env)
+
+    class(public_bind_env) <- classes
+
+    # Initialize ------------------------------------------------------
+    if (is.function(public_bind_env$initialize)) {
+      public_bind_env$initialize(...)
+    } else if (length(list(...)) != 0 ) {
+      stop("Called new() with arguments, but there is no initialize method.")
+    }
+    public_bind_env
   }
 
 
