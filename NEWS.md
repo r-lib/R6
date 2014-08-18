@@ -1,7 +1,10 @@
-# R6 1.0.1.9003
+# R6 1.0.1.9004
 
 * [BREAKING CHANGE] Added `portable` option, which allows inheritance across
   different package namespaces, and made it the default.
+
+* Added `set()` method on class generator object, so new fields and methods can
+  be added after the generator has been created.
 
 * All of the functions involved in instantiating objects are encapsulated in
   an environment separate from the R6 namespace. This means that if a
