@@ -318,6 +318,10 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   }
   environment(generator$get_inherit) <- generator
 
+  # Copy the $has_private function and set it to eval in the right environment
+  generator$has_private <- R6_has_private
+  environment(generator$has_private) <- generator
+
   if (!is.null(inherit) && !inherits(generator$get_inherit(), "R6ClassGenerator")) {
     stop("`inherit` must be a R6ClassGenerator.")
   }
@@ -363,7 +367,7 @@ encapsulate({
     }
 
     # Precompute some things ------------------------------------------
-    has_private <- !(is.null(private_fields) && is.null(private_methods))
+    has_priv <- has_private()
 
 
     # Create binding and enclosing environments -----------------------
@@ -372,7 +376,7 @@ encapsulate({
       # enclosing environment.
 
       # Binding environment for private objects (where private objects are found)
-      if (has_private)
+      if (has_priv)
         private_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
       else
         private_bind_env <- NULL
@@ -388,7 +392,7 @@ encapsulate({
       # enclosing environment.
       # If present, the private binding env is the parent of the public binding
       # env.
-      if (has_private) {
+      if (has_priv) {
         private_bind_env <- new.env(parent = parent_env, hash = FALSE)
         public_bind_env <- new.env(parent = private_bind_env, hash = FALSE)
       } else {
@@ -401,12 +405,12 @@ encapsulate({
 
     # Add self and private pointer ------------------------------------
     enclos_env$self <- public_bind_env
-    if (has_private)
+    if (has_priv)
       enclos_env$private <- private_bind_env
 
     # Fix environment for methods -------------------------------------
     public_methods <- assign_func_envs(public_methods, enclos_env)
-    if (has_private)
+    if (has_priv)
       private_methods <- assign_func_envs(private_methods, enclos_env)
     if (!is.null(active))
       active <- assign_func_envs(active, enclos_env)
@@ -436,7 +440,7 @@ encapsulate({
     list2env2(public_fields, envir = public_bind_env)
 
     # Copy objects to private bind environment ------------------------
-    if (has_private) {
+    if (has_priv) {
       list2env2(private_methods, envir = private_bind_env)
       list2env2(private_fields, envir = private_bind_env)
     }
@@ -450,12 +454,12 @@ encapsulate({
 
     # Lock ------------------------------------------------------------
     if (lock) {
-      if (has_private) lockEnvironment(private_bind_env)
+      if (has_priv) lockEnvironment(private_bind_env)
       lockEnvironment(public_bind_env)
     }
 
     # Always lock methods
-    if (has_private) {
+    if (has_priv) {
       for (name in names(private_methods))
         lockBinding(name, private_bind_env)
     }
@@ -545,6 +549,21 @@ encapsulate({
       private_methods = private_methods,
       active = active
     )
+  }
+
+  # This is the $has_private function for a R6ClassGenerator. This copy of it
+  # won't run properly; it needs to be copied, and its parent environment set to
+  # the generator object environment.
+  # Returns TRUE if this class or one of its ancestor superclasses has private
+  # members; FALSE otherwise.
+  R6_has_private <- function() {
+    inherit <- get_inherit()
+    if (!is.null(private_fields) || !is.null(private_methods))
+      TRUE
+    else if (is.null(inherit))
+      FALSE
+    else
+      inherit$has_private()
   }
 
 })

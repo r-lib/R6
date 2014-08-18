@@ -574,9 +574,19 @@ test_that("Inheritance is dynamic", {
 
 
 test_that("Private env is created when all private members are inherited", {
+  # Private contains fields only
   AC <- R6Class("AC",
     public = list(getx = function() private$x),
     private = list(x = 1)
+  )
+  BC <- R6Class("BC", inherit = AC)
+  expect_identical(BC$new()$getx(), 1)
+
+
+  # Private contains functions only
+  AC <- R6Class("AC",
+    public = list(getx = function() private$x()),
+    private = list(x = function() 1)
   )
   BC <- R6Class("BC", inherit = AC)
   expect_identical(BC$new()$getx(), 1)
