@@ -240,6 +240,7 @@ test_that("Inheritance hierarchy for super$ methods", {
 
 
 test_that("Private env is created when all private members are inherited", {
+  # Private contains fields only
   AC <- R6Class("AC",
     portable = FALSE,
     public = list(
@@ -249,7 +250,19 @@ test_that("Private env is created when all private members are inherited", {
     private = list(x = 1)
   )
   BC <- R6Class("BC", portable = FALSE, inherit = AC)
+  expect_identical(BC$new()$getx(), 1)
+  expect_identical(BC$new()$getx2(), 1)
 
+  # Private contains functions only
+  AC <- R6Class("AC",
+    portable = FALSE,
+    public = list(
+      getx = function() x(),
+      getx2 = function() private$x()
+    ),
+    private = list(x = function() 1)
+  )
+  BC <- R6Class("BC", portable = FALSE, inherit = AC)
   expect_identical(BC$new()$getx(), 1)
   expect_identical(BC$new()$getx2(), 1)
 })
