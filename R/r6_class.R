@@ -265,6 +265,26 @@
 #' np$setx(10)
 #' np$getx()
 #' #> [1] 10
+#'
+#' # Setting new values ----------------------------------------------
+#' # It is possible to add new members to the class after it has been created,
+#' # by using the $set() method on the generator.
+#'
+#' Simple <- R6Class("Simple",
+#'   public = list(
+#'     x = 1,
+#'     getx = function() x
+#'   )
+#' )
+#'
+#' Simple$set("public", "getx2", function() self$x*2)
+#'
+#' # Use overwrite = TRUE to overwrite existing values
+#' Simple$set("public", "x", 10, overwrite = TRUE)
+#'
+#' s <- Simple$new()
+#' s$x
+#' s$getx2()
 # This function is encapsulated so that it is bound in the R6 namespace, but
 # enclosed in the capsule environment
 R6Class <- encapsulate(function(classname = NULL, public = list(),
