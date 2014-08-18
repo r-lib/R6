@@ -372,9 +372,34 @@ p$getx()
 
 For more information, see the Portable vignette.
 
-### Other topics
 
-#### Printing R6 objects to the screen
+## Other topics
+
+### Adding members to an existing class
+
+It is sometimes useful to add members to a class after the class has already been created. This can be done using the `$set()` method on the generator object.
+
+```{r}
+Simple <- R6Class("Simple",
+  public = list(
+    x = 1,
+    getx = function() x
+  )
+)
+
+Simple$set("public", "getx2", function() self$x*2)
+
+# To replace an existing member, use overwrite=TRUE
+Simple$set("public", "x", 10, overwrite = TRUE)
+
+s <- Simple$new()
+s$x
+s$getx2()
+```
+
+The new members will be present only in instances that are created after `$set()` has been called.
+
+### Printing R6 objects to the screen
 
 R6 objects have a default `print` method that lists all members of the object.
 If a class defines a `print` method, then it overrides the default one.
@@ -396,6 +421,6 @@ pq <- PrettyCountingQueue$new(1, 2, "foobar")
 pq
 ```
 
-### Summary
+## Summary
 
 R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster, and they allow inheritance across packages.

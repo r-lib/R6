@@ -265,6 +265,26 @@
 #' np$setx(10)
 #' np$getx()
 #' #> [1] 10
+#'
+#' # Setting new values ----------------------------------------------
+#' # It is possible to add new members to the class after it has been created,
+#' # by using the $set() method on the generator.
+#'
+#' Simple <- R6Class("Simple",
+#'   public = list(
+#'     x = 1,
+#'     getx = function() x
+#'   )
+#' )
+#'
+#' Simple$set("public", "getx2", function() self$x*2)
+#'
+#' # Use overwrite = TRUE to overwrite existing values
+#' Simple$set("public", "x", 10, overwrite = TRUE)
+#'
+#' s <- Simple$new()
+#' s$x
+#' s$getx2()
 # This function is encapsulated so that it is bound in the R6 namespace, but
 # enclosed in the capsule environment
 R6Class <- encapsulate(function(classname = NULL, public = list(),
@@ -292,8 +312,6 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   # Create the generator object, which is an environment
   generator <- new.env(parent = capsule)
-  attr(generator, "name") <- paste0(classname, "_generator")
-  class(generator) <- "R6ClassGenerator"
 
   generator$classname  <- classname
   generator$active     <- active
@@ -327,8 +345,14 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   }
 
   # Copy the $new function and set it to eval in the right environment
-  generator$new <- R6_newfun
+  generator$new <- R6_new
   environment(generator$new) <- generator
+
+  generator$set <- R6_set
+  environment(generator$set) <- generator
+
+  attr(generator, "name") <- paste0(classname, "_generator")
+  class(generator) <- "R6ClassGenerator"
 
   generator
 })
@@ -337,7 +361,7 @@ encapsulate({
   # This is the $new function for a R6ClassGenerator. This copy of it won't run
   # properly; it needs to be copied, and its parent environment set to the
   # generator object environment.
-  R6_newfun <- function(...) {
+  R6_new <- function(...) {
     # Get superclass object -------------------------------------------
     inherit <- get_inherit()
 
@@ -564,6 +588,54 @@ encapsulate({
       FALSE
     else
       inherit$has_private()
+  }
+
+  # This is the $set function for a R6ClassGenerator. This copy of it won't run
+  # properly; it needs to be copied, and its parent environment set to the
+  # generator object environment.
+  R6_set <- function(which = NULL, name = NULL, value, overwrite = FALSE) {
+    if (is.null(which) || !(which %in% c("public", "private", "active")))
+      stop("`which` must be 'public', 'private', or 'active'.")
+
+    if (is.null(name) || !is.character(name))
+      stop("`name` must be a string.")
+
+    if (missing(value))
+      stop("`value` must be provided.")
+
+    # Find which group this object should go in.
+    if (which == "public") {
+      group <- if (is.function(value)) "public_methods" else "public_fields"
+    } else if (which == "private") {
+      group <- if (is.function(value)) "private_methods" else "private_fields"
+    } else if (which == "active") {
+      if (is.function(value))
+        group <- "active"
+      else
+        stop("Can't add non-function to active")
+    }
+
+    # Check that it's not already present
+    all_groups <- c("public_methods", "public_fields", "private_methods",
+                    "private_fields", "active")
+
+    # If we're allowed to overwrite, don't check the group that this object
+    # would go in.
+    if (overwrite)
+      all_groups <- setdiff(all_groups, group)
+
+    all_names <- unlist(lapply(all_groups, function(g) names(get(g))))
+
+    if (name %in% all_names) {
+      stop("Can't add ", name, " because it already present in ", classname,
+           " generator.")
+    }
+
+    # Assign in correct group
+    generator <- parent.env(environment())
+    generator[[group]][[name]] <- value
+
+    invisible()
   }
 
 })
