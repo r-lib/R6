@@ -1,4 +1,4 @@
-
+library(testthat)
 context("Inheritance across packages")
 
 ## Helper functions to create a new package, with some
