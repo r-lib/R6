@@ -329,27 +329,26 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.
   generator$inherit <- substitute(inherit)
-  # This function returns the superclass object
-  generator$get_inherit <- function() {
-    # The baseenv() arg speeds up eval a tiny bit
-    eval(inherit, parent_env, baseenv())
-  }
+
+
+  # Copy various functions prefixed with R6_ to the generator, and set them to
+  # eval in the right environment.
+  generator$get_inherit <- R6_get_inherit
   environment(generator$get_inherit) <- generator
 
-  # Copy the $has_private function and set it to eval in the right environment
   generator$has_private <- R6_has_private
   environment(generator$has_private) <- generator
 
-  if (!is.null(inherit) && !inherits(generator$get_inherit(), "R6ClassGenerator")) {
-    stop("`inherit` must be a R6ClassGenerator.")
-  }
-
-  # Copy the $new function and set it to eval in the right environment
   generator$new <- R6_new
   environment(generator$new) <- generator
 
   generator$set <- R6_set
   environment(generator$set) <- generator
+
+
+  if (!is.null(inherit) && !inherits(generator$get_inherit(), "R6ClassGenerator")) {
+    stop("`inherit` must be a R6ClassGenerator.")
+  }
 
   attr(generator, "name") <- paste0(classname, "_generator")
   class(generator) <- "R6ClassGenerator"
@@ -573,6 +572,12 @@ encapsulate({
       private_methods = private_methods,
       active = active
     )
+  }
+
+  # This function returns the superclass object
+  R6_get_inherit <- function() {
+    # The baseenv() arg speeds up eval a tiny bit
+    eval(inherit, parent_env, baseenv())
   }
 
   # This is the $has_private function for a R6ClassGenerator. This copy of it

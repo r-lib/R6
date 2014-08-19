@@ -1,21 +1,19 @@
 Package: R6
 Title: Classes with reference semantics
-Version: 1.0.1.9004
+Version: 2.0
 Authors@R: "Winston Chang <winston@stdout.org> [aut, cre]"
 Description: The R6 package allows the creation of classes with reference
     semantics, similar to R's built-in reference classes. Compared to reference
     classes, R6 classes are simpler and lighter-weight, and they are not built
     on S4 classes so they do not require the methods package. These classes
-    allow public and private members, and they support inheritance.
+    allow public and private members, and they support inheritance, even when
+    the classes are defined in different packages.
 Depends:
     R (>= 3.0)
 Suggests:
     knitr,
-    microbenchmark,
     pryr,
     testthat,
-    ggplot2,
-    scales
 License: MIT + file LICENSE
 URL: https://github.com/wch/R6/
 Roxygen: list(wrap = FALSE)
