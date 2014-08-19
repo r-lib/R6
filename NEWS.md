@@ -1,4 +1,4 @@
-# R6 1.0.1.9004
+# R6 2.0
 
 * [BREAKING CHANGE] Added `portable` option, which allows inheritance across
   different package namespaces, and made it the default.
