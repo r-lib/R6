@@ -10,7 +10,7 @@ R6 2.0
 * All of the functions involved in instantiating objects are encapsulated in
   an environment separate from the R6 namespace. This means that if a
   generator is created with one version of R6, saved, then restored in a new R
-  session tha thas a different version of R6, there shouldn't be any problems
+  session that has a different version of R6, there shouldn't be any problems
   with compatibility.
 
 * Methods are locked so that they can't be changed. (Fixes #19)
