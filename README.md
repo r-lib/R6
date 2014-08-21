@@ -13,10 +13,10 @@ The name R5 was also a code-name used for a different object system started by S
 
 ## Installation
 
-R6 version 2.0 is now on CRAN. It may be a few days before binary packages are available. To get version 2.0, you can install from the source package:
+To install R6 from CRAN:
 
 ```R
-install.packages('R6', type = 'source')
+install.packages('R6')
 ```
 
 To install the development version (requires the devtools package):
