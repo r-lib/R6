@@ -15,3 +15,11 @@ encapsulate <- function(expr) {
   expr <- substitute(expr)
   eval(expr, capsule)
 }
+
+
+# This list contains functions that are copied to the generator environment and
+# are assigned as the generator env as their enclosing environment.
+# This is simpler than encapsulate, because these functions don't need to be
+# enclosed in a special environment now; when a class is created, they will be
+# copied into the generator environment and assigned it as their enclosing env.
+generator_funs <- list()
