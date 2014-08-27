@@ -336,10 +336,6 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator_funs <- assign_func_envs(generator_funs, generator)
   list2env2(generator_funs, generator)
 
-  if (!is.null(inherit) && !inherits(generator$get_inherit(), "R6ClassGenerator")) {
-    stop("`inherit` must be a R6ClassGenerator.")
-  }
-
   attr(generator, "name") <- paste0(classname, "_generator")
   class(generator) <- "R6ClassGenerator"
 
