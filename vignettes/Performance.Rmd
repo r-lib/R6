@@ -5,6 +5,7 @@ output:
     theme: null
     css: mystyle.css
     toc: yes
+    fig_retina: false
 ---
 
 <!--
