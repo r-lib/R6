@@ -21,7 +21,8 @@ and non-functions.}
 \item{active}{An optional list of active binding functions.}
 
 \item{inherit}{A R6ClassGenerator object to inherit from; in other words, a
-superclass.}
+superclass. This is captured as an unevaluated expression which is
+evaluated in \code{parent_env} each time an object is instantiated.}
 
 \item{portable}{If \code{TRUE} (the default), this class will work with
 inheritance across different packages. Note that when this is enabled,

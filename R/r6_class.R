@@ -76,7 +76,8 @@
 #'   and non-functions.
 #' @param active An optional list of active binding functions.
 #' @param inherit A R6ClassGenerator object to inherit from; in other words, a
-#'   superclass.
+#'   superclass. This is captured as an unevaluated expression which is
+#'   evaluated in \code{parent_env} each time an object is instantiated.
 #' @param portable If \code{TRUE} (the default), this class will work with
 #'   inheritance across different packages. Note that when this is enabled,
 #'   fields and members must be accessed with  \code{self$x} or
