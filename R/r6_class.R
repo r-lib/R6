@@ -274,7 +274,7 @@
 #' Simple <- R6Class("Simple",
 #'   public = list(
 #'     x = 1,
-#'     getx = function() x
+#'     getx = function() self$x
 #'   )
 #' )
 #'
@@ -286,6 +286,27 @@
 #' s <- Simple$new()
 #' s$x
 #' s$getx2()
+#'
+#' # Debugging -------------------------------------------------------
+#' \dontrun{
+#' # This will enable debugging the getx() method for objects of the 'Simple'
+#' # class that are instantiated in the future.
+#' Simple$debug("getx")
+#' s <- Simple$new()
+#' s$getx()
+#'
+#' # Disable debugging for future instances:
+#' Simple$undebug("getx")
+#' s <- Simple$new()
+#' s$getx()
+#'
+#' # To enable and disable debugging for a method in a single instance of an
+#' # R6 object (this will not affect other objects):
+#' s <- Simple$new()
+#' debug(s$getx)
+#' s$getx()
+#' undebug(s$getx)
+#' }
 # This function is encapsulated so that it is bound in the R6 namespace, but
 # enclosed in the capsule environment
 R6Class <- encapsulate(function(classname = NULL, public = list(),

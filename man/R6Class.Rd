@@ -297,7 +297,7 @@ np$getx()
 Simple <- R6Class("Simple",
   public = list(
     x = 1,
-    getx = function() x
+    getx = function() self$x
   )
 )
 
@@ -309,5 +309,26 @@ Simple$set("public", "x", 10, overwrite = TRUE)
 s <- Simple$new()
 s$x
 s$getx2()
+
+# Debugging -------------------------------------------------------
+\dontrun{
+# This will enable debugging the getx() method for objects of the 'Simple'
+# class that are instantiated in the future.
+Simple$debug("getx")
+s <- Simple$new()
+s$getx()
+
+# Disable debugging for future instances:
+Simple$undebug("getx")
+s <- Simple$new()
+s$getx()
+
+# To enable and disable debugging for a method in a single instance of an
+# R6 object (this will not affect other objects):
+s <- Simple$new()
+debug(s$getx)
+s$getx()
+undebug(s$getx)
+}
 }
 
