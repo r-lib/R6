@@ -314,6 +314,8 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # Create the generator object, which is an environment
   generator <- new.env(parent = capsule)
 
+  generator$self <- generator
+
   generator$classname  <- classname
   generator$active     <- active
   generator$portable   <- portable
@@ -331,6 +333,8 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # the parent_env, it should return the superclass object.
   generator$inherit <- substitute(inherit)
 
+  # Names of methods for which to enable debugging
+  generator$debug_names <- character(0)
 
   # Set the generator functions to eval in the generator environment, and copy
   # them into the generator env.
@@ -342,5 +346,3 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator
 })
-
-

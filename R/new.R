@@ -79,6 +79,12 @@ generator_funs$new <- function(...) {
   if (!is.null(active))
     active <- assign_func_envs(active, enclos_env)
 
+  # Enable debugging ------------------------------------------------
+  if (length(debug_names) > 0) {
+    lapply(public_methods[names(public_methods) %in% debug_names], base::debug)
+    lapply(private_methods[names(private_methods) %in% debug_names], base::debug)
+    lapply(active[names(active) %in% debug_names], base::debug)
+  }
 
   # Set up superclass objects ---------------------------------------
   if (!is.null(inherit)) {

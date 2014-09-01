@@ -61,8 +61,19 @@ generator_funs$set <- function(which = NULL, name = NULL, value, overwrite = FAL
   }
 
   # Assign in correct group
-  generator <- parent.env(environment())
-  generator[[group]][[name]] <- value
+  self[[group]][[name]] <- value
 
   invisible()
+}
+
+
+# Enable debugging for one or more methods. This will apply to all objects
+# instantiated after this is called.
+generator_funs$debug <- function(name) {
+  debug_names <<- union(debug_names, name)
+}
+
+# Disable debugging for one or more methods.
+generator_funs$undebug <- function(name) {
+  debug_names <<- setdiff(debug_names, name)
 }
