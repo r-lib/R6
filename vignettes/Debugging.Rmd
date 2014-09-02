@@ -16,6 +16,9 @@ output:
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
+Debugging methods in R6 classes is somewhat different from debugging normal R functions.
+
+RStudio breakpoints don't work in R6 class methods. The simplest way to debug code is to insert a `browser()` line where you want to open a debugging console, reload the classes, and then step through your code. But this involves modifying your code, reloading it, and re-instantiating any objects you want to test.
 
 ## Enabling debugging for all future instances of a class
 
@@ -69,3 +72,6 @@ undebug(s$getx)
 s$getx()
 #> [1] 10
 ```
+
+
+You can also use the `trace()` function to specify where in a method you want to drop into the debugging console.
