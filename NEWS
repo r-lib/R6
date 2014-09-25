@@ -1,3 +1,10 @@
+R6 2.0.1
+-------------------------------------------------------------------------------
+
+* Superclasses are checked only on object instantiation, not on class creation.
+
+* Added documentation about debugging and finalizers.
+
 R6 2.0
 -------------------------------------------------------------------------------
 
