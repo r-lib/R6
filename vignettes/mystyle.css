@@ -219,6 +219,10 @@ h5, h6 {
   font-size: 16px;
 }
 
+h4.author {
+  border-bottom: none;
+}
+
 a {
   color: #0033dd;
   text-decoration: none;
