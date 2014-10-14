@@ -88,7 +88,7 @@
 #'   \code{TRUE}. If \code{FALSE}, the objects will simply look like
 #'   environments, which is what they are.
 #' @param lock Should the environments of the generated objects be locked? If
-#'   lcoked, new members can't be added to the objects.
+#'   locked, new members can't be added to the objects.
 #' @examples
 #' # A queue ---------------------------------------------------------
 #' Queue <- R6Class("Queue",
