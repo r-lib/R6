@@ -19,6 +19,5 @@ Suggests:
     scales
 License: MIT + file LICENSE
 URL: https://github.com/wch/R6/
-Roxygen: list(wrap = FALSE)
 LazyData: true
 VignetteBuilder: knitr
