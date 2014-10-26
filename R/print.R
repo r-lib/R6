@@ -1,6 +1,6 @@
 #' @export
 print.R6 <- function(x, ...) {
-  if (is.function(x$print)) {
+  if (exists("print", x, inherits = FALSE)) {
     x$print()
 
   } else {
@@ -12,7 +12,7 @@ print.R6 <- function(x, ...) {
       sep = ""
     )
 
-    if (!is.null(x$private)) {
+    if (exists("private", x, inherits = FALSE)) {
       cat(
         "  Private:\n",
         indent(object_summaries(x$private), 4),
