@@ -25,7 +25,7 @@ superclass. This is captured as an unevaluated expression which is
 evaluated in \code{parent_env} each time an object is instantiated.}
 
 \item{lock}{Should the environments of the generated objects be locked? If
-lcoked, new members can't be added to the objects.}
+locked, new members can't be added to the objects.}
 
 \item{class}{Should a class attribute be added to the object? Default is
 \code{TRUE}. If \code{FALSE}, the objects will simply look like
