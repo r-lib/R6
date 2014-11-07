@@ -45,8 +45,8 @@ Person <- R6Class("Person",
     name = NA,
     hair = NA,
     initialize = function(name, hair) {
-      if (!missing(name)) self$name <- name
-      if (!missing(hair)) self$hair <- hair
+      if (!missing(name)) name -> self$name
+      if (!missing(hair)) hair -> self$hair 
       self$greet()
     },
     set_hair = function(val) {
