@@ -45,12 +45,12 @@ Person <- R6Class("Person",
     name = NA,
     hair = NA,
     initialize = function(name, hair) {
-      if (!missing(name)) name -> self$name
-      if (!missing(hair)) hair -> self$hair 
+      if (!missing(name)) { name -> self$name }
+      if (!missing(hair)) { hair -> self$hair }
       self$greet()
     },
     set_hair = function(val) {
-      self$hair <- val
+      val -> self$hair
     },
     greet = function() {
       cat(paste0("Hello, my name is ", self$name, ".\n"))
