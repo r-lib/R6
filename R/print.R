@@ -70,12 +70,14 @@ object_summaries <- function(x) {
     obj_names <- ls(x, all.names = TRUE)
 
   values <- vapply(obj_names, function(name) {
-    obj <- x[[name]]
     if (is.environment(x) && bindingIsActive(name, x)) "active binding"
-    else if (is.function(obj)) "function"
-    else if (is.environment(obj)) "environment"
-    else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
-    else paste(class(obj), collapse = ", ")
+    else {
+      obj <- x[[name]]
+      if (is.function(obj)) "function"
+      else if (is.environment(obj)) "environment"
+      else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
+      else paste(class(obj), collapse = ", ")
+    }
   }, FUN.VALUE = character(1))
 
   paste0(

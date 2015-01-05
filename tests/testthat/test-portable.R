@@ -112,6 +112,18 @@ test_that("Active bindings work", {
       x2 = function(value) {
         if (missing(value)) return(self$x * 2)
         else self$x <- value/2
+      },
+
+      sqrt_of_x = function(value) {
+        if (!missing(value))
+          # In "setter" role
+          stop("Sorry this is a read-only variable.")
+        else {
+          # In "getter" role
+          if (x < 0) stop("The requested value is not available.")
+          else sqrt(x)
+        }
+
       }
     )
   )
@@ -123,6 +135,13 @@ test_that("Active bindings work", {
   A$x2 <- 60
   expect_identical(A$x2, 60)
   expect_identical(A$x, 30)
+
+  A$x <- -2
+  expect_error(A$sqrt_of_x)
+  # print does not throw an error trying to read
+  # the active binding variables
+  muted_print <- function(x) capture.output(print(x))
+  expect_that(muted_print(A), not(throws_error()))
 })
 
 
