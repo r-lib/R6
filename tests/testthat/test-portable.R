@@ -120,8 +120,8 @@ test_that("Active bindings work", {
           stop("Sorry this is a read-only variable.")
         else {
           # In "getter" role
-          if (x < 0) stop("The requested value is not available.")
-          else sqrt(x)
+          if (self$x < 0) stop("The requested value is not available.")
+          else sqrt(self$x)
         }
 
       }

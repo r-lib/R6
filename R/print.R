@@ -70,8 +70,9 @@ object_summaries <- function(x) {
     obj_names <- ls(x, all.names = TRUE)
 
   values <- vapply(obj_names, function(name) {
-    if (is.environment(x) && bindingIsActive(name, x)) "active binding"
-    else {
+    if (is.environment(x) && bindingIsActive(name, x)) {
+      "active binding"
+    } else {
       obj <- x[[name]]
       if (is.function(obj)) "function"
       else if (is.environment(obj)) "environment"
