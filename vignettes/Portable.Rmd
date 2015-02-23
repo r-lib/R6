@@ -20,7 +20,7 @@ One limitation to R's reference classes is that class inheritance across package
 
 ## The problem
 
-Here is an example of the cross-pacakge inheritance problem with reference classes: Suppose you have ClassA in pkgA, and ClassB in pkgB, which inherits from ClassA. ClassA has a method `foo` which calls a non-exported function `fun` in pkgA.
+Here is an example of the cross-package inheritance problem with reference classes: Suppose you have ClassA in pkgA, and ClassB in pkgB, which inherits from ClassA. ClassA has a method `foo` which calls a non-exported function `fun` in pkgA.
 
 If ClassB inherits `foo`, it will try to call `fun` -- but since ClassB objects are created in pkgB namespace (which is an environment) instead of the pkgA namespace, it won't be able to find `fun`.
 
