@@ -139,7 +139,7 @@ generator_funs$new <- function(...) {
   class(public_bind_env) <- classes
 
   # Initialize ------------------------------------------------------
-  if (is.function(public_bind_env$initialize)) {
+  if (exists("initialize", public_bind_env, inherits = FALSE)) {
     public_bind_env$initialize(...)
   } else if (length(list(...)) != 0 ) {
     stop("Called new() with arguments, but there is no initialize method.")
