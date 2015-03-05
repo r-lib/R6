@@ -1,7 +1,7 @@
 #' @export
 print.R6 <- function(x, ...) {
   if (is.function(x$print)) {
-    x$print()
+    x$print(...)
 
   } else {
     cat(
