@@ -28,6 +28,7 @@ generator_funs <- list()
 # Add tab completion of all objects inheriting from R6. It will complete all
 # public fields and methods (method parameters doesn't work though)
 #' @export
+#' @importFrom utils .DollarNames
 .DollarNames.R6 <- function(x, pattern){
-  utils:::findMatches(pattern, ls(x))
+  grep(pattern, ls(x), value=TRUE)
 }
