@@ -293,7 +293,7 @@ To avoid this, populate the field in the `initialize` method:
 NonSharedField <- R6Class("NonSharedField",
   public = list(
     e = NULL,
-    initialize = function() e <<- SimpleClass$new()
+    initialize = function() self$e <- SimpleClass$new()
   )
 )
 
