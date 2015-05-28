@@ -1,4 +1,4 @@
-R6 2.0.2
+R6 2.0.1.9xxx
 -------------------------------------------------------------------------------
 
 * Previously, when an R6 object was printed, it accessed (and called) active
