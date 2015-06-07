@@ -245,6 +245,57 @@
 #' cq$get_total()
 #' #> [1] 3
 #'
+#' # Object copying --------------------------------------------------
+#' # Shallow copying of R6 objects are provided for free using the copy
+#' # method on class instances.
+#'
+#' Copier <- R6Class("Copier",
+#'   public = list(
+#'     x = 1
+#'   )
+#' )
+#'
+#' cop <- Copier$new()
+#' cop2 <- cop
+#' cop3 <- cop$copy()
+#'
+#' # cop and cop2 refers to the same object, while cop3 is disconnected
+#' # from them both
+#' cop$x <- 10
+#'
+#' cop$x == cop2$x
+#' cop$x != cop3$x
+#'
+#' # More complicated objects with fields containing environments or other
+#' # R6 objects might need additional handling if deep copying is wanted.
+#'
+#' DeepCopier <- R6Class("DeepCopier",
+#'   public = list(
+#'     y = Copier$new(),
+#'     z = 'a'
+#'   ),
+#'   private = list(
+#'     deepCopy = function() {
+#'       list(
+#'         public = list(y=self$y$copy())
+#'       )
+#'     }
+#'   )
+#' )
+#'
+#' dcop <- DeepCopier$new()
+#' dcop2 <- dcop$copy()
+#' dcop3 <- dcop$copy(deep = TRUE)
+#'
+#' # dcop2 is a shallow copy of dcop
+#' dcop$z <- 'b'
+#' dcop$z != dcop2$z
+#'
+#' dcop$y$x <- 10
+#' dcop$y$x == dcop2$y$x
+#'
+#' # dcop3 is deep
+#' dcop$y$x != dcop3$y$x
 #'
 #' # Non-portable classes --------------------------------------------
 #' # By default, R6 classes are portable, which means they can be inherited
