@@ -34,4 +34,14 @@ encapsulate({
     }
     list2env(x, envir)
   }
+
+  # Wrapper around as.list that works on R6 baseclasses
+  to_list <- function(x) {
+    old_class <- class(x)
+    class(x) <- NULL
+    on.exit({
+      class(x) <- old_class
+    })
+    as.list(x)
+  }
 })
