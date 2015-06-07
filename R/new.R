@@ -79,6 +79,12 @@ generator_funs$new <- function(...) {
   if (!is.null(active))
     active <- assign_func_envs(active, enclos_env)
 
+  # Add copy method -------------------------------------------------
+  copy_encl <- list2env2(to_list(parent.env(environment())), parent=parent.env(parent.env(environment())))
+  copy_encl$encl <- enclos_env
+  public_methods$copy <- copy
+  environment(public_methods$copy) <- copy_encl
+
   # Enable debugging ------------------------------------------------
   if (length(debug_names) > 0) {
     lapply(public_methods[names(public_methods) %in% debug_names], base::debug)
