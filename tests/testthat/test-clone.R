@@ -7,7 +7,7 @@ test_that("Cloning portable objects with public only", {
     public = list(
       x = 1,
       getx = function() self$x,
-      clone = function() R6::clone()
+      clone = function() clone(self)
     ),
     parent_env = parenv
   )
@@ -38,6 +38,12 @@ test_that("Cloning portable objects with public only", {
   # Parent of binding env is emptyenv(), for portable classes
   expect_identical(parent.env(a), emptyenv())
   expect_identical(parent.env(b), emptyenv())
+
+  # Cloning a clone
+  c <- b$clone()
+  expect_identical(c$getx(), 2)
+  c$x <- 3
+  expect_identical(c$getx(), 3)
 })
 
 
@@ -48,7 +54,7 @@ test_that("Cloning non-portable objects with public only", {
     public = list(
       x = 1,
       getx = function() self$x,
-      clone = function() R6::clone()
+      clone = function() R6::clone(self)
     ),
     parent_env = parenv
   )
@@ -91,7 +97,7 @@ test_that("Cloning portable objects with public and private", {
       getx = function() self$x,
       getprivate = function() private,
       sety = function(value) private$y <- value,
-      clone = function() R6::clone()
+      clone = function() clone(self)
     ),
     private = list(
       y = 1,
@@ -152,7 +158,7 @@ test_that("Cloning non-portable objects with public and private", {
       getx = function() self$x,
       getprivate = function() private,
       sety = function(value) private$y <- value,
-      clone = function() R6::clone()
+      clone = function() R6::clone(self)
     ),
     private = list(
       y = 1,
@@ -202,3 +208,54 @@ test_that("Cloning non-portable objects with public and private", {
   expect_identical(ls(b$getprivate()), c("gety", "y"))
 })
 
+
+test_that("Lock state", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      yval = function(y) {
+        if (missing(y)) private$y
+        else private$y <- y
+      }
+    ),
+    private = list(w = 1),
+    lock = TRUE
+  )
+
+  a <- AC$new()
+  b <- clone(a)
+  expect_error(a$z <- 1)
+  expect_error(b$z <- 1)
+
+  expect_identical(a$yval(), NULL)
+  expect_identical(b$yval(), NULL)
+  expect_error(a$yval(1))
+  expect_error(b$yval(1))
+
+  # With lock = FALSE
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      yval = function(y) {
+        if (missing(y)) private$y
+        else private$y <- y
+      }
+    ),
+    private = list(w = 1),
+    lock = FALSE
+  )
+
+  a <- AC$new()
+  b <- clone(a)
+  a$y <- 1
+  b$y <- 1
+  expect_identical(a$y, 1)
+  expect_identical(b$y, 1)
+
+  expect_identical(a$yval(), NULL)
+  expect_identical(b$yval(), NULL)
+  a$yval(1)
+  b$yval(1)
+  expect_identical(a$yval(), 1)
+  expect_identical(b$yval(), 1)
+})
