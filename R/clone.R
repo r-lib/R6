@@ -1,6 +1,73 @@
 #' Clone an R6 object
 #'
+#' This function clones an R6 object, with a few limitations. It can be called
+#' with \code{clone(obj)}, or you can add a public \code{clone} method to your
+#' class, like this: \code{clone = function() clone(self)}.
+#'
+#' Note that for non-portable R6 classes, \code{clone = function() clone(self)}
+#' will result in the method attempting to call itself. In this case, you will
+#' need to use \code{clone = function() R6::clone(self)}.
+#'
+#' @section Limitations:
+#'
+#'   \code{clone()} can't correctly copy objects with active bindings; the value
+#'   of the active binding will be copied, not the active binding itself.
+#'
+#'   If you try to clone an object that inherits from another class,
+#'   \code{clone()} presently won't copy the \code{super} object. This will
+#'   cause problems only if you access the \code{super} object explicitly; any
+#'   inherited fields or methods should work fine.
+#'
+#'   \code{clone()} only makes shallow copies. If your object has any fields
+#'   with reference semantics (e.g., environments, RefClass objects, or R6
+#'   objects), then clone will point to those same objects, not copies of those
+#'   objects.
+#'
 #' @param obj An R6 object to clone.
+#'
+#' @examples
+#' AC <- R6Class("AC",
+#'   public = list(
+#'     x = 1,
+#'     gety = function() private$y,
+#'     sety = function(y) private$y <- y
+#'   ),
+#'   private = list(
+#'     y = 1
+#'   )
+#' )
+#'
+#' a <- AC$new()
+#' b <- clone(a)
+#' b$x       # 1
+#' b$gety()  # 1
+#'
+#' # Changing values in a doesn't affect b
+#' a$x <- 2
+#' a$sety(2)
+#' b$x       # 1
+#' b$gety()  # 1
+#'
+#' # Changing values in b does affect b
+#' b$x <- 3
+#' b$sety(3)
+#' b$x       # 3
+#' b$gety()  # 3
+#'
+#'
+#'
+#' # A class with a built-in clone() method
+#' Cloner <- R6Class("Cloner",
+#'   public = list(
+#'     x = 1,
+#'     clone = function() clone(self)
+#'   )
+#' )
+#'
+#' a <- Cloner$new()
+#' b <- a$clone()
+#' a$x <- 2
+#' b$x  # 1
 #'
 #' @export
 clone <- encapsulate(function(obj) {
@@ -82,4 +149,3 @@ clone <- encapsulate(function(obj) {
   attr(public_bind_env, "enclos_env") <- new_enclos_env
   public_bind_env
 })
-
