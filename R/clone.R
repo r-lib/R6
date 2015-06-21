@@ -114,6 +114,9 @@ clone <- encapsulate(function(obj) {
     list2env2(private_copies, private_bind_env)
   }
 
+  # Clone super object -------------------------------------------
+  clone_super(old_enclos_env, new_enclos_env, public_bind_env)
+
   # Lock --------------------------------------------------------------
   # Copy locked state of environment
   if (environmentIsLocked(old_public_bind_env)) {
@@ -148,4 +151,53 @@ clone <- encapsulate(function(obj) {
 
   attr(public_bind_env, "enclos_env") <- new_enclos_env
   public_bind_env
+})
+
+
+encapsulate({
+  clone_super <- function(old_enclos_env, new_enclos_env, public_bind_env) {
+    old_super_bind_env <- old_enclos_env$super
+    if (is.null(old_super_bind_env))
+      return()
+
+    # Copy all the methods from the old super binding env to the new one, and
+    # set their enclosing env to a new one.
+    super_copies <- as.list.environment(old_super_bind_env)
+
+    # Degenerate case: super env is empty
+    if (length(super_copies) == 0) {
+      new_enclos_env$super <- new.env(parent = emptyenv(), hash = FALSE)
+      return()
+    }
+
+    # All items in the old_super_bind_env must be functions; to get the
+    # old_super_enclos_env, simply call environment() on one of them. Doing it
+    # this way lets us avoid storing an explicit pointer to the super_enclos_env
+    # in the original super_bind_env. This doesn't work as well for avoiding
+    # storing the enclos_env in the original public_bind_env, because there are
+    # many possible items there. We can't assume that just any item is a
+    # function -- and even if we do find a function, it's not guaranteed that
+    # it's a method. It may be a function (with a different parent env) that was
+    # added after the object was created.
+    old_super_enclos_env <- environment(super_copies[[1]])
+
+    # Create new super enclos env and populate with self and private.
+    new_super_enclos_env <- new.env(parent = parent.env(old_super_enclos_env),
+                                    hash = FALSE)
+    new_super_enclos_env$self <- public_bind_env
+    if (!is.null(new_enclos_env$private))
+      new_super_enclos_env$private <- new_enclos_env$private
+
+    new_super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+
+    # Copy over the methods and fix up their environments
+    super_copies <- assign_func_envs(super_copies, new_super_enclos_env)
+    list2env2(super_copies, new_super_bind_env)
+
+
+    new_enclos_env$super <- new_super_bind_env
+
+    # Recurse
+    clone_super(old_super_enclos_env, new_super_enclos_env, public_bind_env)
+  }
 })

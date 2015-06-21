@@ -259,3 +259,53 @@ test_that("Lock state", {
   expect_identical(a$yval(), 1)
   expect_identical(b$yval(), 1)
 })
+
+
+test_that("Cloning inherited methods", {
+  C1 <- R6Class("C1",
+    public = list(
+      x = 1,
+      getx = function() self$x,
+      addx = function() self$x + 10
+    )
+  )
+
+  C2 <- R6Class("C2",
+    inherit = C1,
+    public = list(
+      x = 2,
+      addx = function() super$addx() + 10
+    )
+  )
+
+  a <- C2$new()
+  b <- clone(a)
+
+  expect_identical(b$getx(), 2)
+  expect_identical(b$addx(), 22)
+  b$x <- 3
+  expect_identical(b$getx(), 3)
+  expect_identical(b$addx(), 23)
+
+
+  # Same as previous, but with another copy and another level of inheritance
+  C3 <- R6Class("C3",
+    inherit = C2,
+    public = list(
+      x = 3,
+      addx = function() super$addx() + 20
+    )
+  )
+
+  a <- C3$new()
+  b <- clone(a)
+  c <- clone(b)
+  b$x <- 4
+  c$x <- 5
+  expect_identical(a$getx(), 3)
+  expect_identical(a$addx(), 43)
+  expect_identical(b$getx(), 4)
+  expect_identical(b$addx(), 44)
+  expect_identical(c$getx(), 5)
+  expect_identical(c$addx(), 45)
+})
