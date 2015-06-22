@@ -60,7 +60,10 @@ generator_funs$set <- function(which = NULL, name = NULL, value, overwrite = FAL
          " generator.")
   }
 
-  # Assign in correct group
+  # Assign in correct group. Create group if it doesn't exist.
+  if (is.null(self[[group]]))
+    self[[group]] <- list()
+
   self[[group]][[name]] <- value
 
   invisible()

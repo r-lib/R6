@@ -62,3 +62,18 @@ test_that("Setting values set values on generator", {
   expect_error(AC$set("public", "z", function() 99, overwrite = TRUE))
   expect_error(AC$set("private", "x2", function(value) 99, overwrite = TRUE))
 })
+
+
+test_that("Setting values with empty public or private", {
+  AC <- R6::R6Class("AC",
+    public = list(),
+    private = list()
+  )
+  AC$set("public", "x", 1)
+  AC$set("private", "y", 1)
+  AC$set("public", "gety", function() private$y)
+
+  a <- AC$new()
+  expect_identical(a$x, 1)
+  expect_identical(a$gety(), 1)
+})
