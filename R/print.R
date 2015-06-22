@@ -12,10 +12,11 @@ print.R6 <- function(x, ...) {
       sep = ""
     )
 
-    if (!is.null(x$private)) {
+    private <- attr(x, "enclos_env", TRUE)
+    if (!is.null(private)) {
       cat(
         "  Private:\n",
-        indent(object_summaries(x$private), 4),
+        indent(object_summaries(private), 4),
         "\n",
         sep = ""
       )
