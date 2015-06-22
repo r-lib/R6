@@ -54,7 +54,8 @@ print.R6ClassGenerator <- function(x, ...) {
     )
   }
   cat("  Parent env: ", format(x$parent_env), "\n", sep = "")
-  cat("  Lock: ", x$lock, "\n", sep = "")
+  cat("  Locked objects: ", x$lock_objects, "\n", sep = "")
+  cat("  Locked class: ", x$lock_class, "\n", sep = "")
   cat("  Portable: ", x$portable, "\n", sep = "")
   invisible(x)
 }

@@ -30,7 +30,7 @@
 #'
 #'   R6 object generators and R6 objects have a default \code{print} method to
 #'   show them on the screen: they simply list the members and parameters (e.g.
-#'   lock, portable, etc., see above) of the object.
+#'   lock_objects, portable, etc., see above) of the object.
 #'
 #'   The default \code{print} method of R6 objects can be redefined, by
 #'   supplying a public \code{print} method. (\code{print} members that are not
@@ -87,8 +87,14 @@
 #' @param class Should a class attribute be added to the object? Default is
 #'   \code{TRUE}. If \code{FALSE}, the objects will simply look like
 #'   environments, which is what they are.
-#' @param lock Should the environments of the generated objects be locked? If
-#'   locked, new members can't be added to the objects.
+#' @param lock_objects Should the environments of the generated objects be
+#'   locked? If locked, new members can't be added to the objects.
+#' @param lock_class If \code{TRUE}, it won't be possible to add more members to
+#'   the generator object with \code{$set}. If \code{FALSE} (the default), then
+#'   it will be possible to add more members with \code{$set}. The methods
+#'   \code{$is_locked}, \code{$lock}, and \code{$unlock} can be used to query
+#'   and change the locked state of the class.
+#' @param lock Deprecated as of version 2.1; use \code{lock_class} instead.
 #' @examples
 #' # A queue ---------------------------------------------------------
 #' Queue <- R6Class("Queue",
@@ -307,13 +313,15 @@
 #' s$getx()
 #' undebug(s$getx)
 #' }
+
 # This function is encapsulated so that it is bound in the R6 namespace, but
 # enclosed in the capsule environment
 R6Class <- encapsulate(function(classname = NULL, public = list(),
                                 private = NULL, active = NULL,
-                                inherit = NULL, lock = TRUE, class = TRUE,
-                                portable = TRUE,
-                                parent_env = parent.frame()) {
+                                inherit = NULL, lock_objects = TRUE,
+                                class = TRUE, portable = TRUE,
+                                lock_class = FALSE,
+                                parent_env = parent.frame(), lock) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
     stop("All elements of public, private, and active must be named.")
@@ -331,18 +339,26 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (length(get_nonfunctions(active)) != 0)
     stop("All items in active must be functions.")
 
+  if (!missing(lock)) {
+    message(paste(
+      "R6Class: 'lock' argument has been renamed to 'lock_objects' as of version 2.1.",
+      "This code will continue to work, but the 'lock' option will be removed in a later version of R6"
+    ))
+    lock_objects <- lock
+  }
 
   # Create the generator object, which is an environment
   generator <- new.env(parent = capsule)
 
   generator$self <- generator
 
-  generator$classname  <- classname
-  generator$active     <- active
-  generator$portable   <- portable
-  generator$parent_env <- parent_env
-  generator$lock       <- lock
-  generator$class      <- class
+  generator$classname    <- classname
+  generator$active       <- active
+  generator$portable     <- portable
+  generator$parent_env   <- parent_env
+  generator$lock_objects <- lock_objects
+  generator$class        <- class
+  generator$lock_class   <- lock_class
 
   # Separate fields from methods
   generator$public_fields   <- get_nonfunctions(public)

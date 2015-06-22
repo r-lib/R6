@@ -23,6 +23,9 @@ generator_funs$has_private <- function() {
 # properly; it needs to be copied, and its parent environment set to the
 # generator object environment.
 generator_funs$set <- function(which = NULL, name = NULL, value, overwrite = FALSE) {
+  if (lock_class)
+    stop("Can't modify a locked R6 class.")
+
   if (is.null(which) || !(which %in% c("public", "private", "active")))
     stop("`which` must be 'public', 'private', or 'active'.")
 
@@ -79,4 +82,16 @@ generator_funs$debug <- function(name) {
 # Disable debugging for one or more methods.
 generator_funs$undebug <- function(name) {
   debug_names <<- setdiff(debug_names, name)
+}
+
+generator_funs$lock <- function() {
+  lock_class <<- TRUE
+}
+
+generator_funs$unlock <- function() {
+  lock_class <<- FALSE
+}
+
+generator_funs$is_locked <- function() {
+  lock_class
 }

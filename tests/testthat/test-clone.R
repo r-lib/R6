@@ -248,7 +248,7 @@ test_that("Lock state", {
       }
     ),
     private = list(w = 1),
-    lock = TRUE
+    lock_objects = TRUE
   )
 
   a <- AC$new()
@@ -271,7 +271,7 @@ test_that("Lock state", {
       }
     ),
     private = list(w = 1),
-    lock = FALSE
+    lock_objects = FALSE
   )
 
   a <- AC$new()
