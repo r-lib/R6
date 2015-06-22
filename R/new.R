@@ -138,6 +138,9 @@ generator_funs$new <- function(...) {
 
   class(public_bind_env) <- classes
 
+  # Add refs to other environments in the object --------------------
+  attr(public_bind_env, "enclos_env") <- enclos_env
+
   # Initialize ------------------------------------------------------
   if (is.function(public_bind_env$initialize)) {
     public_bind_env$initialize(...)
