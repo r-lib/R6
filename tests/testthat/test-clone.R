@@ -209,6 +209,35 @@ test_that("Cloning non-portable objects with public and private", {
 })
 
 
+test_that("Cloning active bindings", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1
+    ),
+    active = list(
+      x2 = function(value) {
+        if (missing(value)) self$x * 2
+        else self$x <- value / 2
+      }
+    )
+  )
+
+  a <- AC$new()
+  b <- clone(a)
+
+  a$x <- 10
+  expect_identical(a$x2, 20)
+  a$x2 <- 22
+  expect_identical(a$x, 11)
+
+  expect_identical(b$x2, 2)
+  b$x <- 2
+  expect_identical(b$x2, 4)
+  b$x2 <- 10
+  expect_identical(b$x, 5)
+})
+
+
 test_that("Lock state", {
   AC <- R6Class("AC",
     public = list(
@@ -267,6 +296,12 @@ test_that("Cloning inherited methods", {
       x = 1,
       getx = function() self$x,
       addx = function() self$x + 10
+    ),
+    active = list(
+      xa = function(val) {
+        if (missing(val)) self$x * 2
+        else self$x <- val / 2
+      }
     )
   )
 
@@ -275,6 +310,12 @@ test_that("Cloning inherited methods", {
     public = list(
       x = 2,
       addx = function() super$addx() + 10
+    ),
+    active = list(
+      xa = function(val) {
+        if (missing(val)) self$x * 3
+        else self$x <- val / 3
+      }
     )
   )
 
@@ -287,6 +328,13 @@ test_that("Cloning inherited methods", {
   expect_identical(b$getx(), 3)
   expect_identical(b$addx(), 23)
 
+  expect_identical(b$xa, 9)
+  b$xa <- 12
+  expect_identical(b$x, 4)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 2)
+
 
   # Same as previous, but with another copy and another level of inheritance
   C3 <- R6Class("C3",
@@ -294,6 +342,12 @@ test_that("Cloning inherited methods", {
     public = list(
       x = 3,
       addx = function() super$addx() + 20
+    ),
+    active = list(
+      xa = function(val) {
+        if (missing(val)) self$x * 4
+        else self$x <- val / 4
+      }
     )
   )
 
@@ -308,4 +362,25 @@ test_that("Cloning inherited methods", {
   expect_identical(b$addx(), 44)
   expect_identical(c$getx(), 5)
   expect_identical(c$addx(), 45)
+
+  expect_identical(c$xa, 20)
+  c$xa <- 24
+  expect_identical(c$x, 6)
+
+  # Make sure a and b were unaffected
+  expect_identical(a$x, 3)
+  expect_identical(b$x, 4)
+
+
+  # Three levels; don't override active binding
+  C3na <- R6Class("C3na",
+    inherit = C2,
+    public = list(x = 3)
+  )
+  a <- C3na$new()
+  b <- clone(a)
+  b$x <- 4
+  expect_identical(b$xa, 12)
+  b$xa <- 15
+  expect_identical(b$x, 5)
 })

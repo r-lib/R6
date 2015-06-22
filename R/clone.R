@@ -102,12 +102,30 @@ clone <- encapsulate(function(obj) {
     new_enclos_env <- public_bind_env
   }
 
+
+  # Copy members ----------------------------------------------------
+
   # Copy the old objects, fix up method environments, and put them into the
   # new binding environment.
   public_copies <- as.list.environment(old_public_bind_env, all.names = TRUE)
   public_copies <- assign_func_envs(public_copies, new_enclos_env)
+
+  # Separate active and non-active bindings
+  active_idx <- vapply(names(public_copies), bindingIsActive, env = old_public_bind_env,
+                       logical(1))
+  active_copies <- public_copies[active_idx]
+  public_copies <- public_copies[!active_idx]
+
+  # Copy in public and active bindings
   list2env2(public_copies, public_bind_env)
 
+  if (length(active_copies) > 0) {
+    for (name in names(active_copies)) {
+      makeActiveBinding(name, active_copies[[name]], public_bind_env)
+    }
+  }
+
+  # Copy private members
   if (has_private) {
     private_copies <- as.list.environment(old_private_bind_env, all.names = TRUE)
     private_copies <- assign_func_envs(private_copies, new_enclos_env)
