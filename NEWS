@@ -4,9 +4,14 @@ R6 2.0.1.9xxx
 * Added support for making shallow clones of R6 objects with the `clone()`
   function. (#27)
 
+* Allow adding public or private members when there were no public or private
+  members to begin with. (#51)
+
 * Previously, when an R6 object was printed, it accessed (and called) active
   bindings. Now it simply reports that a field is an active binding. (#37, #38.
   Thanks to Oscar de Lama)
+
+* Printing private members now works correctly for portable R6 objects. (#26)
 
 R6 2.0.1
 -------------------------------------------------------------------------------
