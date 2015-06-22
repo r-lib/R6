@@ -104,12 +104,12 @@ clone <- encapsulate(function(obj) {
 
   # Copy the old objects, fix up method environments, and put them into the
   # new binding environment.
-  public_copies <- as.list.environment(old_public_bind_env)
+  public_copies <- as.list.environment(old_public_bind_env, all.names = TRUE)
   public_copies <- assign_func_envs(public_copies, new_enclos_env)
   list2env2(public_copies, public_bind_env)
 
   if (has_private) {
-    private_copies <- as.list.environment(old_private_bind_env)
+    private_copies <- as.list.environment(old_private_bind_env, all.names = TRUE)
     private_copies <- assign_func_envs(private_copies, new_enclos_env)
     list2env2(private_copies, private_bind_env)
   }
@@ -162,7 +162,7 @@ encapsulate({
 
     # Copy all the methods from the old super binding env to the new one, and
     # set their enclosing env to a new one.
-    super_copies <- as.list.environment(old_super_bind_env)
+    super_copies <- as.list.environment(old_super_bind_env, all.names = TRUE)
 
     # Degenerate case: super env is empty
     if (length(super_copies) == 0) {
