@@ -10,14 +10,6 @@
 #'
 #' @section Limitations:
 #'
-#'   \code{clone()} can't correctly copy objects with active bindings; the value
-#'   of the active binding will be copied, not the active binding itself.
-#'
-#'   If you try to clone an object that inherits from another class,
-#'   \code{clone()} presently won't copy the \code{super} object. This will
-#'   cause problems only if you access the \code{super} object explicitly; any
-#'   inherited fields or methods should work fine.
-#'
 #'   \code{clone()} only makes shallow copies. If your object has any fields
 #'   with reference semantics (e.g., environments, RefClass objects, or R6
 #'   objects), then clone will point to those same objects, not copies of those
