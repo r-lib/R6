@@ -394,3 +394,75 @@ test_that("Cloning inherited methods", {
   b$xa <- 15
   expect_identical(b$x, 5)
 })
+
+
+test_that("Deep cloning", {
+  AC <- R6Class("AC", public = list(x = 1))
+  BC <- R6Class("BC",
+    public = list(
+      x = NULL,
+      y = function() private$y_,
+      initialize = function() {
+        self$x <- AC$new()
+        private$y_ <- AC$new()
+      }
+    ),
+    private = list(
+      y_ = NULL
+    )
+  )
+
+  b <- BC$new()
+  b2 <- b$clone(deep = FALSE)
+  expect_identical(b$x, b2$x)
+  expect_identical(b$y(), b2$y())
+
+  b <- BC$new()
+  b2 <- b$clone(deep = TRUE)
+  expect_false(identical(b$x, b2$x))
+  expect_false(identical(b$y(), b2$y()))
+  # Make sure b2$x and b2$y are properly cloned R6 objects
+  expect_identical(class(b2$x), c("AC", "R6"))
+  expect_identical(class(b2$y()), c("AC", "R6"))
+
+
+  # Deep cloning with custom function
+  AC <- R6Class("AC", public = list(x = 1))
+  BC <- R6Class("BC",
+    public = list(
+      x = "AC",
+      y = "AC",
+      z = "AC",
+      initialize = function() {
+        self$x <- AC$new()
+        self$y <- AC$new()
+        self$z <- AC$new()
+      }
+    ),
+    private = list(
+      deep_clone = function(name, val) {
+        if (name %in% c("x", "y"))
+          val$clone()
+        else
+          val
+      }
+    )
+  )
+  a <- BC$new()
+  b <- a$clone()
+  c <- a$clone(deep = TRUE)
+
+  a$x$x <- 2
+  a$y$x <- 3
+  a$z$x <- 4
+
+  # b is shallow clone
+  expect_identical(a$x$x, b$x$x)
+  expect_identical(a$y$x, b$y$x)
+  expect_identical(a$z$x, b$z$x)
+
+  # c has deep clones of x and y, but not z
+  expect_identical(c$x$x, 1)
+  expect_identical(c$y$x, 1)
+  expect_identical(a$z$x, c$z$x)
+})
