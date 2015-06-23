@@ -139,7 +139,17 @@ generator_funs$new <- function(...) {
   class(public_bind_env) <- classes
 
   # Add refs to other environments in the object --------------------
-  attr(public_bind_env, "enclos_env") <- enclos_env
+  if (portable) {
+    attr(public_bind_env, "enclos_env") <- enclos_env
+  } else {
+    # Setting this to NULL for non-portable classes is a hack to work around a
+    # self-reference segfault bug that's present in R 3.2.1. See
+    # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=16441 and
+    # https://github.com/wch/R6/issues/64/. Hopefully this will be fixed in a
+    # future version of R. Until the fix is widespread, we need this hack: NA
+    # means that the public_bind_env itself is also the enclos_env.
+    attr(public_bind_env, "enclos_env") <- NA
+  }
 
   # Initialize ------------------------------------------------------
   if (is.function(public_bind_env$initialize)) {

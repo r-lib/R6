@@ -73,6 +73,11 @@
 clone <- encapsulate(function(obj) {
   old_enclos_env <- attr(obj, "enclos_env", TRUE)
 
+  # This is a workaround for https://github.com/wch/R6/issues/64/. See the
+  # comment in $new for more information.
+  if (identical(old_enclos_env, NA)) {
+    old_enclos_env <- obj
+  }
   if (!is.environment(old_enclos_env)) {
     stop("`obj` must be an R6 object.")
   }
