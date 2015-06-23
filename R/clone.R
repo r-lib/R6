@@ -77,12 +77,12 @@ generator_funs$clone_method <- function() {
   }
 
 
-  old_enclos_env = parent.env(environment())
+  old_enclos_env = self$`.__enclos_env__`
   if (!is.environment(old_enclos_env)) {
     stop("clone() must be called from an R6 object.")
   }
 
-  old_public_bind_env <- old_enclos_env$self
+  old_public_bind_env <- self
   old_private_bind_env <- old_enclos_env$private
   has_private <- !is.null(old_private_bind_env)
 
