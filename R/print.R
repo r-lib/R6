@@ -54,7 +54,16 @@ print.R6ClassGenerator <- function(x, ...) {
     )
   }
   cat("  Parent env: ", format(x$parent_env), "\n", sep = "")
-  cat("  Lock: ", x$lock, "\n", sep = "")
+  # R6 generators created by versions <2.1 could be used with this version of
+  # print. They had x$lock instead of x$lock_objects, and they didn't have
+  # x$lock_class at all. Make sure we don't error in that case. Eventually we'll
+  # be able to remove this check.
+  if (!is.null(x$lock) && is.logical(x$lock))
+    cat("  Locked objects: ", x$lock, "\n", sep = "")
+  if (!is.null(x$lock_objects))
+    cat("  Locked objects: ", x$lock_objects, "\n", sep = "")
+  if (!is.null(x$lock_class))
+    cat("  Locked class: ", x$lock_class, "\n", sep = "")
   cat("  Portable: ", x$portable, "\n", sep = "")
   invisible(x)
 }

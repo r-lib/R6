@@ -6,8 +6,8 @@
 \title{Create an R6 reference object generator}
 \usage{
 R6Class(classname = NULL, public = list(), private = NULL,
-  active = NULL, inherit = NULL, lock = TRUE, class = TRUE,
-  portable = TRUE, parent_env = parent.frame())
+  active = NULL, inherit = NULL, lock_objects = TRUE, class = TRUE,
+  portable = TRUE, lock_class = FALSE, parent_env = parent.frame(), lock)
 }
 \arguments{
 \item{classname}{Name of the class. The class name is useful primarily for S3
@@ -25,8 +25,8 @@ and non-functions.}
 superclass. This is captured as an unevaluated expression which is
 evaluated in \code{parent_env} each time an object is instantiated.}
 
-\item{lock}{Should the environments of the generated objects be locked? If
-locked, new members can't be added to the objects.}
+\item{lock_objects}{Should the environments of the generated objects be
+locked? If locked, new members can't be added to the objects.}
 
 \item{class}{Should a class attribute be added to the object? Default is
 \code{TRUE}. If \code{FALSE}, the objects will simply look like
@@ -37,8 +37,16 @@ inheritance across different packages. Note that when this is enabled,
 fields and members must be accessed with  \code{self$x} or
 \code{private$x}; they can't be accessed with just \code{x}.}
 
+\item{lock_class}{If \code{TRUE}, it won't be possible to add more members to
+the generator object with \code{$set}. If \code{FALSE} (the default), then
+it will be possible to add more members with \code{$set}. The methods
+\code{$is_locked}, \code{$lock}, and \code{$unlock} can be used to query
+and change the locked state of the class.}
+
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
+
+\item{lock}{Deprecated as of version 2.1; use \code{lock_class} instead.}
 }
 \description{
 R6 objects are essentially environments, structured in a way that makes them
@@ -73,7 +81,7 @@ instantiate the object and assign it.
 
   R6 object generators and R6 objects have a default \code{print} method to
   show them on the screen: they simply list the members and parameters (e.g.
-  lock, portable, etc., see above) of the object.
+  lock_objects, portable, etc., see above) of the object.
 
   The default \code{print} method of R6 objects can be redefined, by
   supplying a public \code{print} method. (\code{print} members that are not

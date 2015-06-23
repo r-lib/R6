@@ -65,7 +65,7 @@ test_that("Setting values set values on generator", {
 
 
 test_that("Setting values with empty public or private", {
-  AC <- R6::R6Class("AC",
+  AC <- R6Class("AC",
     public = list(),
     private = list()
   )
@@ -76,4 +76,17 @@ test_that("Setting values with empty public or private", {
   a <- AC$new()
   expect_identical(a$x, 1)
   expect_identical(a$gety(), 1)
+})
+
+test_that("Locked class", {
+  AC <- R6Class("AC", lock_class = TRUE)
+  expect_error(AC$set("public", "x", 1))
+  expect_error(AC$set("private", "x", 1))
+
+  expect_true(AC$is_locked())
+  AC$unlock()
+  expect_false(AC$is_locked())
+  AC$set("public", "x", 1)
+  AC$lock()
+  expect_error(AC$set("public", "x", 2))
 })

@@ -150,7 +150,7 @@ test_that("Locking works", {
     portable = FALSE,
     public = list(x = 1, getx = function() self$x),
     private = list(y = 2, gety = function() self$y),
-    lock = TRUE
+    lock_objects = TRUE
   )
   A <- AC$new()
 
@@ -174,7 +174,7 @@ test_that("Locking works", {
     portable = FALSE,
     public = list(x = 1, getx = function() x),
     private = list(y = 2, gety = function() y),
-    lock = FALSE
+    lock_objects = FALSE
   )
   A <- AC$new()
 

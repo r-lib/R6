@@ -123,7 +123,7 @@ generator_funs$new <- function(...) {
   }
 
   # Lock ------------------------------------------------------------
-  if (lock) {
+  if (lock_objects) {
     if (has_priv) lockEnvironment(private_bind_env)
     lockEnvironment(public_bind_env)
   }
