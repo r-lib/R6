@@ -13,6 +13,9 @@ R6 2.0.1.9xxx
 
 * Printing private members now works correctly for portable R6 objects. (#26)
 
+* The 'lock' argument has been renamed to 'lock_objects'. Also, there is a new
+  argument, 'lock_class', which can prevent changes to the class. (#52)
+
 R6 2.0.1
 -------------------------------------------------------------------------------
 
