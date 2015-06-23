@@ -63,13 +63,8 @@
 #'
 #' @export
 clone <- encapsulate(function(obj) {
-  old_enclos_env <- attr(obj, "enclos_env", TRUE)
+  old_enclos_env <- obj$`.__enclos_env__`
 
-  # This is a workaround for https://github.com/wch/R6/issues/64/. See the
-  # comment in $new for more information.
-  if (identical(old_enclos_env, NA)) {
-    old_enclos_env <- obj
-  }
   if (!is.environment(old_enclos_env)) {
     stop("`obj` must be an R6 object.")
   }
@@ -105,6 +100,8 @@ clone <- encapsulate(function(obj) {
   # Copy the old objects, fix up method environments, and put them into the
   # new binding environment.
   public_copies <- as.list.environment(old_public_bind_env, all.names = TRUE)
+  # Don't copy .__enclose_env__
+  public_copies <- public_copies[setdiff(names(public_copies), ".__enclos_env__")]
   public_copies <- assign_func_envs(public_copies, new_enclos_env)
 
   # Separate active and non-active bindings
@@ -131,6 +128,9 @@ clone <- encapsulate(function(obj) {
 
   # Clone super object -------------------------------------------
   clone_super(old_enclos_env, new_enclos_env, public_bind_env)
+
+  # Add refs to other environments in the object --------------------
+  public_bind_env$`.__enclos_env__` <- new_enclos_env
 
   # Lock --------------------------------------------------------------
   # Copy locked state of environment
@@ -164,7 +164,6 @@ clone <- encapsulate(function(obj) {
 
   class(public_bind_env) <- class(old_public_bind_env)
 
-  attr(public_bind_env, "enclos_env") <- new_enclos_env
   public_bind_env
 })
 

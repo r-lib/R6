@@ -7,12 +7,12 @@ print.R6 <- function(x, ...) {
     cat(
       "<", class(x)[1], ">\n",
       "  Public:\n",
-      indent(object_summaries(x), 4),
+      indent(object_summaries(x, exclude = ".__enclos_env__"), 4),
       "\n",
       sep = ""
     )
 
-    private <- attr(x, "enclos_env", TRUE)
+    private <- x$`.__enclos_env__`$private
     if (!is.null(private)) {
       cat(
         "  Private:\n",
@@ -70,7 +70,7 @@ print.R6ClassGenerator <- function(x, ...) {
 
 # Return a summary string of the items of a list or environment
 # x must be a list or environment
-object_summaries <- function(x) {
+object_summaries <- function(x, exclude = NULL) {
   if (length(x) == 0)
     return(NULL)
 
@@ -78,6 +78,8 @@ object_summaries <- function(x) {
     obj_names <- names(x)
   else if (is.environment(x))
     obj_names <- ls(x, all.names = TRUE)
+
+  obj_names <- setdiff(obj_names, exclude)
 
   values <- vapply(obj_names, function(name) {
     if (is.environment(x) && bindingIsActive(name, x)) {
