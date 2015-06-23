@@ -7,7 +7,8 @@
 \usage{
 R6Class(classname = NULL, public = list(), private = NULL,
   active = NULL, inherit = NULL, lock_objects = TRUE, class = TRUE,
-  portable = TRUE, lock_class = FALSE, parent_env = parent.frame(), lock)
+  portable = TRUE, lock_class = FALSE, cloneable = TRUE,
+  parent_env = parent.frame(), lock)
 }
 \arguments{
 \item{classname}{Name of the class. The class name is useful primarily for S3
@@ -42,6 +43,9 @@ the generator object with \code{$set}. If \code{FALSE} (the default), then
 it will be possible to add more members with \code{$set}. The methods
 \code{$is_locked}, \code{$lock}, and \code{$unlock} can be used to query
 and change the locked state of the class.}
+
+\item{cloneable}{If \code{TRUE} (the default), the generated objects will
+have method named \code{$clone}, which makes a copy of the object.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
@@ -103,6 +107,15 @@ instantiate the object and assign it.
   When used in non-portable mode, R6 classes behave more like reference
   classes: inheritance across packages will not work well, and \code{self}
   and \code{private} are not necessary for accessing fields.
+}
+
+\section{Cloning objects}{
+
+
+  R6 objects have a method named \code{clone} by default. To disable this,
+  use \code{cloneable=FALSE}. Having the \code{clone} method present will
+  slightly increase the memory footprint of R6 objects, but since the method
+  will be shared across all R6 objects, the memory use will be negligible.
 }
 
 \section{S3 details}{
@@ -318,6 +331,30 @@ Simple$set("public", "x", 10, overwrite = TRUE)
 s <- Simple$new()
 s$x
 s$getx2()
+
+
+# Cloning objects -------------------------------------------------
+a <- Queue$new(5, 6)
+a$remove()
+#> [1] 5
+
+# Clone a. New object gets a's state.
+b <- a$clone()
+
+# Can add to each queue separately now.
+a$add(10)
+b$add(20)
+
+a$remove()
+#> [1] 6
+a$remove()
+#> [1] 10
+
+b$remove()
+#> [1] 6
+b$remove()
+#> [1] 20
+
 
 # Debugging -------------------------------------------------------
 \dontrun{

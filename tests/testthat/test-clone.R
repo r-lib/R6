@@ -1,13 +1,26 @@
 context("clone")
 
+test_that("Can't use reserved name 'clone'", {
+  expect_error(R6Class("AC", public = list(clone = function() NULL)))
+  expect_error(R6Class("AC", private = list(clone = function() NULL)))
+  expect_error(R6Class("AC", active = list(clone = function() NULL)))
+})
+
+
+test_that("Can disable cloning", {
+  AC <- R6Class("AC", public = list(x = 1), cloneable = FALSE)
+  a <- AC$new()
+  expect_null(a$clone)
+})
+
+
 test_that("Cloning portable objects with public only", {
   parenv <- new.env()
   AC <- R6Class("AC",
     portable = TRUE,
     public = list(
       x = 1,
-      getx = function() self$x,
-      clone = function() clone(self)
+      getx = function() self$x
     ),
     parent_env = parenv
   )
@@ -53,8 +66,7 @@ test_that("Cloning non-portable objects with public only", {
     portable = FALSE,
     public = list(
       x = 1,
-      getx = function() self$x,
-      clone = function() R6::clone(self)
+      getx = function() self$x
     ),
     parent_env = parenv
   )
@@ -96,8 +108,7 @@ test_that("Cloning portable objects with public and private", {
       x = 1,
       getx = function() self$x,
       getprivate = function() private,
-      sety = function(value) private$y <- value,
-      clone = function() clone(self)
+      sety = function(value) private$y <- value
     ),
     private = list(
       y = 1,
@@ -157,8 +168,7 @@ test_that("Cloning non-portable objects with public and private", {
       x = 1,
       getx = function() self$x,
       getprivate = function() private,
-      sety = function(value) private$y <- value,
-      clone = function() R6::clone(self)
+      sety = function(value) private$y <- value
     ),
     private = list(
       y = 1,
@@ -223,7 +233,7 @@ test_that("Cloning active bindings", {
   )
 
   a <- AC$new()
-  b <- clone(a)
+  b <- a$clone()
 
   a$x <- 10
   expect_identical(a$x2, 20)
@@ -252,7 +262,7 @@ test_that("Lock state", {
   )
 
   a <- AC$new()
-  b <- clone(a)
+  b <- a$clone()
   expect_error(a$z <- 1)
   expect_error(b$z <- 1)
 
@@ -275,7 +285,7 @@ test_that("Lock state", {
   )
 
   a <- AC$new()
-  b <- clone(a)
+  b <- a$clone()
   a$y <- 1
   b$y <- 1
   expect_identical(a$y, 1)
@@ -320,7 +330,7 @@ test_that("Cloning inherited methods", {
   )
 
   a <- C2$new()
-  b <- clone(a)
+  b <- a$clone()
 
   expect_identical(b$getx(), 2)
   expect_identical(b$addx(), 22)
@@ -352,8 +362,8 @@ test_that("Cloning inherited methods", {
   )
 
   a <- C3$new()
-  b <- clone(a)
-  c <- clone(b)
+  b <- a$clone()
+  c <- b$clone()
   b$x <- 4
   c$x <- 5
   expect_identical(a$getx(), 3)
@@ -378,7 +388,7 @@ test_that("Cloning inherited methods", {
     public = list(x = 3)
   )
   a <- C3na$new()
-  b <- clone(a)
+  b <- a$clone()
   b$x <- 4
   expect_identical(b$xa, 12)
   b$xa <- 15

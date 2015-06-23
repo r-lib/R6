@@ -51,6 +51,13 @@
 #'   classes: inheritance across packages will not work well, and \code{self}
 #'   and \code{private} are not necessary for accessing fields.
 #'
+#' @section Cloning objects:
+#'
+#'   R6 objects have a method named \code{clone} by default. To disable this,
+#'   use \code{cloneable=FALSE}. Having the \code{clone} method present will
+#'   slightly increase the memory footprint of R6 objects, but since the method
+#'   will be shared across all R6 objects, the memory use will be negligible.
+#'
 #' @section S3 details:
 #'
 #'   Normally the public environment will have two classes: the one supplied in
@@ -94,6 +101,8 @@
 #'   it will be possible to add more members with \code{$set}. The methods
 #'   \code{$is_locked}, \code{$lock}, and \code{$unlock} can be used to query
 #'   and change the locked state of the class.
+#' @param cloneable If \code{TRUE} (the default), the generated objects will
+#'   have method named \code{$clone}, which makes a copy of the object.
 #' @param lock Deprecated as of version 2.1; use \code{lock_class} instead.
 #' @examples
 #' # A queue ---------------------------------------------------------
@@ -293,6 +302,30 @@
 #' s$x
 #' s$getx2()
 #'
+#'
+#' # Cloning objects -------------------------------------------------
+#' a <- Queue$new(5, 6)
+#' a$remove()
+#' #> [1] 5
+#'
+#' # Clone a. New object gets a's state.
+#' b <- a$clone()
+#'
+#' # Can add to each queue separately now.
+#' a$add(10)
+#' b$add(20)
+#'
+#' a$remove()
+#' #> [1] 6
+#' a$remove()
+#' #> [1] 10
+#'
+#' b$remove()
+#' #> [1] 6
+#' b$remove()
+#' #> [1] 20
+#'
+#'
 #' # Debugging -------------------------------------------------------
 #' \dontrun{
 #' # This will enable debugging the getx() method for objects of the 'Simple'
@@ -320,14 +353,18 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
                                 private = NULL, active = NULL,
                                 inherit = NULL, lock_objects = TRUE,
                                 class = TRUE, portable = TRUE,
-                                lock_class = FALSE,
+                                lock_class = FALSE, cloneable = TRUE,
                                 parent_env = parent.frame(), lock) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
     stop("All elements of public, private, and active must be named.")
 
-  if (any(duplicated(c(names(public), names(private), names(active)))))
+  allnames <- c(names(public), names(private), names(active))
+  if (any(duplicated(allnames)))
     stop("All items in public, private, and active must have unique names.")
+
+  if ("clone" %in% allnames)
+    stop("Cannot add a member with reserved name 'clone'.")
 
   if (any(c("self", "private", "super") %in%
       c(names(public), names(private), names(active))))
@@ -352,6 +389,11 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator$self <- generator
 
+  # Set the generator functions to eval in the generator environment, and copy
+  # them into the generator env.
+  generator_funs <- assign_func_envs(generator_funs, generator)
+  list2env2(generator_funs, generator)
+
   generator$classname    <- classname
   generator$active       <- active
   generator$portable     <- portable
@@ -366,17 +408,15 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator$public_methods  <- get_functions(public)
   generator$private_methods <- get_functions(private)
 
+  if (cloneable)
+    generator$public_methods$clone <- generator_funs$clone_method
+
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.
   generator$inherit <- substitute(inherit)
 
   # Names of methods for which to enable debugging
   generator$debug_names <- character(0)
-
-  # Set the generator functions to eval in the generator environment, and copy
-  # them into the generator env.
-  generator_funs <- assign_func_envs(generator_funs, generator)
-  list2env2(generator_funs, generator)
 
   attr(generator, "name") <- paste0(classname, "_generator")
   class(generator) <- "R6ClassGenerator"
