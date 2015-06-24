@@ -58,6 +58,25 @@
 #'   slightly increase the memory footprint of R6 objects, but since the method
 #'   will be shared across all R6 objects, the memory use will be negligible.
 #'
+#'   By default, calling \code{x$clone()} on an R6 object will result in a
+#'   shallow clone. That is, if any fields have reference semantics
+#'   (environments, R6, or reference class objects), they will not be copied;
+#'   instead, the clone object will have a field that simply refers to the same
+#'   object.
+#'
+#'   To make a deep copy, you can use \code{x$clone(deep=TRUE)}. With this
+#'   option, any fields that are R6 objects will also be cloned; however,
+#'   environments and reference class objects will not be.
+#'
+#'   If you want different deep copying behavior, you can supply your own
+#'   private method called \code{deep_clone}. This method will be called for
+#'   each field in the object, with two arguments: \code{name}, which is the
+#'   name of the field, and \code{value}, which is the value. Whatever the
+#'   method returns will be used as the value for the field in the new clone
+#'   object. You can write a \code{deep_clone} method that makes copies of
+#'   specific fields, whether they are environments, R6 objects, or reference
+#'   class objects.
+#'
 #' @section S3 details:
 #'
 #'   Normally the public environment will have two classes: the one supplied in
@@ -324,6 +343,102 @@
 #' #> [1] 6
 #' b$remove()
 #' #> [1] 20
+#'
+#'
+#' # Deep clones -----------------------------------------------------
+#'
+#'Simple <- R6Class("Simple",
+#'  public = list(
+#'    x = NULL,
+#'    initialize = function(val) self$x <- val
+#'  )
+#')
+#'
+#' Cloner <- R6Class("Cloner",
+#'   public = list(
+#'     s = NULL,
+#'     y = 1,
+#'     initialize = function() self$s <- Simple$new(1)
+#'   )
+#' )
+#'
+#' a <- Cloner$new()
+#' b <- a$clone()
+#' c <- a$clone(deep = TRUE)
+#'
+#' # Modify a
+#' a$s$x <- 2
+#' a$y <- 2
+#'
+#' # b is a shallow clone. b$s is the same as a$s because they are R6 objects.
+#' b$s$x
+#' #> [1] 2
+#' # But a$y and b$y are different, because y is just a value.
+#' b$y
+#' #> [1] 1
+#'
+#' # c is a deep clone, so c$s is not the same as a$s.
+#' c$s$x
+#' #> [1] 1
+#' c$y
+#' #> [1] 1
+#'
+#'
+#' # Deep clones with custom deep_clone method -----------------------
+#'
+#' CustomCloner <- R6Class("CustomCloner",
+#'   public = list(
+#'     e = NULL,
+#'     s1 = NULL,
+#'     s2 = NULL,
+#'     s3 = NULL,
+#'     initialize = function() {
+#'       self$e <- new.env()
+#'       self$e$x <- 1
+#'       self$s1 <- Simple$new(1)
+#'       self$s2 <- Simple$new(1)
+#'       self$s3 <- Simple$new(1)
+#'     }
+#'   ),
+#'   private = list(
+#'     # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
+#'     # each field, with the name and value.
+#'     deep_clone = function(name, value) {
+#'       if (name == "e") {
+#'         # e1 is an environment, so use this quick way of copying
+#'         list2env(as.list.environment(value, all.names = TRUE))
+#'
+#'       } else if (name %in% c("s1", "s2")) {
+#'         # s1 and s2 are R6 objects which we can clone
+#'         value$clone()
+#'
+#'       } else {
+#'         # For everything else, just return it. This results in a shallow
+#'         # copy of s3.
+#'         value
+#'       }
+#'     }
+#'   )
+#' )
+#'
+#' a <- CustomCloner$new()
+#' b <- a$clone(deep = TRUE)
+#'
+#' # Change some values in a's fields
+#' a$e$x <- 2
+#' a$s1$x <- 3
+#' a$s2$x <- 4
+#' a$s3$x <- 5
+#'
+#' # b has copies of e, s1, and s2, but shares the same s3
+#' b$e$x
+#' #> [1] 1
+#' b$s1$x
+#' #> [1] 1
+#' b$s2$x
+#' #> [1] 1
+#' b$s3$x
+#' #> [1] 5
 #'
 #'
 #' # Debugging -------------------------------------------------------

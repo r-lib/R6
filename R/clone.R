@@ -1,6 +1,6 @@
 # This function will be added as a method to R6 objects, with the name 'clone',
 # and with the environment changed.
-generator_funs$clone_method <- function() {
+generator_funs$clone_method <- function(deep = FALSE) {
 
   # Need to embed these utility functions inside this closure because the
   # environment of this function will change.
@@ -28,7 +28,6 @@ generator_funs$clone_method <- function() {
     }
     list2env(x, envir)
   }
-
 
   clone_super <- function(old_enclos_env, new_enclos_env, public_bind_env) {
     old_super_bind_env <- old_enclos_env$super
@@ -76,6 +75,7 @@ generator_funs$clone_method <- function() {
     clone_super(old_super_enclos_env, new_super_enclos_env, public_bind_env)
   }
 
+  # ------------------------------------------------------------------
 
   old_enclos_env = self$`.__enclos_env__`
   if (!is.environment(old_enclos_env)) {
@@ -88,6 +88,24 @@ generator_funs$clone_method <- function() {
 
   # Figure out if we're in a portable class object
   portable <- !identical(old_public_bind_env, old_enclos_env)
+
+  # Set up stuff for deep clones
+  if (deep) {
+    if (has_private && is.function(old_private_bind_env$deep_clone)) {
+      # Get private$deep_clone, if available.
+      deep_clone <- old_private_bind_env$deep_clone
+    } else {
+      # If there's no private$deep_clone, then this default function will copy
+      # fields that are R6 objects.
+      deep_clone <- function(name, value) {
+        # Check if it's an R6 object.
+        if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+          return(value$clone(deep = TRUE))
+        }
+        value
+      }
+    }
+  }
 
   # Create the new binding and enclosing environments
   if (portable) {
@@ -123,6 +141,11 @@ generator_funs$clone_method <- function() {
   active_copies <- public_copies[active_idx]
   public_copies <- public_copies[!active_idx]
 
+  if (deep) {
+    public_copies <- mapply(deep_clone, names(public_copies), public_copies,
+                            SIMPLIFY = FALSE)
+  }
+
   # Copy in public and active bindings
   list2env2(public_copies, public_bind_env)
 
@@ -135,6 +158,10 @@ generator_funs$clone_method <- function() {
   # Copy private members
   if (has_private) {
     private_copies <- as.list.environment(old_private_bind_env, all.names = TRUE)
+    if (deep) {
+      private_copies <- mapply(deep_clone, names(private_copies), private_copies,
+                               SIMPLIFY = FALSE)
+    }
     private_copies <- assign_func_envs(private_copies, new_enclos_env)
     list2env2(private_copies, private_bind_env)
   }
