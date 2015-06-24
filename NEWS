@@ -1,8 +1,9 @@
 R6 2.0.1.9xxx
 -------------------------------------------------------------------------------
 
-* Added support for making shallow clones of R6 objects with the `clone()`
-  function. (#27)
+* Added support for making clones of R6 objects with a `clone()` method on R6
+  objects. The `deep=TRUE` option allows for making clones that have copies of
+  fields with reference semantics (like other R6 objects). (#27)
 
 * Allow adding public or private members when there were no public or private
   members to begin with. (#51)
