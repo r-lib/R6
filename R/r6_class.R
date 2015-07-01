@@ -492,8 +492,8 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
     stop("All items in active must be functions.")
 
   if (!missing(lock)) {
-    message(paste(
-      "R6Class: 'lock' argument has been renamed to 'lock_objects' as of version 2.1.",
+    message(paste0(
+      "R6Class ", classname, ": 'lock' argument has been renamed to 'lock_objects' as of version 2.1.",
       "This code will continue to work, but the 'lock' option will be removed in a later version of R6"
     ))
     lock_objects <- lock
