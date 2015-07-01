@@ -17,6 +17,8 @@ R6 2.0.1.9xxx
 * The 'lock' argument has been renamed to 'lock_objects'. Also, there is a new
   argument, 'lock_class', which can prevent changes to the class. (#52)
 
+* Fixed printing of NULL fields.
+
 R6 2.0.1
 -------------------------------------------------------------------------------
 

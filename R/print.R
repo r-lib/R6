@@ -88,6 +88,7 @@ object_summaries <- function(x, exclude = NULL) {
       obj <- x[[name]]
       if (is.function(obj)) "function"
       else if (is.environment(obj)) "environment"
+      else if (is.null(obj)) "NULL"
       else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
       else paste(class(obj), collapse = ", ")
     }
