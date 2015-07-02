@@ -426,6 +426,25 @@ test_that("Deep cloning", {
   expect_identical(class(b2$y()), c("AC", "R6"))
 
 
+  # Deep cloning with multiple levels
+  CC <- R6Class("CC",
+    public = list(
+      x = NULL,
+      initialize = function() {
+        self$x <- BC$new()
+      }
+    )
+  )
+
+  c <- CC$new()
+  c2 <- c$clone(deep = TRUE)
+  expect_false(identical(c$x, c2$x))
+  expect_false(identical(c$x$x, c2$x$x))
+  # Make sure c2$x and c2$x$x are properly cloned R6 objects
+  expect_identical(class(c2$x), c("BC", "R6"))
+  expect_identical(class(c2$x$x), c("AC", "R6"))
+
+
   # Deep cloning with custom function
   AC <- R6Class("AC", public = list(x = 1))
   BC <- R6Class("BC",
