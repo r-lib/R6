@@ -393,7 +393,7 @@
 #'     s2 = NULL,
 #'     s3 = NULL,
 #'     initialize = function() {
-#'       self$e <- new.env()
+#'       self$e <- new.env(parent = emptyenv())
 #'       self$e$x <- 1
 #'       self$s1 <- Simple$new(1)
 #'       self$s2 <- Simple$new(1)
@@ -401,12 +401,13 @@
 #'     }
 #'   ),
 #'   private = list(
-#'     # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
+#'     # When x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
 #'     # each field, with the name and value.
 #'     deep_clone = function(name, value) {
 #'       if (name == "e") {
 #'         # e1 is an environment, so use this quick way of copying
-#'         list2env(as.list.environment(value, all.names = TRUE))
+#'         list2env(as.list.environment(value, all.names = TRUE),
+#'                  parent = emptyenv())
 #'
 #'       } else if (name %in% c("s1", "s2")) {
 #'         # s1 and s2 are R6 objects which we can clone
