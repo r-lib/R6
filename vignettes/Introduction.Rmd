@@ -13,6 +13,7 @@ output:
 -->
 
 ```{r echo = FALSE}
+library(pryr)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
@@ -66,7 +67,7 @@ ann <- Person$new("Ann", "black")
 ann
 ```
 
-The `$new()` method creates the object and calls the `initialize()` method, if it exists. 
+The `$new()` method creates the object and calls the `initialize()` method, if it exists.
 
 Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`. Note that by default, `self` is required to access members, although for non-portable classes which we'll see later, it is optional.
 
@@ -398,6 +399,180 @@ s$getx2()
 ```
 
 The new members will be present only in instances that are created after `$set()` has been called.
+
+To prevent modification of a class, you can use `lock_class=TRUE` when creating the class. You can also lock and unlock a class as follows:
+
+```{r}
+# Create a locked class
+Simple <- R6Class("Simple",
+  public = list(
+    x = 1,
+    getx = function() self$x
+  ),
+  lock_class = TRUE
+)
+
+# This would result in an error
+# Simple$set("public", "y", 2)
+
+# Unlock the class
+Simple$unlock()
+
+# Now it works
+Simple$set("public", "y", 2)
+
+# Lock the class again
+Simple$lock()
+```
+
+
+### Cloning objects
+
+By default, R6 objects have method named `clone` for making a copy of the object.
+
+```{r}
+Simple <- R6Class("Simple",
+  public = list(
+    x = 1,
+    getx = function() self$x
+  )
+)
+
+s <- Simple$new()
+
+# Create a clone
+s1 <- s$clone()
+# Modify it
+s1$x <- 2
+s1$getx()
+
+# Original is unaffected by changes to the clone
+s$getx()
+```
+
+```{r clone-size, echo=FALSE}
+# Calculate size of clone method in this block.
+Cloneable <- R6Class("Cloneable", cloneable = TRUE)
+NonCloneable <- R6Class("NonCloneable", cloneable = FALSE)
+
+c1 <- Cloneable$new()
+c2 <- Cloneable$new()
+# Bytes for each new cloneable object
+cloneable_delta <- object_size(c1, c2) - object_size(c2)
+
+nc1 <- NonCloneable$new()
+nc2 <- NonCloneable$new()
+# Bytes for each new noncloneable object
+noncloneable_delta <- object_size(nc1, nc2) - object_size(nc2)
+
+# Number of bytes used by each copy of clone method
+additional_clone_method_bytes <- cloneable_delta - noncloneable_delta
+additional_clone_method_bytes_str <- capture.output(print(additional_clone_method_bytes))
+
+# Number of bytes used by first copy of a clone method
+first_clone_method_bytes <- object_size(c1) - object_size(nc1)
+# Need some trickery to get the nice output from pryr::print.bytes
+first_clone_method_bytes_str <- capture.output(print(first_clone_method_bytes))
+```
+
+If you don't want a `clone` method to be added, you can use `cloneable=FALSE` when creating the class. If any loaded R6 object has a `clone` method, that function uses `r first_clone_method_bytes_str`, but for each additional object, the `clone` method costs a trivial amount of space (`r additional_clone_method_bytes` bytes).
+
+
+#### Deep cloning
+
+If there are any fields which are objects with reference sematics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
+
+For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because the original's and the clone's `s` fields both refer to the same object, modifying it from one results in a change that is reflect in the other.
+
+```{r}
+Simple <- R6Class("Simple", public = list(x = 1))
+
+Cloneable <- R6Class("Cloneable",
+  public = list(
+    s = NULL,
+    initialize = function() self$s <- Simple$new()
+  )
+)
+
+c1 <- Cloneable$new()
+c2 <- c1$clone()
+
+# Change c1's `s` field
+c1$s$x <- 2
+
+# c2's `s` is the same object, so it reflects the change
+c2$s$x
+```
+
+To make it so the clone receives a *copy* of `s`, we can use the `deep=TRUE` option:
+
+```{r}
+c3 <- c1$clone(deep = TRUE)
+
+# Change c1's `s` field
+c1$s$x <- 3
+
+# c2's `s` is different
+c3$s$x
+```
+
+The default behavior of `clone(deep=TRUE)` is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).
+
+If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named `deep_clone`. Below is an example of an R6 object with two fields, `a` and `b`, both of which which are environments, and both of which contain a value `x`. It also has a field `v` which is a regular (non-reference) value, and a private `deep_clone` method.
+
+The `deep_clone` method is be called once for each field. It is passed the name and value of the field, and the value it returns is be used in the clone.
+
+```{r}
+CloneEnv <- R6Class("CloneEnv",
+  public = list(
+    a = NULL,
+    b = NULL,
+    v = 1,
+    initialize = function() {
+      self$a <- new.env(parent = emptyenv())
+      self$b <- new.env(parent = emptyenv())
+      self$a$x <- 1
+      self$b$x <- 1
+    }
+  ),
+  private = list(
+    deep_clone = function(name, value) {
+      # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
+      # each field, with the name and value.
+      if (name == "a") {
+        # `a` is an environment, so use this quick way of copying
+        list2env(as.list.environment(value, all.names = TRUE),
+                 parent = emptyenv())
+      } else {
+        # For all other fields, just return the value
+        value
+      }
+    }
+  )
+)
+
+c1 <- CloneEnv$new()
+c2 <- c1$clone(deep = TRUE)
+```
+
+When `c1$clone(deep=TRUE)` is called, the `deep_clone` method is called for each field in `c1`, and is passed the name of the field and value. In our version, the `a` environment gets copied, but `b` does not, nor does `v` (but that doesn't matter since `v` is not a reference object). We can test out the clone:
+
+```{r}
+# Modifying c1$a doesn't affect c2$a, because they're separate objects
+c1$a$x <- 2
+c2$a$x
+
+# Modifying c1$b does affect c2$b, because they're the same object
+c1$b$x <- 3
+c2$b$x
+
+# Modifying c1$v doesn't affect c2$v, because they're not reference objects
+c1$v <- 4
+c2$v
+```
+
+In the example `deep_clone` method above, we checked the name of each field to determine what to do with it, but we could also check the value, by using `inherits(value, "R6")`, or `is.environment()`, and so on.
+
 
 ### Printing R6 objects to the screen
 
