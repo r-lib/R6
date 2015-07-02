@@ -383,7 +383,7 @@ It is sometimes useful to add members to a class after the class has already bee
 Simple <- R6Class("Simple",
   public = list(
     x = 1,
-    getx = function() x
+    getx = function() self$x
   )
 )
 
