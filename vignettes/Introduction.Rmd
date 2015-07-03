@@ -80,7 +80,7 @@ ann$set_hair("red")
 ann$hair
 ```
 
-Implementation note: The R6 object is basically an environment with the public members in it. The `self` object is bound in that environment, and is simply a reference back to that environment.
+Implementation note: The external face of an R6 object is basically an environment with the public members in it. This is also known as the *public environment*. An R6 object's methods have a separate *enclosing environment* which, roughly speaking, is the environment they "run in". This is where `self` binding is found, and it is simply a reference back to public environment.
 
 ### Private members
 
@@ -137,7 +137,7 @@ q$length()
 #> Error: attempt to apply non-function
 ```
 
-Unless there is a compelling reason otherwise, methods should return `self` (invisibly) because it makes them chainable. For example, the `add()` method returns `self` so you can chain them together:
+A useful design pattern is for methods to return `self` (invisibly) when possible, because it makes them chainable. For example, the `add()` method returns `self` so you can chain them together:
 
 ```{r}
 q$add(10)$add(11)$add(12)
@@ -152,7 +152,6 @@ q$remove()
 q$remove()
 ```
 
-Implementation note: When private members are used, the public environment is a child of the private environment, and the `private` object points to the private environment. Although public and private methods are bound (that is, they can be found) in their respective environments, the _enclosing_ environment for all of those methods is the public environment. This means that private methods "run in" the public environment, so they will find public objects without needing an explicit `self$xx`.
 
 ### Active bindings
 
