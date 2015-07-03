@@ -1,5 +1,5 @@
 Package: R6
-Title: Classes with reference semantics
+Title: Classes with Reference Semantics
 Version: 2.1.0
 Authors@R: person("Winston", "Chang", role = c("aut", "cre"), email = "winston@stdout.org")
 Description: The R6 package allows the creation of classes with reference
