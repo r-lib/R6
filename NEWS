@@ -1,4 +1,4 @@
-R6 2.0.1.9xxx
+R6 2.1.0
 -------------------------------------------------------------------------------
 
 * Added support for making clones of R6 objects with a `clone()` method on R6
