@@ -28,6 +28,6 @@ devtools::install_github('wch/R6', build_vignettes = FALSE)
 
 ## Documentation
 
-* [Introduction to R6](http://rpubs.com/wch/24456)
-* [Portable R6 classes](http://rpubs.com/wch/24427) - Inheritance across different packages.
-* [Performance tests](http://rpubs.com/wch/17459) - Speed and memory comparisons of R6 classes and reference classes.
+* [Introduction to R6](http://cran.r-project.org/web/packages/R6/vignettes/Introduction.html)
+* [Portable R6 classes](http://cran.r-project.org/web/packages/R6/vignettes/Portable.html) - Inheritance across different packages.
+* [Performance tests](http://cran.r-project.org/web/packages/R6/vignettes/Performance.html) - Speed and memory comparisons of R6 classes and reference classes.
