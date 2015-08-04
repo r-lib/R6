@@ -85,7 +85,7 @@ object_summaries <- function(x, exclude = NULL) {
     if (is.environment(x) && bindingIsActive(name, x)) {
       "active binding"
     } else {
-      obj <- x[[name]]
+      obj <- .subset2(x, name)
       if (is.function(obj)) "function"
       else if (is.environment(obj)) "environment"
       else if (is.null(obj)) "NULL"
