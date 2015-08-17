@@ -219,6 +219,31 @@ test_that("Cloning non-portable objects with public and private", {
 })
 
 
+test_that("Cloning subclasses with inherited private fields", {
+  # For issue #72
+  AC <- R6Class("AC",
+    public = list(
+      getx = function() private$x
+    ),
+    private = list(
+      x = 1
+    )
+  )
+
+  BC <- R6Class("BC",
+    inherit = AC,
+    public = list(
+      getx = function() super$getx()
+    )
+  )
+
+  b1 <- BC$new()
+  b2 <- b1$clone()
+  expect_identical(b1$getx(), 1)
+  expect_identical(b2$getx(), 1)
+})
+
+
 test_that("Cloning active bindings", {
   AC <- R6Class("AC",
     public = list(

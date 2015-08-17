@@ -29,7 +29,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
     list2env(x, envir)
   }
 
-  clone_super <- function(old_enclos_env, new_enclos_env, public_bind_env) {
+  clone_super <- function(old_enclos_env, new_enclos_env, public_bind_env,
+                          has_private, private_bind_env)
+  {
     old_super_bind_env <- old_enclos_env$super
     if (is.null(old_super_bind_env))
       return()
@@ -59,8 +61,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
     new_super_enclos_env <- new.env(parent = parent.env(old_super_enclos_env),
                                     hash = FALSE)
     new_super_enclos_env$self <- public_bind_env
-    if (!is.null(new_enclos_env$private))
-      new_super_enclos_env$private <- new_enclos_env$private
+    if (has_private)
+      new_super_enclos_env$private <- private_bind_env
 
     new_super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
 
@@ -72,7 +74,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
     new_enclos_env$super <- new_super_bind_env
 
     # Recurse
-    clone_super(old_super_enclos_env, new_super_enclos_env, public_bind_env)
+    clone_super(old_super_enclos_env, new_super_enclos_env, public_bind_env,
+                has_private, private_bind_env)
   }
 
   # ------------------------------------------------------------------
@@ -167,7 +170,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
   }
 
   # Clone super object -------------------------------------------
-  clone_super(old_enclos_env, new_enclos_env, public_bind_env)
+  clone_super(old_enclos_env, new_enclos_env, public_bind_env, has_private,
+              private_bind_env)
 
   # Add refs to other environments in the object --------------------
   public_bind_env$`.__enclos_env__` <- new_enclos_env
