@@ -1,3 +1,12 @@
+R6 2.1.0.9xxx
+-------------------------------------------------------------------------------
+
+* Fixed a bug with printing R6 objects when a `[[` method is defined for the
+  class. (#70)
+
+* Fixed cloning of objects that call a `super` method which accesses `private`.
+  (#72)
+
 R6 2.1.0
 -------------------------------------------------------------------------------
 
