@@ -93,7 +93,7 @@ object_summaries <- function(x, exclude = NULL) {
       "active binding"
     } else {
       obj <- .subset2(x, name)
-      if (is.function(obj)) "function"
+      if (is.function(obj)) deparse(args(obj))[[1L]]
       else if (is.environment(obj)) "environment"
       else if (is.null(obj)) "NULL"
       else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
