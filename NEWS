@@ -1,3 +1,9 @@
+R6 2.1.1.9xxx
+-------------------------------------------------------------------------------
+
+* Implemented `format.R6()` and `format.R6ClassGenerator`, the former calls
+  a public `format` method if defined (#73. Thanks to Kirill Müller)
+
 R6 2.1.1
 -------------------------------------------------------------------------------
 
