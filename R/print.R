@@ -3,8 +3,15 @@ format.R6 <- function(x, ...) {
   if (is.function(x$format)) {
     x$format(...)
   } else {
-    ret <- c(
-      paste0("<", class(x)[1], ">"),
+    ret <- paste0("<", class(x)[1], ">")
+
+    # If there's another class besides first class and R6
+    classes <- setdiff(class(x), "R6")
+    if (length(classes) >= 2) {
+      ret <- c(ret, paste0("  Inherits from: <", classes[2], ">"))
+    }
+
+    ret <- c(ret,
       "  Public:",
       indent(object_summaries(x, exclude = ".__enclos_env__"), 4)
     )
@@ -33,8 +40,13 @@ print.R6 <- function(x, ...) {
 format.R6ClassGenerator <- function(x, ...) {
   classname <- x$classname
   if (is.null(classname)) classname <- "unnamed"
-  ret <- c(
-    paste0("<", classname, "> object generator"),
+  ret <- paste0("<", classname, "> object generator")
+
+  if (!is.null(x$inherit)) {
+    ret <- c(ret, paste0("  Inherits from: <", deparse(x$inherit), ">"))
+  }
+
+  ret <- c(ret,
     "  Public:",
     indent(object_summaries(x$public_fields), 4),
     indent(object_summaries(x$public_methods), 4)
