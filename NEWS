@@ -9,6 +9,8 @@ R6 2.1.1.9xxx
 * Functions are shown with their interface in `print` and `format`, limited
   to one line (#76. Thanks to Kirill Müller)
 
+* R6 objects and generators print out which class they inherit from. (#67)
+
 R6 2.1.1
 -------------------------------------------------------------------------------
 
