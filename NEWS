@@ -1,4 +1,4 @@
-R6 2.1.1.9xxx
+R6 2.1.2
 -------------------------------------------------------------------------------
 
 * Implemented `format.R6()` and `format.R6ClassGenerator`, the former calls
