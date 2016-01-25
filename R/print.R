@@ -131,3 +131,13 @@ trim <- function(str, n = 60) {
   if (nchar(str) > n) paste(substr(str, 1, 56), "...")
   else str
 }
+
+
+#' @export
+plot.R6 <- function(x, ...) {
+  if (is.function(x$plot)) {
+    x$plot(...)
+  } else {
+    stop(paste0("No plot method defined for R6 class ", class(x)[1]))
+  }
+}

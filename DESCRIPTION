@@ -21,3 +21,4 @@ License: MIT + file LICENSE
 URL: https://github.com/wch/R6/
 LazyData: true
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
