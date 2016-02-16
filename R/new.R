@@ -4,6 +4,7 @@
 generator_funs$new <- function(...) {
   # Get superclass object -------------------------------------------
   inherit <- get_inherit()
+  implement <- get_implement()
 
   # Some checks on superclass ---------------------------------------
   if (!is.null(inherit)) {
@@ -19,20 +20,21 @@ generator_funs$new <- function(...) {
       merge_vectors(recursive_merge(obj$get_inherit(), which), obj[[which]])
     }
     public_fields  <- merge_vectors(recursive_merge(inherit, "public_fields"),
-                                    public_fields)
+      public_fields)
     private_fields <- merge_vectors(recursive_merge(inherit, "private_fields"),
                                     private_fields)
   }
 
   if (class) {
-    classes <- c(classname, get_superclassnames(inherit), "R6")
+    # classes <- c(classname, get_superclassnames(inherit), "R6")
+    classes <- unique(c(classname, get_superclassnames(inherit),
+      get_superclassnames(implement), "R6"))
   } else {
     classes <- NULL
   }
 
   # Precompute some things ------------------------------------------
   has_priv <- has_private()
-
 
   # Create binding and enclosing environments -----------------------
   if (portable) {
@@ -103,6 +105,69 @@ generator_funs$new <- function(...) {
     public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
     private_methods <- merge_vectors(super_struct$private_methods, private_methods)
     active          <- merge_vectors(super_struct$active, active)
+  }
+
+  # Implemented interface AFTER concrete superclass has been processed as it
+  # "only" defines abstract methods that can be overloaded by this very class
+  # its concrete superclass.
+  # As the actual "crucial" superclass aspects (public and private fields and
+  # methods) have already been processed, this shouldn't break any of the
+  # current implementation aspects.
+  if (!is.null(implement)) {
+    if (portable) {
+      # Set up the superclass objects
+      super_struct <- create_super_env(implement, public_bind_env,
+        private_bind_env, portable = TRUE)
+    } else {
+      # Set up the superclass objects
+    super_struct <- create_super_env(implement, public_bind_env, portable = FALSE)
+    }
+
+    # Cache decoupled state of env or interface superclass for sanity checks
+    # (see below)
+    implement_super_struct <- as.list(super_struct)
+
+    enclos_env$super <- super_struct$bind_env
+
+    # Merge this level's methods over the superclass methods
+    public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
+    private_methods <- merge_vectors(super_struct$private_methods, private_methods)
+    active          <- merge_vectors(super_struct$active, active)
+
+    # Note:
+    # If running the same code for `implement` as for `inherit` interferes with
+    # current behavior of `super_struct` and associated aspects the following
+    # would also be an alternative.
+    # As we only need a check of the public methods here in order to mimick the
+    # concept/behavior of interfaces, the following should suffice:
+    # implement_super_struct <- implement
+
+    # Sanity checks
+    # Throw an error in case neither the superclass nor the actual class
+    # overloads/implements any of the abstract public methods defined by the
+    # interface superclass as I think this would be a violation of the concept
+    # of a class IMPLEMENTING an interface from an OOD perspective.
+    # Note:
+    # The gsub part is only necessary due to the fact that the `clone` method
+    # features this suffix --> a possible minor inconsistency with regard to
+    # remaining methods such as `has_private` etc.?
+
+    public_methods_interface <- implement_super_struct$public_methods
+    interface_funs <- setdiff(names(public_methods_interface),
+      gsub("_method$", "", names(generator_funs)))
+    if (length(interface_funs)) {
+      err_list <- unlist(sapply(interface_funs, function(fun) {
+        if (identical(
+          body(public_methods_interface[[fun]]),
+          body(public_methods[[fun]])
+        )) {
+          sprintf("Non-implemented interface method: %s", fun)
+        }
+      }))
+      if (length(err_list)) {
+        stop(paste(c("\n", err_list), collapse = "\n"))
+      }
+    }
   }
 
   # Copy objects to public bind environment -------------------------

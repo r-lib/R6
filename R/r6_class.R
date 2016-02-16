@@ -123,6 +123,13 @@
 #' @param cloneable If \code{TRUE} (the default), the generated objects will
 #'   have method named \code{$clone}, which makes a copy of the object.
 #' @param lock Deprecated as of version 2.1; use \code{lock_class} instead.
+#' @param implement A R6ClassGenerator object to inherit from which represents
+#'   an interface class; this is very similar to argument \code{inherit} with
+#'   the subtle difference that such objects merely mimick abstract classes that
+#'   only define abstract methods and must not contain \strong{any} data fields.
+#'   The main benefit is being able to write code that fits the \emph{SOLID principles
+#'   of object-oriented design}
+#'   (\url{https://en.wikipedia.org/wiki/SOLID_%28object-oriented_design%29}).
 #' @examples
 #' # A queue ---------------------------------------------------------
 #' Queue <- R6Class("Queue",
@@ -470,7 +477,8 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
                                 inherit = NULL, lock_objects = TRUE,
                                 class = TRUE, portable = TRUE,
                                 lock_class = FALSE, cloneable = TRUE,
-                                parent_env = parent.frame(), lock) {
+                                parent_env = parent.frame(), lock,
+                                implement = NULL) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
     stop("All elements of public, private, and active must be named.")
@@ -530,6 +538,11 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.
   generator$inherit <- substitute(inherit)
+
+  # Capture the unevaluated expression for the interface implementation
+  # superclass; when evaluated in the parent_env, it should return the
+  # superclass object.
+  generator$implement <- substitute(implement)
 
   # Names of methods for which to enable debugging
   generator$debug_names <- character(0)
