@@ -623,7 +623,7 @@ A$new()
 gc()
 ```
 
-In the example above, we used `onexit=TRUE`, so that the finalizer will alsobe called when R exits. This is useful in some cases, like database connections, but it isn't necessary for others, like open files, since they will be closed anyway when the R process exits.
+In the example above, we used `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections, but it isn't necessary for others, like open files, since they will be closed anyway when the R process exits.
 
 
 ## Summary
