@@ -43,11 +43,11 @@ library(R6)
 
 Person <- R6Class("Person",
   public = list(
-    name = NA,
-    hair = NA,
-    initialize = function(name, hair) {
-      if (!missing(name)) self$name <- name
-      if (!missing(hair)) self$hair <- hair
+    name = NULL,
+    hair = NULL,
+    initialize = function(name = NA, hair = NA) {
+      self$name <- name
+      self$hair <- hair
       self$greet()
     },
     set_hair = function(val) {
