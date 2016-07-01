@@ -134,7 +134,11 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # Copy the old objects, fix up method environments, and put them into the
   # new binding environment.
   public_copies <- as.list.environment(old_public_bind_env, all.names = TRUE)
-  # Don't copy .__enclose_env__
+  # If non-portable, `self` will be there; make sure not to copy it.
+  if (!portable) {
+    public_copies$self <- NULL
+  }
+  # Don't copy .__enclos_env__
   public_copies <- public_copies[setdiff(names(public_copies), ".__enclos_env__")]
   public_copies <- assign_func_envs(public_copies, new_enclos_env)
 
@@ -176,6 +180,13 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # Add refs to other environments in the object --------------------
   public_bind_env$`.__enclos_env__` <- new_enclos_env
 
+  # Add self and (optional) private pointer ---------------------------
+  new_enclos_env$self <- public_bind_env
+  if (has_private)
+    new_enclos_env$private <- private_bind_env
+
+  class(public_bind_env) <- class(old_public_bind_env)
+
   # Lock --------------------------------------------------------------
   # Copy locked state of environment
   if (environmentIsLocked(old_public_bind_env)) {
@@ -200,13 +211,6 @@ generator_funs$clone_method <- function(deep = FALSE) {
         lockBinding(name, private_bind_env)
     }
   }
-
-  # Add self and (optional) private pointer ---------------------------
-  new_enclos_env$self <- public_bind_env
-  if (has_private)
-    new_enclos_env$private <- private_bind_env
-
-  class(public_bind_env) <- class(old_public_bind_env)
 
   public_bind_env
 }
