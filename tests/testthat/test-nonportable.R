@@ -28,7 +28,7 @@ test_that("initialization", {
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
   AC <- R6Class("AC", portable = FALSE)
-  expect_that(AC$new(), not(throws_error()))
+  expect_no_error(AC$new())
 })
 
 
@@ -107,9 +107,9 @@ test_that("Locking objects", {
   A <- AC$new()
 
   # Can modify fields
-  expect_that(A$x <- 5, not(throws_error()))
+  expect_no_error(A$x <- 5)
   expect_identical(A$x, 5)
-  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_no_error(A$private$y <- 5)
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
@@ -131,9 +131,9 @@ test_that("Locking objects", {
   A <- AC$new()
 
   # Can modify fields
-  expect_that(A$x <- 5, not(throws_error()))
+  expect_no_error(A$x <- 5)
   expect_identical(A$x, 5)
-  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_no_error(A$private$y <- 5)
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
@@ -141,9 +141,9 @@ test_that("Locking objects", {
   expect_error(A$private$gety <- function() 2)
 
   # Can add members
-  expect_that(A$z <- 1, not(throws_error()))
+  expect_no_error(A$z <- 1)
   expect_identical(A$z, 1)
-  expect_that(A$private$z <- 1, not(throws_error()))
+  expect_no_error(A$private$z <- 1)
   expect_identical(A$private$z, 1)
 })
 

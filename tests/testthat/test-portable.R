@@ -29,7 +29,7 @@ test_that("initialization", {
 test_that("empty members and methods are allowed", {
   # No initialize method: throw error if arguments are passed in
   AC <- R6Class("AC", portable = TRUE)
-  expect_that(AC$new(), not(throws_error()))
+  expect_no_error(AC$new())
 })
 
 
@@ -141,7 +141,7 @@ test_that("Active bindings work", {
   # print does not throw an error trying to read
   # the active binding variables
   muted_print <- function(x) capture.output(print(x))
-  expect_that(muted_print(A), not(throws_error()))
+  expect_no_error(muted_print(A))
 })
 
 
@@ -155,9 +155,9 @@ test_that("Locking works", {
   A <- AC$new()
 
   # Can modify fields
-  expect_that(A$x <- 5, not(throws_error()))
+  expect_no_error(A$x <- 5)
   expect_identical(A$x, 5)
-  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_no_error(A$private$y <- 5)
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
@@ -179,9 +179,9 @@ test_that("Locking works", {
   A <- AC$new()
 
   # Can modify fields
-  expect_that(A$x <- 5, not(throws_error()))
+  expect_no_error(A$x <- 5)
   expect_identical(A$x, 5)
-  expect_that(A$private$y <- 5, not(throws_error()))
+  expect_no_error(A$private$y <- 5)
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
@@ -189,8 +189,8 @@ test_that("Locking works", {
   expect_error(A$private$gety <- function() 2)
 
   # Can add members
-  expect_that(A$z <- 1, not(throws_error()))
+  expect_no_error(A$z <- 1)
   expect_identical(A$z, 1)
-  expect_that(A$private$z <- 1, not(throws_error()))
+  expect_no_error(A$private$z <- 1)
   expect_identical(A$private$z, 1)
 })
