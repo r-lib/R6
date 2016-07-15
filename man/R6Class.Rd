@@ -8,7 +8,7 @@
 R6Class(classname = NULL, public = list(), private = NULL,
   active = NULL, inherit = NULL, lock_objects = TRUE, class = TRUE,
   portable = TRUE, lock_class = FALSE, cloneable = TRUE,
-  parent_env = parent.frame(), lock)
+  parent_env = parent.frame(), lock, implement = NULL)
 }
 \arguments{
 \item{classname}{Name of the class. The class name is useful primarily for S3
@@ -51,6 +51,14 @@ have method named \code{$clone}, which makes a copy of the object.}
 objects.}
 
 \item{lock}{Deprecated as of version 2.1; use \code{lock_class} instead.}
+
+\item{implement}{A R6ClassGenerator object to inherit from which represents
+an interface class; this is very similar to argument \code{inherit} with
+the subtle difference that such objects merely mimick abstract classes that
+only define abstract methods and must not contain \strong{any} data fields.
+The main benefit is being able to write code that fits the \emph{SOLID
+principles of object-oriented design}
+(\url{https://en.wikipedia.org/wiki/SOLID_\%28object-oriented_design\%29}).}
 }
 \description{
 R6 objects are essentially environments, structured in a way that makes them
