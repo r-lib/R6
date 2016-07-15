@@ -510,3 +510,15 @@ test_that("Deep cloning", {
   expect_identical(c$y$x, 1)
   expect_identical(a$z$x, c$z$x)
 })
+
+
+test_that("Deep cloning non-portable classes", {
+  # Make sure deep cloning doesn't lead to infinite loop because of `self`
+  AC <- R6Class("AC", portable = FALSE, public = list(x = 1))
+  a <- AC$new()
+  a$x <- 2
+  a2 <- a$clone(deep = TRUE)
+
+  expect_identical(a2$x, 2)
+  expect_identical(a2$self, a2)
+})
