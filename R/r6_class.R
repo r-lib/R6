@@ -127,9 +127,9 @@
 #'   an interface class; this is very similar to argument \code{inherit} with
 #'   the subtle difference that such objects merely mimick abstract classes that
 #'   only define abstract methods and must not contain \strong{any} data fields.
-#'   The main benefit is being able to write code that fits the \emph{SOLID principles
-#'   of object-oriented design}
-#'   (\url{https://en.wikipedia.org/wiki/SOLID_%28object-oriented_design%29}).
+#'   The main benefit is being able to write code that fits the \emph{SOLID
+#'   principles of object-oriented design}
+#'   (\url{https://en.wikipedia.org/wiki/SOLID_\%28object-oriented_design\%29}).
 #' @examples
 #' # A queue ---------------------------------------------------------
 #' Queue <- R6Class("Queue",
