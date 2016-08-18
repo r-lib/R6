@@ -8,7 +8,7 @@ output:
 ---
 
 <!--
-%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEngine{rmarkdown::render}
 %\VignetteIndexEntry{Introduction to R6 classes}
 -->
 
