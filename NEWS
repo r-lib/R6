@@ -4,6 +4,8 @@ R6 2.1.2.9000
 * The `plot` S3 method for R6 objects will call `$plot` on the object if
   present. (#77)
 
+* Added `as.list.R6` method. (#91)
+
 R6 2.1.2
 -------------------------------------------------------------------------------
 
