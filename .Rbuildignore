@@ -5,3 +5,4 @@
 \.sublime-workspace$
 ^\.travis\.yml$
 ^doc_extra$
+^appveyor\.yml$
