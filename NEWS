@@ -1,4 +1,4 @@
-R6 2.1.2.9000
+R6 2.1.3
 -------------------------------------------------------------------------------
 
 * The `plot` S3 method for R6 objects will call `$plot` on the object if
