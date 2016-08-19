@@ -5,12 +5,11 @@ output:
     theme: null
     css: mystyle.css
     toc: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Vignette Title}
+  \usepackage[utf8]{inputenc}
 ---
-
-<!--
-%\VignetteEngine{rmarkdown::render}
-%\VignetteIndexEntry{Debugging methods in R6 objects}
--->
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")

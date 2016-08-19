@@ -5,12 +5,11 @@ output:
     theme: null
     css: mystyle.css
     toc: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Vignette Title}
+  \usepackage[utf8]{inputenc}
 ---
-
-<!--
-%\VignetteEngine{rmarkdown::render}
-%\VignetteIndexEntry{Introduction to R6 classes}
--->
 
 ```{r echo = FALSE}
 library(pryr)
