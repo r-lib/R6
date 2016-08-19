@@ -6,6 +6,8 @@ r:
 sudo: false
 cache: packages
 
+r_packages: rmarkdown
+
 notifications:
   email:
     on_success: change
