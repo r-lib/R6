@@ -6,12 +6,11 @@ output:
     css: mystyle.css
     toc: yes
     fig_retina: false
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Vignette Title}
+  \usepackage[utf8]{inputenc}
 ---
-
-<!--
-%\VignetteEngine{rmarkdown::render}
-%\VignetteIndexEntry{Reference and R6 class performance tests}
--->
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 3.9, fig.height = 3.5)
