@@ -594,35 +594,29 @@ pq <- PrettyCountingQueue$new(1, 2, "foobar")
 pq
 ```
 
-
 ### Finalizers
 
-Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can call the `reg.finalizer()` function in your `initialize` method, and pass it `self` as the object that will trigger the function when it is garbage collected.
+Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a `finalize()` method, which will be called with no arguments when the object is garbage collected.
 
 
 ```{r}
 A <- R6Class("A", public = list(
-  initialize = function() {
-    reg.finalizer(self,
-                  function(e) print("Finalizer has been called!"),
-                  onexit = TRUE)
+  finalize = function() {
+    print("Finalizer has been called!")
   }
 ))
 
 
-# Instantiate an object, but don't save a reference to it
-A$new()
+# Instantiate an object:
+obj <- A$new()
 
-# Run something else to get rid of any references to the object, because the
-# last returned value is saved in .Last.value
-1+1
-
-# Force immediate garbage collection (normally this will happen automatically
-# from time to time)
-gc()
+# Remove the single existing reference to it, and force garbage collection
+# (normally garbage collection will happen automatically from time
+# to time)
+rm(obj); gc()
 ```
 
-In the example above, we used `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections, but it isn't necessary for others, like open files, since they will be closed anyway when the R process exits.
+Finalizers are implemented using the `reg.finalizer()` function, and they set `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.
 
 
 ## Summary
