@@ -1,3 +1,8 @@
+R6 2.1.3.9000
+
+* Classes can define finalizers explicitly, by defining a
+  public `finalize` method. (#92, #93)
+
 R6 2.1.3
 -------------------------------------------------------------------------------
 

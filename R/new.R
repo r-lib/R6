@@ -147,6 +147,16 @@ generator_funs$new <- function(...) {
   } else if (length(list(...)) != 0 ) {
     stop("Called new() with arguments, but there is no initialize method.")
   }
+
+  # Finalize --------------------------------------------------------
+  if (is.function(public_bind_env$finalize)) {
+    reg.finalizer(
+      public_bind_env,
+      function(...) public_bind_env$finalize(),
+      onexit = TRUE
+    )
+  }
+
   public_bind_env
 }
 
