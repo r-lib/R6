@@ -17,13 +17,11 @@
 #' is.R6Class(object)
 #' is.R6(object)
 #' @export
-#' @rdname is.r6
-#' @export
 is.R6 <- function(x) {
   inherits(x, "R6")
 }
 
-#' @rdname is.r6
+#' @rdname is.R6
 #' @export
 is.R6Class <- function(x) {
   inherits(x, "R6ClassGenerator")
