@@ -10,7 +10,7 @@ is.R6(x)
 is.R6Class(x)
 }
 \arguments{
-\item{x}{Any variable.}
+\item{x}{An object.}
 }
 \value{
 A logical value.
@@ -27,8 +27,10 @@ Checks for R6 class generators and R6 objects.
 \examples{
 class_generator <- R6Class()
 object <- class_generator$new()
+
 is.R6Class(class_generator)
 is.R6(class_generator)
+
 is.R6Class(object)
 is.R6(object)
 }
