@@ -142,17 +142,17 @@ generator_funs$new <- function(...) {
   class(public_bind_env) <- classes
 
   # Initialize ------------------------------------------------------
-  if (is.function(public_bind_env$initialize)) {
-    public_bind_env$initialize(...)
+  if (is.function(.subset2(public_bind_env, "initialize"))) {
+    .subset2(public_bind_env, "initialize")(...)
   } else if (length(list(...)) != 0 ) {
     stop("Called new() with arguments, but there is no initialize method.")
   }
 
   # Finalize --------------------------------------------------------
-  if (is.function(public_bind_env$finalize)) {
+  if (is.function(.subset2(public_bind_env, "finalize"))) {
     reg.finalizer(
       public_bind_env,
-      function(...) public_bind_env$finalize(),
+      function(...) .subset2(public_bind_env, "finalize")(),
       onexit = TRUE
     )
   }
