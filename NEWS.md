@@ -1,7 +1,11 @@
 R6 2.1.3.9000
 =============
 
-* Classes can define finalizers explicitly, by defining a public `finalize` method. (#92, #93)
+* Classes can define finalizers explicitly, by defining a public `finalize` method. ([#92](https://github.com/wch/R6/issues/92), [#93](https://github.com/wch/R6/pull/93))
+
+* Added function `is.R6()` and `is.R6Class()`. ([#95](https://github.com/wch/R6/pull/95))
+
+* Fixed [#96](https://github.com/wch/R6/issues/96): R6 now avoids using `$` and `[[` after the class has been assigned to the object. This allows the user to provide their own methods for `$` and `[[` without causing problems to R6's operation.
 
 R6 2.1.3
 ========
