@@ -8,7 +8,7 @@ output:
     fig_retina: false
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{R6 and Reference class performance tests}
   %\usepackage[utf8]{inputenc}
 ---
 
