@@ -1,5 +1,5 @@
-R6 2.1.3.9000
-=============
+R6 2.2.0
+========
 
 * Classes can define finalizers explicitly, by defining a public `finalize` method. ([#92](https://github.com/wch/R6/issues/92), [#93](https://github.com/wch/R6/pull/93))
 
