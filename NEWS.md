@@ -12,7 +12,7 @@ R6 2.1.3
 
 * The `plot` S3 method for R6 objects will call `$plot` on the object if present. (#77)
 
-* Fixed priting of members that are R6 objects. (#88)
+* Fixed printing of members that are R6 objects. (#88)
 
 * Fixed deep cloning for non-portable classes. (#85)
 
