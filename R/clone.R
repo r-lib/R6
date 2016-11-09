@@ -158,7 +158,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
   if (length(active_copies) > 0) {
     for (name in names(active_copies)) {
-      makeActiveBinding(name, active_copies[[name]], public_bind_env)
+      make_active_binding(name, active_copies[[name]], public_bind_env)
     }
   }
 
