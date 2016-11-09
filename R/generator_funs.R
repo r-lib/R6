@@ -1,7 +1,7 @@
 # This function returns the superclass object
 generator_funs$get_inherit <- function() {
-  # The baseenv() arg speeds up eval a tiny bit
-  eval(inherit, parent_env, baseenv())
+  # The NULL arg speeds up eval a tiny bit
+  eval(inherit, parent_env, NULL)
 }
 
 # This is the $has_private function for a R6ClassGenerator. This copy of it

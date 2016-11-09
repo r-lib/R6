@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^NEWS\.md$
 \.sublime-project$
 \.sublime-workspace$
 ^\.travis\.yml$

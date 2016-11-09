@@ -80,7 +80,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
   # ------------------------------------------------------------------
 
-  old_enclos_env = self$`.__enclos_env__`
+  old_enclos_env <- .subset2(self, ".__enclos_env__")
   if (!is.environment(old_enclos_env)) {
     stop("clone() must be called from an R6 object.")
   }
@@ -202,7 +202,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # option, which makes ls() much faster, so at some point we'll be able to
   # switch to that.
   for (name in names(public_copies)) {
-    if (is.function(public_bind_env[[name]]))
+    if (is.function(.subset2(public_bind_env, name)))
       lockBinding(name, public_bind_env)
   }
   if (has_private) {

@@ -7,7 +7,7 @@ output:
     toc: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Introduction to R6 classes}
   %\usepackage[utf8]{inputenc}
 ---
 

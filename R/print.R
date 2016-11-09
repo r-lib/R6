@@ -1,7 +1,7 @@
 #' @export
 format.R6 <- function(x, ...) {
-  if (is.function(x$format)) {
-    x$format(...)
+  if (is.function(.subset2(x, "format"))) {
+    .subset2(x, "format")(...)
   } else {
     ret <- paste0("<", class(x)[1], ">")
 
@@ -16,7 +16,7 @@ format.R6 <- function(x, ...) {
       indent(object_summaries(x, exclude = ".__enclos_env__"), 4)
     )
 
-    private <- x$`.__enclos_env__`$private
+    private <- .subset2(.subset2(x, ".__enclos_env__"), "private")
     if (!is.null(private)) {
       ret <- c(ret,
         "  Private:",
@@ -29,8 +29,8 @@ format.R6 <- function(x, ...) {
 
 #' @export
 print.R6 <- function(x, ...) {
-  if (is.function(x$print)) {
-    x$print(...)
+  if (is.function(.subset2(x, "print"))) {
+    .subset2(x, "print")(...)
   } else {
     cat(format(x, ...), sep = "\n")
   }
