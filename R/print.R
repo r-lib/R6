@@ -129,7 +129,7 @@ indent <- function(str, indent = 0) {
 
 # Trim a string to n characters; if it's longer than n, add " ..." to the end
 trim <- function(str, n = 60) {
-  if (nchar(str) > n) paste(substr(str, 1, 56), "...")
+  if (nchar(str) > n) paste(substr(str, 1, n-4), "...")
   else str
 }
 
