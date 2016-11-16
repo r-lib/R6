@@ -1,7 +1,7 @@
 # This is the $new function for a R6ClassGenerator. This copy of it won't run
 # properly; it needs to be copied, and its parent environment set to the
 # generator object environment.
-generator_funs$new <- function(...) {
+generator_funs$new_dots <- function(...) {
   # Get superclass object -------------------------------------------
   inherit <- get_inherit()
 
