@@ -548,7 +548,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
 wrap_dots_fun <- function(dots_fun, arglist_fun) {
   if (is.null(arglist_fun)) {
-    return(dots_fun)
+    arglist_fun <- function() NULL
   }
 
   my_formals <- formals(arglist_fun)
