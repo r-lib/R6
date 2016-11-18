@@ -510,7 +510,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   # Add a "new" function that wraps ".new_dots"
   generator_funs <- generator_funs
-  generator_funs$new <- wrap_dots_fun(".new_dots", public$initialize, generator)
+  generator_funs$new <- wrap_dots_fun(generator_funs$.new_dots, ".new_dots", public$initialize)
 
   # Copy the generator functions into the generator env.
   list2env2(generator_funs, generator)
@@ -545,9 +545,9 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator
 })
 
-wrap_dots_fun <- function(dots_fun_name, arglist_fun, envir) {
-  if (is.null(arglist_fun)) {
-    arglist_fun <- function(...) NULL
+wrap_dots_fun <- function(dots_fun, dots_fun_name, arglist_fun) {
+  if (is.null(arglist_fun) || identical(formals(arglist_fun), as.pairlist(alist(... = )))) {
+    return(dots_fun)
   }
 
   my_formals <- formals(arglist_fun)
@@ -561,7 +561,7 @@ wrap_dots_fun <- function(dots_fun_name, arglist_fun, envir) {
     }
   ))
 
-  environment(new_fun) <- envir
+  environment(new_fun) <- environment(dots_fun)
   formals(new_fun) <- my_formals
 
   new_fun
