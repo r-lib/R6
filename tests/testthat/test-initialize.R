@@ -24,3 +24,9 @@ test_that("initializer with dots", {
   Initializer <- R6Class("Initializer", public = list(initialize = function(a = "", ..., b) NULL))
   expect_identical(formals(Initializer$new), as.pairlist(alist(a = "", ... = , b = )))
 })
+
+test_that("inherited initializer", {
+  A <- R6Class("A", public = list(initialize = function(a = "", ..., b) NULL))
+  B <- R6Class("B", inherit = A)
+  expect_identical(formals(B$new), formals(A$new))
+})
