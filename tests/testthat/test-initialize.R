@@ -2,7 +2,10 @@ context("initialize")
 
 test_that("no initializer", {
   NoInitializer <- R6Class("NoInitializer")
-  expect_null(formals(NoInitializer$new))
+
+  # Absence of initializer means we might use an inherited initializer,
+  # but we don't know its interface at the time the class is created (#12).
+  expect_identical(formals(NoInitializer$new), as.pairlist(alist(... = )))
 })
 
 test_that("empty initializer", {
@@ -28,5 +31,5 @@ test_that("initializer with dots", {
 test_that("inherited initializer", {
   A <- R6Class("A", public = list(initialize = function(a = "", ..., b) NULL))
   B <- R6Class("B", inherit = A)
-  expect_identical(formals(B$new), formals(A$new))
+  expect_identical(formals(B$new), as.pairlist(alist(... = )))
 })
