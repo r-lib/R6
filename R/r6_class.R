@@ -508,10 +508,9 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # Set the generator functions to eval in the generator environment
   generator_funs <- assign_func_envs(generator_funs, generator)
 
-  # Add a "new" function that wraps "new_dots"
+  # Add a "new" function that wraps ".new_dots"
   generator_funs <- generator_funs
-  generator_funs$new <- wrap_dots_fun(generator_funs$new_dots, public$initialize)
-  generator_funs$new_dots <- NULL
+  generator_funs$new <- wrap_dots_fun(".new_dots", public$initialize, generator)
 
   # Copy the generator functions into the generator env.
   list2env2(generator_funs, generator)
@@ -546,7 +545,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator
 })
 
-wrap_dots_fun <- function(dots_fun, arglist_fun) {
+wrap_dots_fun <- function(dots_fun_name, arglist_fun, envir) {
   if (is.null(arglist_fun)) {
     arglist_fun <- function(...) NULL
   }
@@ -554,16 +553,15 @@ wrap_dots_fun <- function(dots_fun, arglist_fun) {
   my_formals <- formals(arglist_fun)
   my_formals_names <- lapply(names(my_formals), as.name)
   names(my_formals_names) <- names(my_formals)
-  dots_fun_call <- as.call(c(quote(dots_fun), my_formals_names))
+  dots_fun_call <- as.call(c(as.name(dots_fun_name), my_formals_names))
 
   new_fun <- eval(bquote(
     function() {
-      dots_fun <- .(dots_fun)
       .(dots_fun_call)
     }
   ))
 
-  environment(new_fun) <- environment(dots_fun)
+  environment(new_fun) <- envir
   formals(new_fun) <- my_formals
 
   new_fun
