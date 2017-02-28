@@ -16,7 +16,9 @@ encapsulate({
     c(inherit$classname, get_superclassnames(inherit$get_inherit()))
   }
 
-  # Wrapper around list2env with a NULL check
+  # Wrapper around list2env with a NULL check. In R <3.2.0, if an empty unnamed
+  # list is passed to list2env(), it errors. But an empty named list is OK. For
+  # R >=3.2.0, this wrapper is not necessary.
   # @param empty_to_null Controls what to do when x is NULL or empty list.
   #   If TRUE, return NULL. If FALSE, return an empty list.
   list2env2 <- function(x, envir = NULL, parent = emptyenv(),
