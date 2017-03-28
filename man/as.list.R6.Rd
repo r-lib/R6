@@ -15,4 +15,3 @@
 This returns a list of public members from the object. It simply calls
 \code{as.list.environment}.
 }
-

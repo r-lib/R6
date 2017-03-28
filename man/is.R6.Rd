@@ -34,4 +34,3 @@ is.R6(class_generator)
 is.R6Class(object)
 is.R6(object)
 }
-
