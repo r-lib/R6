@@ -23,7 +23,7 @@
 #' If the public or private lists contain any items that have reference
 #' semantics (for example, an environment), those items will be shared across
 #' all instances of the class. To avoid this, add an entry for that item with a
-#' \code{NULL} initial value, and then in the \code{intialize} method,
+#' \code{NULL} initial value, and then in the \code{initialize} method,
 #' instantiate the object and assign it.
 #'
 #' @section The \code{print} method:
