@@ -14,20 +14,36 @@ vignette: >
 
 ```{r echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 3.9, fig.height = 3.5)
-library(microbenchmark)
-# Only print 3 significant digits
-print_microbenchmark <- function (x, unit, order = NULL, ...) {
-  s <- summary(x, unit = unit)
-  cat("Unit: ", attr(s, "unit"), "\n", sep = "")
 
-  timing_cols <- c("min", "lq", "median", "uq", "max")
-  s[timing_cols] <- lapply(s[timing_cols], signif, digits = 3)
-  s[timing_cols] <- lapply(s[timing_cols], format, big.mark = ",")
+# Make sure vignette doesn't error on platforms where microbenchmark is not present.
+if (requireNamespace("microbenchmark", quietly = TRUE)) {
+  library(microbenchmark)
 
-  print(s, ..., row.names = FALSE)
+  # Only print 3 significant digits
+  print_microbenchmark <- function (x, unit, order = NULL, ...) {
+    s <- summary(x, unit = unit)
+    cat("Unit: ", attr(s, "unit"), "\n", sep = "")
+
+    timing_cols <- c("min", "lq", "median", "uq", "max")
+    s[timing_cols] <- lapply(s[timing_cols], signif, digits = 3)
+    s[timing_cols] <- lapply(s[timing_cols], format, big.mark = ",")
+
+    print(s, ..., row.names = FALSE)
+  }
+
+  assignInNamespace("print.microbenchmark", print_microbenchmark,
+                    "microbenchmark")
+
+} else {
+  # Some dummy functions so that the vignette doesn't throw an error.
+  microbenchmark <- function(...) {
+    structure(list(), class = "microbenchmark_dummy")
+  }
+
+  summary.microbenchmark_dummy <- function(object, ...) {
+    data.frame(expr = "", median = 0)
+  }
 }
-assignInNamespace("print.microbenchmark", print_microbenchmark,
-  "microbenchmark")
 ```
 
 This document compares the memory costs and speed of R's reference classes against R6 classes and simple environments. For must uses, R6 and reference classes have comparable features, but as we'll see, R6 classes are faster and lighter weight.
@@ -38,8 +54,20 @@ This document tests reference classes against R6 classes (in many variations), a
 
 First we'll load some packages which will be used below:
 
-```{r}
+```{r eval = FALSE}
 library(microbenchmark)
+options(microbenchmark.unit = "us")
+library(pryr)  # For object_size function
+library(R6)
+```
+
+```{r echo = FALSE}
+# The previous code block is just for appearances. This code block is the one
+# that gets run. The loading of microbenchmark must be conditional because it is
+# not available on all platforms.
+if (requireNamespace("microbenchmark", quietly = TRUE)) {
+  library(microbenchmark)
+}
 options(microbenchmark.unit = "us")
 library(pryr)  # For object_size function
 library(R6)
