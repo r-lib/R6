@@ -1,3 +1,10 @@
+R6 2.2.0.9000
+=============
+
+* Vignettes now only try use the microbenchmark package if it is present. This is so that the package builds properly on platforms where microbenchmark is not present, like Solaris.
+
+* Fixed ending position for `trim()`.
+
 R6 2.2.0
 ========
 
