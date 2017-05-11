@@ -10,6 +10,8 @@ Description: The R6 package allows the creation of classes with reference
     the classes are defined in different packages.
 Depends:
     R (>= 3.0)
+Imports:
+    utils
 Suggests:
     knitr,
     microbenchmark,
