@@ -23,3 +23,12 @@ encapsulate <- function(expr) {
 # enclosed in a special environment now; when a class is created, they will be
 # copied into the generator environment and assigned it as their enclosing env.
 generator_funs <- list()
+
+
+# Add tab completion of all objects inheriting from R6. It will complete all
+# public fields and methods (method parameters doesn't work though)
+#' @export
+#' @importFrom utils .DollarNames
+.DollarNames.R6 <- function(x, pattern){
+  grep(pattern, ls(x), value=TRUE)
+}
