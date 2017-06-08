@@ -66,10 +66,23 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
     new_super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
 
-    # Copy over the methods and fix up their environments
+    # Fix up environments for methods
     super_copies <- assign_func_envs(super_copies, new_super_enclos_env)
-    list2env2(super_copies, new_super_bind_env)
 
+    # Separate active from non-active items
+    active_idx <- vapply(names(super_copies), bindingIsActive, env = old_super_bind_env,
+                         TRUE)
+    active_copies     <- super_copies[active_idx]
+    non_active_copies <- super_copies[!active_idx]
+
+    # Copy over items
+    list2env2(non_active_copies, new_super_bind_env)
+
+    if (length(active_copies) > 0) {
+      for (name in names(active_copies)) {
+        makeActiveBinding(name, active_copies[[name]], new_super_bind_env)
+      }
+    }
 
     new_enclos_env$super <- new_super_bind_env
 

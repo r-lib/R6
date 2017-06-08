@@ -273,6 +273,50 @@ test_that("Cloning active bindings", {
 })
 
 
+
+test_that("Cloning active binding in superclass", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1
+    ),
+    active = list(
+      x2 = function(value){
+        if (missing(value)) self$x * 2
+        else self$x <- value / 2
+      }
+    )
+  )
+
+  BC <- R6Class("BC",
+    inherit = AC,
+    active = list(
+      x2 = function(value){
+        if (missing(value)) super$x2 * 2
+        else super$x2 <- value / 2
+      }
+    )
+  )
+
+  a <- AC$new()
+  a$x <- 10
+  expect_identical(a$x2, 20)
+  a$x2 <- 22
+  expect_identical(a$x, 11)
+
+  b <- BC$new()
+  b$x <- 10
+  expect_identical(b$x2, 40)
+  b$x <- 11
+  expect_identical(b$x2, 44)
+
+  b1 <- b$clone()
+  expect_identical(b1$x2, 44)
+  b1$x <- 12
+  expect_identical(b1$x2, 48)
+})
+
+
+
 test_that("Lock state", {
   AC <- R6Class("AC",
     public = list(
