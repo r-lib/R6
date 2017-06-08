@@ -1,7 +1,9 @@
 R6 2.2.1.9000
 =============
 
-* Fixed (#108)[https://github.com/wch/R6/issues/108]: When an object with a `super` object and an active binding in the `super` object was cloned, the new object's `super` object did not get the active binding -- it was a normal function.
+* Fixed [#108](https://github.com/wch/R6/issues/108): When an object with a `super` object and an active binding in the `super` object was cloned, the new object's `super` object did not get the active binding -- it was a normal function.
+
+* Fixed [#119](https://github.com/wch/R6/issues/119): When a class had two levels of inheritance, an instance of that class's `super` object could contain methods that had an incorrect enclosing environment.
 
 
 R6 2.2.1

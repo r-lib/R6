@@ -192,6 +192,9 @@ encapsulate({
     # because it's not the enclosing environment for any functions.
     super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
 
+    # Need to store the enclosing environment for cloning.
+    super_bind_env$.__enclos_env__ <- super_enclos_env
+
     # Add self/private pointers -----------------------------------------
     if (portable) {
       super_enclos_env$self <- public_bind_env

@@ -39,6 +39,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
     # Copy all the methods from the old super binding env to the new one, and
     # set their enclosing env to a new one.
     super_copies <- as.list.environment(old_super_bind_env, all.names = TRUE)
+    super_copies <- super_copies[setdiff(names(super_copies), ".__enclos_env__")]
 
     # Degenerate case: super env is empty
     if (length(super_copies) == 0) {
@@ -46,16 +47,11 @@ generator_funs$clone_method <- function(deep = FALSE) {
       return()
     }
 
-    # All items in the old_super_bind_env must be functions; to get the
-    # old_super_enclos_env, simply call environment() on one of them. Doing it
-    # this way lets us avoid storing an explicit pointer to the super_enclos_env
-    # in the original super_bind_env. This doesn't work as well for avoiding
-    # storing the enclos_env in the original public_bind_env, because there are
-    # many possible items there. We can't assume that just any item is a
-    # function -- and even if we do find a function, it's not guaranteed that
-    # it's a method. It may be a function (with a different parent env) that was
-    # added after the object was created.
-    old_super_enclos_env <- environment(super_copies[[1]])
+    # Get the enclosing env for the super object. Note that this is the
+    # enclosing env only for methods declared for this level of super object --
+    # if this super object has inherited methods from its super object, then
+    # those methods will have a different environment. (#119)
+    old_super_enclos_env <- old_super_bind_env$.__enclos_env__
 
     # Create new super enclos env and populate with self and private.
     new_super_enclos_env <- new.env(parent = parent.env(old_super_enclos_env),
@@ -65,6 +61,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
       new_super_enclos_env$private <- private_bind_env
 
     new_super_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+    new_super_bind_env$.__enclos_env__ <- new_super_enclos_env
 
     # Fix up environments for methods
     super_copies <- assign_func_envs(super_copies, new_super_enclos_env)
