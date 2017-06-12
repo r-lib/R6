@@ -1,5 +1,5 @@
-R6 2.2.1.9000
-=============
+R6 2.2.2
+========
 
 * Fixed [#108](https://github.com/wch/R6/issues/108): When an object with a `super` object and an active binding in the `super` object was cloned, the new object's `super` object did not get the active binding -- it was a normal function.
 
