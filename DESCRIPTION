@@ -1,13 +1,13 @@
 Package: R6
 Title: Classes with Reference Semantics
-Version: 2.2.2
+Version: 2.2.2.9000
 Authors@R: person("Winston", "Chang", role = c("aut", "cre"), email = "winston@stdout.org")
-Description: The R6 package allows the creation of classes with reference
-    semantics, similar to R's built-in reference classes. Compared to reference
-    classes, R6 classes are simpler and lighter-weight, and they are not built
-    on S4 classes so they do not require the methods package. These classes
-    allow public and private members, and they support inheritance, even when
-    the classes are defined in different packages.
+Description: Creates classes with reference semantics, similar to R's built-in
+    reference classes. Compared to reference classes, R6 classes are simpler
+    and lighter-weight, and they are not built on S4 classes so they do not
+    require the methods package. These classes allow public and private
+    members, and they support inheritance, even when the classes are defined in
+    different packages.
 Depends:
     R (>= 3.0)
 Suggests:
