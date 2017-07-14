@@ -360,3 +360,36 @@ test_that("Finalizers and two levels of inheritance, non-portable", {
     "An AC was just deleted.*A BC was just deleted.*A CC was just deleted"
   )
 })
+
+
+# Issue #121
+test_that("Finalizer method does not prevent GC of objects passed to initialize", {
+  a_gc <- FALSE
+  A <- R6Class(
+    "A",
+    cloneable = FALSE,
+    public = list(
+      initialize = function(x) {
+        force(x) # Need to eval x
+      },
+      finalize = function(e) {
+        a_gc <<- TRUE
+      }
+    )
+  )
+
+  x_gc <- FALSE
+  x <- new.env(parent = emptyenv())
+  reg.finalizer(x, function(e) { x_gc <<- TRUE })
+
+  # Pass x to A's initialize method
+  a <- A$new(x)
+
+  rm(x)
+  gc()
+  expect_true(x_gc)  # This is the key test: x should be GC'd
+
+  rm(a)
+  gc()
+  expect_true(a_gc)
+})

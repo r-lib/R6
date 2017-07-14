@@ -1,3 +1,9 @@
+R6 2.2.2.9000
+========
+
+* Fixed [#121](https://github.com/wch/R6/issues/121): If a `finalize` method was present, it would prevent objects passed to `initialize` from getting GC'd.
+
+
 R6 2.2.2
 ========
 

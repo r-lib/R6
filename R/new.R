@@ -150,9 +150,19 @@ generator_funs$new <- function(...) {
 
   # Finalize --------------------------------------------------------
   if (is.function(.subset2(public_bind_env, "finalize"))) {
+    # This wraps the user's `finalize` method. The user's finalize method
+    # typically does not have an `e` argument, so the wrapper needs to consume
+    # the `e` argument.
+    finalizer_wrapper <- function(e) {
+      .subset2(e, "finalize")()
+    }
+    # Reassign the wrapper's environment so that it does not capture the current
+    # environment and prevent objects from getting GC'd.
+    environment(finalizer_wrapper) <- baseenv()
+
     reg.finalizer(
       public_bind_env,
-      function(...) .subset2(public_bind_env, "finalize")(),
+      finalizer_wrapper,
       onexit = TRUE
     )
   }
