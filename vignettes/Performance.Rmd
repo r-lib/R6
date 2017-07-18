@@ -48,7 +48,7 @@ if (requireNamespace("microbenchmark", quietly = TRUE)) {
 
 This document compares the memory costs and speed of R's reference classes against R6 classes and simple environments. For must uses, R6 and reference classes have comparable features, but as we'll see, R6 classes are faster and lighter weight.
 
-This document tests reference classes against R6 classes (in many variations), as well as against very simple reference objects: environments created by functino calls.
+This document tests reference classes against R6 classes (in many variations), as well as against very simple reference objects: environments created by function calls.
 
 *****
 
