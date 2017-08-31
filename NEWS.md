@@ -1,15 +1,15 @@
 R6 2.2.2.9000
 ========
 
-* Fixed [#121](https://github.com/wch/R6/issues/121): If a `finalize` method was present, it would prevent objects passed to `initialize` from getting GC'd.
+* Fixed [#121](https://github.com/r-lib/R6/issues/121): If a `finalize` method was present, it would prevent objects passed to `initialize` from getting GC'd.
 
 
 R6 2.2.2
 ========
 
-* Fixed [#108](https://github.com/wch/R6/issues/108): When an object with a `super` object and an active binding in the `super` object was cloned, the new object's `super` object did not get the active binding -- it was a normal function.
+* Fixed [#108](https://github.com/r-lib/R6/issues/108): When an object with a `super` object and an active binding in the `super` object was cloned, the new object's `super` object did not get the active binding -- it was a normal function.
 
-* Fixed [#119](https://github.com/wch/R6/issues/119): When a class had two levels of inheritance, an instance of that class's `super` object could contain methods that had an incorrect enclosing environment.
+* Fixed [#119](https://github.com/r-lib/R6/issues/119): When a class had two levels of inheritance, an instance of that class's `super` object could contain methods that had an incorrect enclosing environment.
 
 
 R6 2.2.1
@@ -22,11 +22,11 @@ R6 2.2.1
 R6 2.2.0
 ========
 
-* Classes can define finalizers explicitly, by defining a public `finalize` method. ([#92](https://github.com/wch/R6/issues/92), [#93](https://github.com/wch/R6/pull/93))
+* Classes can define finalizers explicitly, by defining a public `finalize` method. ([#92](https://github.com/r-lib/R6/issues/92), [#93](https://github.com/r-lib/R6/pull/93))
 
-* Added function `is.R6()` and `is.R6Class()`. ([#95](https://github.com/wch/R6/pull/95))
+* Added function `is.R6()` and `is.R6Class()`. ([#95](https://github.com/r-lib/R6/pull/95))
 
-* Fixed [#96](https://github.com/wch/R6/issues/96): R6 now avoids using `$` and `[[` after the class has been assigned to the object. This allows the user to provide their own methods for `$` and `[[` without causing problems to R6's operation.
+* Fixed [#96](https://github.com/r-lib/R6/issues/96): R6 now avoids using `$` and `[[` after the class has been assigned to the object. This allows the user to provide their own methods for `$` and `[[` without causing problems to R6's operation.
 
 R6 2.1.3
 ========

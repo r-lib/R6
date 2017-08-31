@@ -24,7 +24,7 @@ install.packages('R6')
 To install the development version (requires the devtools package):
 
 ```R
-devtools::install_github('wch/R6', build_vignettes = FALSE)
+devtools::install_github('r-lib/R6', build_vignettes = FALSE)
 ```
 
 
