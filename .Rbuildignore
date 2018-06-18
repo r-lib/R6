@@ -5,3 +5,4 @@
 ^\.travis\.yml$
 ^doc_extra$
 ^appveyor\.yml$
+^\.github$
