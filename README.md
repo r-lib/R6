@@ -1,36 +1,19 @@
-R6 classes
-===========
+R6 dummy package
+================
 
-[![Build Status](https://travis-ci.org/wch/R6.svg?branch=master)](https://travis-ci.org/wch/R6)
+This is a version of the R6 package that is empty; it has no R code. It is intended to be used for testing the following: If a package calls `R6Class()` at build time and saves the resulting `R6ClassGenerator` object, will that package call any code from the R6 package after it is built? The goal is for the answer to be "no."
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/wch/R6?branch=master&svg=true)](https://ci.appveyor.com/project/wch/R6)
+For more information, see https://github.com/r-lib/R6/issues/149.
 
-This package contains an implemention of classes with reference semantics, and it is a simpler, faster, lighter-weight alternative to R's built-in reference classes.
+To test this, do the following:
 
-Additionally, these classes are not built on S4 classes, so they do not require the methods package. They allow public and private members, and they support inheritance. Unlike reference classes, R6 classes can be cleanly inherited across different packages, when used in portable mode (enabled by default).
+* Install the usual version of R6.
+* Install the package which uses `R6Class()` at build time.
+* Install this dummy version of the package:
 
-Why the name R6? When R's reference classes were introduced, some users, following the names of R's existing class systems S3 and S4, called the new class system R5 in jest. Although reference classes are not actually called R5, the name of this package and its classes takes inspiration from that name.
+    ```R
+    devtools::install_github("r-lib/R6@dummy-package")
+    ```
 
-The name R5 was also a code-name used for a different object system started by Simon Urbanek, meant to solve some issues with S4 relating to syntax and performance. However, the R5 branch was shelved after a little development, and it was never released.
-
-## Installation
-
-To install R6 from CRAN:
-
-```R
-install.packages('R6')
-```
-
-To install the development version (requires the devtools package):
-
-```R
-devtools::install_github('r-lib/R6', build_vignettes = FALSE)
-```
-
-
-## Documentation
-
-* [Introduction to R6](https://cloud.r-project.org/package=R6/vignettes/Introduction.html)
-* [Portable R6 classes](https://cloud.r-project.org/package=R6/vignettes/Portable.html) - Inheritance across different packages.
-* [Performance tests](https://cloud.r-project.org/package=R6/vignettes/Performance.html) - Speed and memory comparisons of R6 classes and reference classes.
-* [Debugging methods in R6 objects](https://cloud.r-project.org/package=R6/vignettes/Debugging.html)
+* Restart R.
+* Load and test your package.
