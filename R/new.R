@@ -118,7 +118,7 @@ generator_funs$new <- function(...) {
   # Set up active bindings ------------------------------------------
   if (!is.null(active)) {
     for (name in names(active)) {
-      makeActiveBinding(name, active[[name]], public_bind_env)
+      make_active_binding(name, active[[name]], public_bind_env)
     }
   }
 
@@ -236,7 +236,7 @@ encapsulate({
     list2env2(public_methods, envir = super_bind_env)
     list2env2(private_methods, envir = super_bind_env)
     for (name in names(active)) {
-      makeActiveBinding(name, active[[name]], super_bind_env)
+      make_active_binding(name, active[[name]], super_bind_env)
     }
 
     # Return an object with all the information needed to merge down

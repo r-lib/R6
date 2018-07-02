@@ -37,3 +37,26 @@ encapsulate({
     x[!funcs]
   }
 })
+
+#' Wraps \code{\link[base]{makeActiveBinding}}, providing a better
+#' error message for read-only bindings.
+#' @param sym A string naming the variable to bind to.
+#' @param fun A function to bind to the variable.
+#' @param env An environment to create the binding in.
+#' @return An active binding.
+#' @examples
+#' fn <- function() 1
+#' make_active_binding("var", fn, globalenv())
+#' var
+#' try(var <- 123)
+#' @noRd
+make_active_binding <- function(sym, fun, env) {
+  new_fun <- if(length(formals(fun)) == 0L) {
+    function(value) {
+      if(!missing(value)) {
+        stop(sym, " is read-only.")
+      } else fun()
+    }
+  } else fun
+  makeActiveBinding(sym, new_fun, env)
+}
