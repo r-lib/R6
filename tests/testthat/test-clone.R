@@ -716,3 +716,57 @@ test_that("Deep cloning non-portable classes", {
   expect_identical(a2$x, 2)
   expect_identical(a2$self, a2)
 })
+
+
+
+test_that("Cloning with functions that are not methods", {
+  x <- 0
+  local_x1 <- local({
+    x <- 1
+    function() x
+  })
+
+  AC <- R6Class("AC",
+    public = list(
+      f = NULL
+    )
+  )
+
+  a <- AC$new()
+  a$f <- local_x1
+  expect_identical(a$f(), 1)
+
+  a2 <- a$clone()
+  expect_identical(a2$f(), 1)
+
+  # Clone of a clone
+  a3 <- a$clone()
+  expect_identical(a3$f(), 1)
+
+  # ==== With inheritance ====
+  local_x2 <- local({
+    x <- 2
+    function() x
+  })
+
+  BC <- R6Class("BC",
+    inherit = AC,
+    public = list(
+      g = NULL
+    )
+  )
+
+  b <- BC$new()
+  b$f <- local_x1
+  b$g <- local_x2
+  expect_identical(b$f(), 1)
+  expect_identical(b$g(), 2)
+
+  b2 <- b$clone()
+  expect_identical(b2$f(), 1)
+  expect_identical(b2$g(), 2)
+
+  b3 <- b$clone()
+  expect_identical(b3$f(), 1)
+  expect_identical(b3$g(), 2)
+})
