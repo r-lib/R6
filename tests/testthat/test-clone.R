@@ -407,98 +407,211 @@ test_that("Lock state", {
 
 
 test_that("Cloning inherited methods", {
+  # This set of tests makes sure that inherited methods refer to the correct
+  # self, private, and super. They also test multiple levels of inheritance.
+
+  # Base class
   C1 <- R6Class("C1",
     public = list(
       x = 1,
-      getx = function() self$x,
-      addx = function() self$x + 10
+      addx   = function() self$x + 100,
+      p_addx = function() private$addx_()
+    ),
+    private = list(
+      addx_  = function() self$x + 100
     ),
     active = list(
-      xa = function(val) {
-        if (missing(val)) self$x * 2
-        else self$x <- val / 2
-      }
+      a_addx = function(val) self$x + 100
     )
   )
 
-  C2 <- R6Class("C2",
+
+  # ==== Inherited methods ====
+  C2_inherit <- R6Class("C2_inherit",
     inherit = C1,
     public = list(
-      x = 2,
-      addx = function() super$addx() + 10
-    ),
-    active = list(
-      xa = function(val) {
-        if (missing(val)) self$x * 3
-        else self$x <- val / 3
-      }
+      x = 2
     )
   )
 
-  a <- C2$new()
+  a <- C2_inherit$new()
   b <- a$clone()
 
-  expect_identical(b$getx(), 2)
-  expect_identical(b$addx(), 22)
-  b$x <- 3
-  expect_identical(b$getx(), 3)
-  expect_identical(b$addx(), 23)
+  expect_identical(a$addx(),   102)
+  expect_identical(a$p_addx(), 102)
+  expect_identical(a$a_addx,   102)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
 
-  expect_identical(b$xa, 9)
-  b$xa <- 12
-  expect_identical(b$x, 4)
+  b$x <- 3
+  expect_identical(b$addx(),     103)
+  expect_identical(b$p_addx(),   103)
+  expect_identical(b$a_addx,     103)
 
   # Make sure a was unaffected
   expect_identical(a$x, 2)
 
 
-  # Same as previous, but with another copy and another level of inheritance
-  C3 <- R6Class("C3",
-    inherit = C2,
+  # ==== Overridden methods ====
+  C2_override <- R6Class("C2_override",
+    inherit = C1,
     public = list(
-      x = 3,
-      addx = function() super$addx() + 20
+      x = 2,
+      addx = function() super$addx() + self$x + 1000
+    ),
+    private = list(
+      addx_  = function() super$addx_() + self$x + 1000
     ),
     active = list(
-      xa = function(val) {
-        if (missing(val)) self$x * 4
-        else self$x <- val / 4
-      }
+      a_addx = function(val) super$a_addx + self$x + 1000
     )
   )
 
-  a <- C3$new()
+  a <- C2_override$new()
   b <- a$clone()
-  c <- b$clone()
-  b$x <- 4
-  c$x <- 5
-  expect_identical(a$getx(), 3)
-  expect_identical(a$addx(), 43)
-  expect_identical(b$getx(), 4)
-  expect_identical(b$addx(), 44)
-  expect_identical(c$getx(), 5)
-  expect_identical(c$addx(), 45)
 
-  expect_identical(c$xa, 20)
-  c$xa <- 24
-  expect_identical(c$x, 6)
+  expect_identical(a$addx(),   1104)
+  expect_identical(a$p_addx(), 1104)
+  expect_identical(a$a_addx,   1104)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
 
-  # Make sure a and b were unaffected
-  expect_identical(a$x, 3)
-  expect_identical(b$x, 4)
+  b$x <- 3
+  expect_identical(b$addx(),     1106)
+  expect_identical(b$p_addx(),   1106)
+  expect_identical(b$a_addx,     1106)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 2)
 
 
-  # Three levels; don't override active binding
-  C3na <- R6Class("C3na",
-    inherit = C2,
-    public = list(x = 3)
+  # ===========================================================================
+  # Sub-sub-classes:
+  # Need to check sequences of:
+  # inherit-inherit, inherit-override, override-inherit, and override-override
+
+  # ==== Inherit-inherit methods ====
+  C3_inherit_inherit <- R6Class("C3_inherit_inherit",
+    inherit = C2_inherit,
+    public = list(
+      x = 3
+    )
   )
-  a <- C3na$new()
+
+  a <- C3_inherit_inherit$new()
   b <- a$clone()
+
+  expect_identical(a$addx(),   103)
+  expect_identical(a$p_addx(), 103)
+  expect_identical(a$a_addx,   103)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
+
   b$x <- 4
-  expect_identical(b$xa, 12)
-  b$xa <- 15
-  expect_identical(b$x, 5)
+  expect_identical(b$addx(),   104)
+  expect_identical(b$p_addx(), 104)
+  expect_identical(b$a_addx,   104)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 3)
+
+
+  # ==== Inherit-override methods ====
+  C3_inherit_override <- R6Class("C3_inherit_override",
+    inherit = C2_inherit,
+    public = list(
+      x = 3,
+      addx = function() super$addx() + self$x + 10000
+    ),
+    private = list(
+      addx_  = function() super$addx_() + self$x + 10000
+    ),
+    active = list(
+      a_addx = function(val) super$a_addx + self$x + 10000
+    )
+  )
+
+  a <- C3_inherit_override$new()
+  b <- a$clone()
+
+  expect_identical(a$addx(),   10106)
+  expect_identical(a$p_addx(), 10106)
+  expect_identical(a$a_addx,   10106)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
+
+  b$x <- 4
+  expect_identical(b$addx(),   10108)
+  expect_identical(b$p_addx(), 10108)
+  expect_identical(b$a_addx,   10108)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 3)
+
+
+  # ==== Override-override methods ====
+  C3_override_override <- R6Class("C3_override_override",
+    inherit = C2_override,
+    public = list(
+      x = 3,
+      addx = function() super$addx() + self$x + 10000
+    ),
+    private = list(
+      addx_  = function() super$addx_() + self$x + 10000
+    ),
+    active = list(
+      a_addx = function(val) super$a_addx + self$x + 10000
+    )
+  )
+
+  a <- C3_override_override$new()
+  b <- a$clone()
+
+  expect_identical(a$addx(),   11109)
+  expect_identical(a$p_addx(), 11109)
+  expect_identical(a$a_addx,   11109)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
+
+  b$x <- 4
+  expect_identical(b$addx(),   11112)
+  expect_identical(b$p_addx(), 11112)
+  expect_identical(b$a_addx,   11112)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 3)
+
+
+  # ==== Override-inherit methods ====
+  C3_override_inherit <- R6Class("C3_override_inherit",
+    inherit = C2_override,
+    public = list(
+      x = 3
+    )
+  )
+
+  a <- C3_override_inherit$new()
+  b <- a$clone()
+
+  expect_identical(a$addx(),   1106)
+  expect_identical(a$p_addx(), 1106)
+  expect_identical(a$a_addx,   1106)
+  expect_identical(a$addx(),   b$addx())
+  expect_identical(a$p_addx(), b$p_addx())
+  expect_identical(a$a_addx,   b$a_addx)
+
+  b$x <- 4
+  expect_identical(b$addx(),   1108)
+  expect_identical(b$p_addx(), 1108)
+  expect_identical(b$a_addx,   1108)
+
+  # Make sure a was unaffected
+  expect_identical(a$x, 3)
 })
 
 
@@ -602,4 +715,58 @@ test_that("Deep cloning non-portable classes", {
 
   expect_identical(a2$x, 2)
   expect_identical(a2$self, a2)
+})
+
+
+
+test_that("Cloning with functions that are not methods", {
+  x <- 0
+  local_x1 <- local({
+    x <- 1
+    function() x
+  })
+
+  AC <- R6Class("AC",
+    public = list(
+      f = NULL
+    )
+  )
+
+  a <- AC$new()
+  a$f <- local_x1
+  expect_identical(a$f(), 1)
+
+  a2 <- a$clone()
+  expect_identical(a2$f(), 1)
+
+  # Clone of a clone
+  a3 <- a$clone()
+  expect_identical(a3$f(), 1)
+
+  # ==== With inheritance ====
+  local_x2 <- local({
+    x <- 2
+    function() x
+  })
+
+  BC <- R6Class("BC",
+    inherit = AC,
+    public = list(
+      g = NULL
+    )
+  )
+
+  b <- BC$new()
+  b$f <- local_x1
+  b$g <- local_x2
+  expect_identical(b$f(), 1)
+  expect_identical(b$g(), 2)
+
+  b2 <- b$clone()
+  expect_identical(b2$f(), 1)
+  expect_identical(b2$g(), 2)
+
+  b3 <- b$clone()
+  expect_identical(b3$f(), 1)
+  expect_identical(b3$g(), 2)
 })
