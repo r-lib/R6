@@ -609,8 +609,8 @@
 <a class="sourceLine" id="cb29-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
 <a class="sourceLine" id="cb29-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
 <a class="sourceLine" id="cb29-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb29-17" data-line-number="17"><span class="co">#&gt; Ncells  649727 34.7    1192774 63.8         NA  1192774 63.8</span></a>
-<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="co">#&gt; Vcells 1318984 10.1    8388608 64.0      16384  2605313 19.9</span></a></code></pre></div>
+<a class="sourceLine" id="cb29-17" data-line-number="17"><span class="co">#&gt; Ncells  649745 34.8    1192851 63.8         NA  1192851 63.8</span></a>
+<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="co">#&gt; Vcells 1319023 10.1    8388608 64.0      16384  2605374 19.9</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 </div>
