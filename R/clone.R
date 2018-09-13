@@ -1,14 +1,27 @@
 # This function will be added as a method to R6 objects, with the name 'clone',
 # and with the environment changed.
 generator_funs$clone_method <- function(deep = FALSE) {
-
   # Need to embed these utility functions inside this closure because the
   # environment of this function will change.
-  assign_func_envs <- function(objs, target_env) {
-    if (is.null(target_env)) return(objs)
 
+  # This takes a list of objects and a list of pairs of environments. For each
+  # object, if it is a function, this checks if that function's environment is
+  # the same as any of the `old` members of the pairs; if so, it will change
+  # the function's environment to the matching `new` member. If the function's
+  # environment is not found in the list, then it will not be touched.
+  remap_func_envs <- function(objs, old_new_env_pairs) {
     lapply(objs, function(x) {
-      if (is.function(x)) environment(x) <- target_env
+      if (is.function(x)) {
+        func_env <- environment(x)
+
+        for (i in seq_along(old_new_env_pairs)) {
+          if (identical(func_env, old_new_env_pairs[[i]]$old)) {
+            environment(x) <- old_new_env_pairs[[i]]$new
+            break
+          }
+        }
+      }
+
       x
     })
   }
@@ -184,7 +197,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # ---------------------------------------------------------------------------
   # Copy members from old to new
   # ---------------------------------------------------------------------------
-  copy_slice <- function(old_slice, new_slice) {
+  copy_slice <- function(old_slice, new_slice, old_new_enclosing_pairs) {
     # Copy the old objects, fix up method environments, and put them into the
     # new binding environment.
     binding_copies <- as.list.environment(old_slice$binding, all.names = TRUE)
@@ -194,8 +207,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
       setdiff(names(binding_copies), c("self", "private", "super", ".__enclos_env__"))
     ]
 
-    # TODO: Fix this up to iterate over super envs
-    binding_copies <- assign_func_envs(binding_copies, new_slice$enclosing)
+    binding_copies <- remap_func_envs(binding_copies, old_new_enclosing_pairs)
 
     # Separate active and non-active bindings
     active_idx <- vapply(
@@ -236,14 +248,29 @@ generator_funs$clone_method <- function(deep = FALSE) {
           SIMPLIFY = FALSE
         )
       }
-      private_copies <- assign_func_envs(private_copies, new_slice$enclosing)
+      private_copies <- remap_func_envs(private_copies, old_new_enclosing_pairs)
       list2env2(private_copies, new_slice$private)
     }
   }
 
+
+  old_new_enclosing_pairs <- list()
   for (i in seq_along(old)) {
-    # This works because the objects in new are reference objects
-    copy_slice(old[[i]], new[[i]])
+    old_new_enclosing_pairs[[i]] <- list(
+      old = old[[i]]$enclosing,
+      new = new[[i]]$enclosing
+    )
+  }
+
+  for (i in seq_along(old)) {
+    # Only need to pass along the old/new pairs from i and above, because a
+    # superclass's function will never have an enclosing environment from a
+    # subclass.
+    copy_slice(
+      old[[i]],
+      new[[i]],
+      old_new_enclosing_pairs[seq(i, length(old))]
+    )
   }
 
 
