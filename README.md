@@ -1,8 +1,7 @@
 R6: Classical object-oriented programming for R
 ===============================================
 
-[![Build Status](https://travis-ci.org/r-lib/R6.svg?branch=master)](https://travis-ci.org/r-lib/R6) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/r-lib/R6?branch=master&svg=true)](https://ci.appveyor.com/project/r-lib/R6)
-
+[![Build Status](https://travis-ci.org/r-lib/R6.svg?branch=master)](https://travis-ci.org/r-lib/R6)
 
 R6 is an implemention of classical object-oriented programming for R, and is a simpler, faster, lighter-weight alternative to R's built-in reference classes.
 
