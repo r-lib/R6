@@ -552,15 +552,56 @@
 <a class="sourceLine" id="cb26-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
 <a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
 <a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  617948 33.1    1194830 63.9         NA  1194830 63.9</span></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1246603  9.6    8388608 64.0      16384  2594236 19.8</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  617976 33.1    1193701 63.8         NA  1193701 63.8</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1247182  9.6    8388608 64.0      16384  2585804 19.8</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
+<div id="class-methods-vs-member-functions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#class-methods-vs-member-functions" class="anchor"></a>Class methods vs. member functions</h3>
+<p>When an R6 class definition contains functions in the public or private sections, those functions are <em>class methods</em>: they can access <code>self</code> (as well as <code>private</code> and <code>super</code> when available). When an R6 object is cloned, the resulting object’s methods will have a <code>self</code> that refers to the new object. This works by changing the <em>enclosing environment</em> of the method in the cloned object.</p>
+<p>In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the <code>initialize</code> method, or after the object has been instantiated. These functions are not class methods, and they will not have access to <code>self</code>, <code>private</code>, or <code>super</code>.</p>
+<p>Here is a trivial class which has a method <code>get_self()</code> that simply returns <code>self</code>, as well as an empty member, <code>fn</code>. In this example, we’ll assign a function to <code>fn</code> which has the same body as <code>get_self</code>. However, since it’s a regular function, <code>self</code> will refer to something other than the R6 object:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">FunctionWrapper &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"FunctionWrapper"</span>,</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">    <span class="dt">get_self =</span> <span class="cf">function</span>() {</a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">      self</a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">    },</a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">    <span class="dt">fn =</span> <span class="ot">NULL</span></a>
+<a class="sourceLine" id="cb27-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb27-8" data-line-number="8">)</a>
+<a class="sourceLine" id="cb27-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb27-10" data-line-number="10">a &lt;-<span class="st"> </span>FunctionWrapper<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb27-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb27-12" data-line-number="12"><span class="co"># Create a function that accesses a variable named `self`.</span></a>
+<a class="sourceLine" id="cb27-13" data-line-number="13"><span class="co"># Note that `self` in this function's scope refers to 100, not to the R6 object.</span></a>
+<a class="sourceLine" id="cb27-14" data-line-number="14">self &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb27-15" data-line-number="15">a<span class="op">$</span>fn &lt;-<span class="st"> </span><span class="cf">function</span>() {</a>
+<a class="sourceLine" id="cb27-16" data-line-number="16">  self</a>
+<a class="sourceLine" id="cb27-17" data-line-number="17">}</a>
+<a class="sourceLine" id="cb27-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb27-19" data-line-number="19">a<span class="op">$</span><span class="kw">get_self</span>()</a>
+<a class="sourceLine" id="cb27-20" data-line-number="20"><span class="co">#&gt; &lt;FunctionWrapper&gt;</span></a>
+<a class="sourceLine" id="cb27-21" data-line-number="21"><span class="co">#&gt;   Public:</span></a>
+<a class="sourceLine" id="cb27-22" data-line-number="22"><span class="co">#&gt;     clone: function (deep = FALSE) </span></a>
+<a class="sourceLine" id="cb27-23" data-line-number="23"><span class="co">#&gt;     fn: function () </span></a>
+<a class="sourceLine" id="cb27-24" data-line-number="24"><span class="co">#&gt;     get_self: function () </span></a>
+<a class="sourceLine" id="cb27-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb27-26" data-line-number="26">a<span class="op">$</span><span class="kw">fn</span>()</a>
+<a class="sourceLine" id="cb27-27" data-line-number="27"><span class="co">#&gt; [1] 100</span></a></code></pre></div>
+<p>As of R6 2.3.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">b &lt;-<span class="st"> </span>a<span class="op">$</span><span class="kw">clone</span>()</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">b<span class="op">$</span><span class="kw">get_self</span>()</a>
+<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="co">#&gt; &lt;FunctionWrapper&gt;</span></a>
+<a class="sourceLine" id="cb28-5" data-line-number="5"><span class="co">#&gt;   Public:</span></a>
+<a class="sourceLine" id="cb28-6" data-line-number="6"><span class="co">#&gt;     clone: function (deep = FALSE) </span></a>
+<a class="sourceLine" id="cb28-7" data-line-number="7"><span class="co">#&gt;     fn: function () </span></a>
+<a class="sourceLine" id="cb28-8" data-line-number="8"><span class="co">#&gt;     get_self: function () </span></a>
+<a class="sourceLine" id="cb28-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb28-10" data-line-number="10">b<span class="op">$</span><span class="kw">fn</span>()</a>
+<a class="sourceLine" id="cb28-11" data-line-number="11"><span class="co">#&gt; [1] 100</span></a></code></pre></div>
 </div>
-<div id="summary" class="section level2">
-<h2 class="hasAnchor">
-<a href="#summary" class="anchor"></a>Summary</h2>
-<p>R6 classes provide capabilities that are common in other object-oriented programming languages. They’re similar to R’s built-in reference classes, but are simpler, smaller, and faster, and they allow inheritance across packages.</p>
 </div>
   </div>
 
@@ -571,7 +612,6 @@
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#r6-classes">R6 classes</a></li>
       <li><a href="#other-topics">Other topics</a></li>
-      <li><a href="#summary">Summary</a></li>
       </ul>
 </div>
       </div>

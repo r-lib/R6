@@ -545,6 +545,56 @@ rm(obj); gc()
 Finalizers are implemented using the `reg.finalizer()` function, and they set `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.
 
 
-## Summary
+### Class methods vs. member functions
 
-R6 classes provide capabilities that are common in other object-oriented programming languages. They're similar to R's built-in reference classes, but are simpler, smaller, and faster, and they allow inheritance across packages.
+When an R6 class definition contains functions in the public or private sections, those functions are *class methods*: they can access `self` (as well as `private` and `super` when available). When an R6 object is cloned, the resulting object's methods will have a `self` that refers to the new object. This works by changing the *enclosing environment* of the method in the cloned object.
+
+In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the `initialize` method, or after the object has been instantiated. These functions are not class methods, and they will not have access to `self`, `private`, or `super`.
+
+Here is a trivial class which has a method `get_self()` that simply returns `self`, as well as an empty member, `fn`. In this example, we'll assign a function to `fn` which has the same body as `get_self`. However, since it's a regular function, `self` will refer to something other than the R6 object:
+
+```R
+FunctionWrapper <- R6Class("FunctionWrapper",
+  public = list(
+    get_self = function() {
+      self
+    },
+    fn = NULL
+  )
+)
+
+a <- FunctionWrapper$new()
+
+# Create a function that accesses a variable named `self`.
+# Note that `self` in this function's scope refers to 100, not to the R6 object.
+self <- 100
+a$fn <- function() {
+  self
+}
+
+a$get_self()
+#> <FunctionWrapper>
+#>   Public:
+#>     clone: function (deep = FALSE) 
+#>     fn: function () 
+#>     get_self: function () 
+
+a$fn()
+#> [1] 100
+```
+
+As of R6 2.3.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:
+
+```R
+b <- a$clone()
+
+b$get_self()
+#> <FunctionWrapper>
+#>   Public:
+#>     clone: function (deep = FALSE) 
+#>     fn: function () 
+#>     get_self: function () 
+
+b$fn()
+#> [1] 100
+```
