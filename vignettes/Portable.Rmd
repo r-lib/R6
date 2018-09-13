@@ -1,14 +1,5 @@
 ---
 title: "Portable and non-portable R6 classes"
-output:
-  html_document:
-    theme: null
-    css: mystyle.css
-    toc: yes
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Portable and non-portable R6 classes}
-  %\usepackage[utf8]{inputenc}
 ---
 
 ```{r echo = FALSE}

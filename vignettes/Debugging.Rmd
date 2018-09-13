@@ -1,14 +1,5 @@
 ---
-title: "Debugging methods in R6 objects"
-output:
-  html_document:
-    theme: null
-    css: mystyle.css
-    toc: yes
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Debugging methods in R6 objects}
-  %\usepackage[utf8]{inputenc}
+title: "Debugging"
 ---
 
 ```{r echo = FALSE}

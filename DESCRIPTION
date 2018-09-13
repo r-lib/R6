@@ -20,5 +20,5 @@ Suggests:
 License: MIT + file LICENSE
 URL: https://github.com/r-lib/R6/
 LazyData: true
-VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+BugReports: https://github.com/r-lib/R6/issues
+RoxygenNote: 6.1.0.9000

@@ -1,14 +1,5 @@
 ---
-title: "Introduction to R6 classes"
-output:
-  html_document:
-    theme: null
-    css: mystyle.css
-    toc: yes
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Introduction to R6 classes}
-  %\usepackage[utf8]{inputenc}
+title: "Introduction"
 ---
 
 ```{r echo = FALSE}

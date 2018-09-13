@@ -1,15 +1,5 @@
 ---
-title: "R6 and Reference class performance tests"
-output:
-  html_document:
-    theme: null
-    css: mystyle.css
-    toc: yes
-    fig_retina: false
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{R6 and Reference class performance tests}
-  %\usepackage[utf8]{inputenc}
+title: "R6 and Reference Class performance tests"
 ---
 
 ```{r echo = FALSE}

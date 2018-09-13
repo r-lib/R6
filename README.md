@@ -1,9 +1,7 @@
 R6 classes
 ===========
 
-[![Build Status](https://travis-ci.org/wch/R6.svg?branch=master)](https://travis-ci.org/wch/R6)
-
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/wch/R6?branch=master&svg=true)](https://ci.appveyor.com/project/wch/R6)
+[![Build Status](https://travis-ci.org/r-lib/R6.svg?branch=master)](https://travis-ci.org/r-lib/R6) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/r-lib/R6?branch=master&svg=true)](https://ci.appveyor.com/project/r-lib/R6)
 
 This package contains an implemention of classes with reference semantics, and it is a simpler, faster, lighter-weight alternative to R's built-in reference classes.
 
@@ -30,7 +28,7 @@ devtools::install_github('r-lib/R6', build_vignettes = FALSE)
 
 ## Documentation
 
-* [Introduction to R6](https://cloud.r-project.org/package=R6/vignettes/Introduction.html)
-* [Portable R6 classes](https://cloud.r-project.org/package=R6/vignettes/Portable.html) - Inheritance across different packages.
-* [Performance tests](https://cloud.r-project.org/package=R6/vignettes/Performance.html) - Speed and memory comparisons of R6 classes and reference classes.
-* [Debugging methods in R6 objects](https://cloud.r-project.org/package=R6/vignettes/Debugging.html)
+* [Introduction to R6](articles/Introduction.html)
+* [Debugging methods in R6 objects](articles/Debugging.html)
+* [Performance tests](articles/Performance.html) - Speed and memory comparisons of R6 classes and reference classes.
+* [Portable R6 classes](articles/Portable.html) - Inheritance across different packages.

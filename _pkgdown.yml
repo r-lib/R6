@@ -1,0 +1,17 @@
+articles:
+- title: "topic 1"
+  desc: >
+    description 1
+  contents:
+  - article_d
+  - article_a
+  - article_b
+  - article_c
+- title: "topic 2"
+  desc: >
+    description 2
+  contents:
+  - article_h
+  - article_f
+  - article_e
+  - article_g

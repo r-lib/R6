@@ -1,3 +1,5 @@
+^docs$
+^_pkgdown\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 \.sublime-project$
@@ -6,3 +8,4 @@
 ^doc_extra$
 ^appveyor\.yml$
 ^\.github$
+^vignettes$

@@ -1,0 +1,9 @@
+pandoc: 2.2.1
+pkgdown: 1.1.0.9000
+pkgdown_sha: 4d4c58dcdc64e2406e9149c2e99afa2fb1d8fb5d
+articles:
+  Debugging: Debugging.html
+  Introduction: Introduction.html
+  Performance: Performance.html
+  Portable: Portable.html
+
