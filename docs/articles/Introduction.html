@@ -148,7 +148,7 @@
 <a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co">#&gt;     name: Ann</span></a>
 <a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co">#&gt;     set_hair: function (val)</span></a></code></pre></div>
 <p>The <code>$new()</code> method creates the object and calls the <code>initialize()</code> method, if it exists.</p>
-<p>Inside methods of the class, <code>self</code> refers to the object. Public members of the object (all you’ve seen so far) are accessed with <code>self$x</code>, and assignment is done with <code>self$x &lt;- y</code>. Note that by default, <code>self</code> is required to access members, although for non-portable classes which we’ll see later, it is optional.</p>
+<p>Inside methods of the class, <code>self</code> refers to the object. Public members of the object (all you’ve seen so far) are accessed with <code>self$x</code>, and assignment is done with <code>self$x &lt;- y</code>.</p>
 <p>Once the object is instantiated, you can access values and methods with <code>$</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">ann<span class="op">$</span>hair</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt; [1] "black"</span></a>
@@ -361,63 +361,6 @@
 <a class="sourceLine" id="cb16-16" data-line-number="16"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
 </div>
 </div>
-<div id="portable-and-non-portable-classes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#portable-and-non-portable-classes" class="anchor"></a>Portable and non-portable classes</h2>
-<p>In R6 version 1.0.1, the default was to create <strong>non-portable</strong> classes. In subsequent versions, the default is to create <strong>portable</strong> classes. The two most noticeable differences are that portable classes:</p>
-<ul>
-<li>Support inheritance across different packages. Non-portable classes do not do this very well.</li>
-<li>Always require the use of <code>self</code> and <code>private</code> to access members, as in <code>self$x</code> and <code>private$y</code>. Non-portable classes can access these members with just <code>x</code> and <code>y</code>, and do assignment to these members with the <code>&lt;&lt;-</code> operator.</li>
-</ul>
-<p>The implementation of the first point is such that it makes the second point necessary.</p>
-<div id="using-self-and--" class="section level3">
-<h3 class="hasAnchor">
-<a href="#using-self-and--" class="anchor"></a>Using <code>self</code> and <code>&lt;&lt;-</code>
-</h3>
-<p>With reference classes, you can access the field without <code>self</code>, and assign to fields using <code>&lt;&lt;-</code>. For example:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">RC &lt;-<span class="st"> </span><span class="kw">setRefClass</span>(<span class="st">"RC"</span>,</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="st">'ANY'</span>),</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">    <span class="dt">setx =</span> <span class="cf">function</span>(value) x &lt;&lt;-<span class="st"> </span>value</a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">  )</a>
-<a class="sourceLine" id="cb17-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb17-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb17-9" data-line-number="9">rc &lt;-<span class="st"> </span>RC<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb17-10" data-line-number="10">rc<span class="op">$</span><span class="kw">setx</span>(<span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb17-11" data-line-number="11">rc<span class="op">$</span><span class="kw">getx</span>()</a>
-<a class="sourceLine" id="cb17-12" data-line-number="12"><span class="co">#&gt; [1] 10</span></a></code></pre></div>
-<p>The same is true for non-portable R6 classes:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">NP &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"NP"</span>,</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="dt">x =</span> <span class="ot">NA</span>,</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">    <span class="dt">setx =</span> <span class="cf">function</span>(value) x &lt;&lt;-<span class="st"> </span>value</a>
-<a class="sourceLine" id="cb18-7" data-line-number="7">  )</a>
-<a class="sourceLine" id="cb18-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb18-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb18-10" data-line-number="10">np &lt;-<span class="st"> </span>NP<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb18-11" data-line-number="11">np<span class="op">$</span><span class="kw">setx</span>(<span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb18-12" data-line-number="12">np<span class="op">$</span><span class="kw">getx</span>()</a>
-<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="co">#&gt; [1] 10</span></a></code></pre></div>
-<p>But for portable R6 classes (this is the default), you must use <code>self</code> and/or <code>private</code>, and <code>&lt;&lt;-</code> assignment doesn’t work – unless you use <code>self</code>, of course:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">P &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"P"</span>,</a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">TRUE</span>,  <span class="co"># This is default</span></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">x =</span> <span class="ot">NA</span>,</a>
-<a class="sourceLine" id="cb19-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x,</a>
-<a class="sourceLine" id="cb19-6" data-line-number="6">    <span class="dt">setx =</span> <span class="cf">function</span>(value) self<span class="op">$</span>x &lt;-<span class="st"> </span>value</a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">  )</a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb19-10" data-line-number="10">p &lt;-<span class="st"> </span>P<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb19-11" data-line-number="11">p<span class="op">$</span><span class="kw">setx</span>(<span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb19-12" data-line-number="12">p<span class="op">$</span><span class="kw">getx</span>()</a>
-<a class="sourceLine" id="cb19-13" data-line-number="13"><span class="co">#&gt; [1] 10</span></a></code></pre></div>
-<p>For more information, see the Portable vignette.</p>
-</div>
-</div>
 <div id="other-topics" class="section level2">
 <h2 class="hasAnchor">
 <a href="#other-topics" class="anchor"></a>Other topics</h2>
@@ -425,150 +368,150 @@
 <h3 class="hasAnchor">
 <a href="#adding-members-to-an-existing-class" class="anchor"></a>Adding members to an existing class</h3>
 <p>It is sometimes useful to add members to a class after the class has already been created. This can be done using the <code>$set()</code> method on the generator object.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb20-5" data-line-number="5">  )</a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">)</a>
-<a class="sourceLine" id="cb20-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"getx2"</span>, <span class="cf">function</span>() self<span class="op">$</span>x<span class="op">*</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="co"># To replace an existing member, use overwrite=TRUE</span></a>
-<a class="sourceLine" id="cb20-11" data-line-number="11">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"x"</span>, <span class="dv">10</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb20-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb20-14" data-line-number="14">s<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb20-15" data-line-number="15"><span class="co">#&gt; [1] 10</span></a>
-<a class="sourceLine" id="cb20-16" data-line-number="16">s<span class="op">$</span><span class="kw">getx2</span>()</a>
-<a class="sourceLine" id="cb20-17" data-line-number="17"><span class="co">#&gt; [1] 20</span></a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">  )</a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">)</a>
+<a class="sourceLine" id="cb17-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"getx2"</span>, <span class="cf">function</span>() self<span class="op">$</span>x<span class="op">*</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb17-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb17-10" data-line-number="10"><span class="co"># To replace an existing member, use overwrite=TRUE</span></a>
+<a class="sourceLine" id="cb17-11" data-line-number="11">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"x"</span>, <span class="dv">10</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb17-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb17-13" data-line-number="13">s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb17-14" data-line-number="14">s<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb17-15" data-line-number="15"><span class="co">#&gt; [1] 10</span></a>
+<a class="sourceLine" id="cb17-16" data-line-number="16">s<span class="op">$</span><span class="kw">getx2</span>()</a>
+<a class="sourceLine" id="cb17-17" data-line-number="17"><span class="co">#&gt; [1] 20</span></a></code></pre></div>
 <p>The new members will be present only in instances that are created after <code>$set()</code> has been called.</p>
 <p>To prevent modification of a class, you can use <code>lock_class=TRUE</code> when creating the class. You can also lock and unlock a class as follows:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># Create a locked class</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb21-6" data-line-number="6">  ),</a>
-<a class="sourceLine" id="cb21-7" data-line-number="7">  <span class="dt">lock_class =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb21-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb21-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb21-10" data-line-number="10"><span class="co"># This would result in an error</span></a>
-<a class="sourceLine" id="cb21-11" data-line-number="11"><span class="co"># Simple$set("public", "y", 2)</span></a>
-<a class="sourceLine" id="cb21-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb21-13" data-line-number="13"><span class="co"># Unlock the class</span></a>
-<a class="sourceLine" id="cb21-14" data-line-number="14">Simple<span class="op">$</span><span class="kw">unlock</span>()</a>
-<a class="sourceLine" id="cb21-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb21-16" data-line-number="16"><span class="co"># Now it works</span></a>
-<a class="sourceLine" id="cb21-17" data-line-number="17">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"y"</span>, <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb21-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="co"># Lock the class again</span></a>
-<a class="sourceLine" id="cb21-20" data-line-number="20">Simple<span class="op">$</span><span class="kw">lock</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co"># Create a locked class</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">  ),</a>
+<a class="sourceLine" id="cb18-7" data-line-number="7">  <span class="dt">lock_class =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8">)</a>
+<a class="sourceLine" id="cb18-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="co"># This would result in an error</span></a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co"># Simple$set("public", "y", 2)</span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="co"># Unlock the class</span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14">Simple<span class="op">$</span><span class="kw">unlock</span>()</a>
+<a class="sourceLine" id="cb18-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb18-16" data-line-number="16"><span class="co"># Now it works</span></a>
+<a class="sourceLine" id="cb18-17" data-line-number="17">Simple<span class="op">$</span><span class="kw">set</span>(<span class="st">"public"</span>, <span class="st">"y"</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb18-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb18-19" data-line-number="19"><span class="co"># Lock the class again</span></a>
+<a class="sourceLine" id="cb18-20" data-line-number="20">Simple<span class="op">$</span><span class="kw">lock</span>()</a></code></pre></div>
 </div>
 <div id="cloning-objects" class="section level3">
 <h3 class="hasAnchor">
 <a href="#cloning-objects" class="anchor"></a>Cloning objects</h3>
 <p>By default, R6 objects have method named <code>clone</code> for making a copy of the object.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb22-4" data-line-number="4">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb22-5" data-line-number="5">  )</a>
-<a class="sourceLine" id="cb22-6" data-line-number="6">)</a>
-<a class="sourceLine" id="cb22-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb22-8" data-line-number="8">s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb22-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="co"># Create a clone</span></a>
-<a class="sourceLine" id="cb22-11" data-line-number="11">s1 &lt;-<span class="st"> </span>s<span class="op">$</span><span class="kw">clone</span>()</a>
-<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="co"># Modify it</span></a>
-<a class="sourceLine" id="cb22-13" data-line-number="13">s1<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb22-14" data-line-number="14">s1<span class="op">$</span><span class="kw">getx</span>()</a>
-<a class="sourceLine" id="cb22-15" data-line-number="15"><span class="co">#&gt; [1] 2</span></a>
-<a class="sourceLine" id="cb22-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="co"># Original is unaffected by changes to the clone</span></a>
-<a class="sourceLine" id="cb22-18" data-line-number="18">s<span class="op">$</span><span class="kw">getx</span>()</a>
-<a class="sourceLine" id="cb22-19" data-line-number="19"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>,</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">  )</a>
+<a class="sourceLine" id="cb19-6" data-line-number="6">)</a>
+<a class="sourceLine" id="cb19-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8">s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb19-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb19-10" data-line-number="10"><span class="co"># Create a clone</span></a>
+<a class="sourceLine" id="cb19-11" data-line-number="11">s1 &lt;-<span class="st"> </span>s<span class="op">$</span><span class="kw">clone</span>()</a>
+<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="co"># Modify it</span></a>
+<a class="sourceLine" id="cb19-13" data-line-number="13">s1<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb19-14" data-line-number="14">s1<span class="op">$</span><span class="kw">getx</span>()</a>
+<a class="sourceLine" id="cb19-15" data-line-number="15"><span class="co">#&gt; [1] 2</span></a>
+<a class="sourceLine" id="cb19-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co"># Original is unaffected by changes to the clone</span></a>
+<a class="sourceLine" id="cb19-18" data-line-number="18">s<span class="op">$</span><span class="kw">getx</span>()</a>
+<a class="sourceLine" id="cb19-19" data-line-number="19"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
 <p>If you don’t want a <code>clone</code> method to be added, you can use <code>cloneable=FALSE</code> when creating the class. If any loaded R6 object has a <code>clone</code> method, that function uses 262 kB, but for each additional object, the <code>clone</code> method costs a trivial amount of space (168 bytes).</p>
 <div id="deep-cloning" class="section level4">
 <h4 class="hasAnchor">
 <a href="#deep-cloning" class="anchor"></a>Deep cloning</h4>
 <p>If there are any fields which are objects with reference sematics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.</p>
 <p>For example, we’ll create an object <code>c1</code> which contains another R6 object, <code>s</code>, and then clone it. Because the original’s and the clone’s <code>s</code> fields both refer to the same object, modifying it from one results in a change that is reflect in the other.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>, <span class="dt">public =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">Cloneable &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Cloneable"</span>,</a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb23-5" data-line-number="5">    <span class="dt">s =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb23-6" data-line-number="6">    <span class="dt">initialize =</span> <span class="cf">function</span>() self<span class="op">$</span>s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb23-7" data-line-number="7">  )</a>
-<a class="sourceLine" id="cb23-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb23-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb23-10" data-line-number="10">c1 &lt;-<span class="st"> </span>Cloneable<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb23-11" data-line-number="11">c2 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>()</a>
-<a class="sourceLine" id="cb23-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb23-13" data-line-number="13"><span class="co"># Change c1's `s` field</span></a>
-<a class="sourceLine" id="cb23-14" data-line-number="14">c1<span class="op">$</span>s<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb23-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb23-16" data-line-number="16"><span class="co"># c2's `s` is the same object, so it reflects the change</span></a>
-<a class="sourceLine" id="cb23-17" data-line-number="17">c2<span class="op">$</span>s<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb23-18" data-line-number="18"><span class="co">#&gt; [1] 2</span></a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">Simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Simple"</span>, <span class="dt">public =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">Cloneable &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"Cloneable"</span>,</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb20-5" data-line-number="5">    <span class="dt">s =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">    <span class="dt">initialize =</span> <span class="cf">function</span>() self<span class="op">$</span>s &lt;-<span class="st"> </span>Simple<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb20-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">)</a>
+<a class="sourceLine" id="cb20-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb20-10" data-line-number="10">c1 &lt;-<span class="st"> </span>Cloneable<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb20-11" data-line-number="11">c2 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>()</a>
+<a class="sourceLine" id="cb20-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb20-13" data-line-number="13"><span class="co"># Change c1's `s` field</span></a>
+<a class="sourceLine" id="cb20-14" data-line-number="14">c1<span class="op">$</span>s<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb20-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb20-16" data-line-number="16"><span class="co"># c2's `s` is the same object, so it reflects the change</span></a>
+<a class="sourceLine" id="cb20-17" data-line-number="17">c2<span class="op">$</span>s<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb20-18" data-line-number="18"><span class="co">#&gt; [1] 2</span></a></code></pre></div>
 <p>To make it so the clone receives a <em>copy</em> of <code>s</code>, we can use the <code>deep=TRUE</code> option:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">c3 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>(<span class="dt">deep =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="co"># Change c1's `s` field</span></a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">c1<span class="op">$</span>s<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb24-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="co"># c2's `s` is different</span></a>
-<a class="sourceLine" id="cb24-7" data-line-number="7">c3<span class="op">$</span>s<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="co">#&gt; [1] 2</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">c3 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>(<span class="dt">deep =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co"># Change c1's `s` field</span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4">c1<span class="op">$</span>s<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="co"># c2's `s` is different</span></a>
+<a class="sourceLine" id="cb21-7" data-line-number="7">c3<span class="op">$</span>s<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb21-8" data-line-number="8"><span class="co">#&gt; [1] 2</span></a></code></pre></div>
 <p>The default behavior of <code>clone(deep=TRUE)</code> is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).</p>
 <p>If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named <code>deep_clone</code>. Below is an example of an R6 object with two fields, <code>a</code> and <code>b</code>, both of which which are environments, and both of which contain a value <code>x</code>. It also has a field <code>v</code> which is a regular (non-reference) value, and a private <code>deep_clone</code> method.</p>
 <p>The <code>deep_clone</code> method is be called once for each field. It is passed the name and value of the field, and the value it returns is be used in the clone.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">CloneEnv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"CloneEnv"</span>,</a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">    <span class="dt">a =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">    <span class="dt">b =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb25-5" data-line-number="5">    <span class="dt">v =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb25-6" data-line-number="6">    <span class="dt">initialize =</span> <span class="cf">function</span>() {</a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">      self<span class="op">$</span>a &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
-<a class="sourceLine" id="cb25-8" data-line-number="8">      self<span class="op">$</span>b &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
-<a class="sourceLine" id="cb25-9" data-line-number="9">      self<span class="op">$</span>a<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb25-10" data-line-number="10">      self<span class="op">$</span>b<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb25-11" data-line-number="11">    }</a>
-<a class="sourceLine" id="cb25-12" data-line-number="12">  ),</a>
-<a class="sourceLine" id="cb25-13" data-line-number="13">  <span class="dt">private =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb25-14" data-line-number="14">    <span class="dt">deep_clone =</span> <span class="cf">function</span>(name, value) {</a>
-<a class="sourceLine" id="cb25-15" data-line-number="15">      <span class="co"># With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for</span></a>
-<a class="sourceLine" id="cb25-16" data-line-number="16">      <span class="co"># each field, with the name and value.</span></a>
-<a class="sourceLine" id="cb25-17" data-line-number="17">      <span class="cf">if</span> (name <span class="op">==</span><span class="st"> "a"</span>) {</a>
-<a class="sourceLine" id="cb25-18" data-line-number="18">        <span class="co"># `a` is an environment, so use this quick way of copying</span></a>
-<a class="sourceLine" id="cb25-19" data-line-number="19">        <span class="kw">list2env</span>(<span class="kw">as.list.environment</span>(value, <span class="dt">all.names =</span> <span class="ot">TRUE</span>),</a>
-<a class="sourceLine" id="cb25-20" data-line-number="20">                 <span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
-<a class="sourceLine" id="cb25-21" data-line-number="21">      } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb25-22" data-line-number="22">        <span class="co"># For all other fields, just return the value</span></a>
-<a class="sourceLine" id="cb25-23" data-line-number="23">        value</a>
-<a class="sourceLine" id="cb25-24" data-line-number="24">      }</a>
-<a class="sourceLine" id="cb25-25" data-line-number="25">    }</a>
-<a class="sourceLine" id="cb25-26" data-line-number="26">  )</a>
-<a class="sourceLine" id="cb25-27" data-line-number="27">)</a>
-<a class="sourceLine" id="cb25-28" data-line-number="28"></a>
-<a class="sourceLine" id="cb25-29" data-line-number="29">c1 &lt;-<span class="st"> </span>CloneEnv<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb25-30" data-line-number="30">c2 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>(<span class="dt">deep =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">CloneEnv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"CloneEnv"</span>,</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">    <span class="dt">a =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">    <span class="dt">b =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">    <span class="dt">v =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">    <span class="dt">initialize =</span> <span class="cf">function</span>() {</a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">      self<span class="op">$</span>a &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">      self<span class="op">$</span>b &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
+<a class="sourceLine" id="cb22-9" data-line-number="9">      self<span class="op">$</span>a<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb22-10" data-line-number="10">      self<span class="op">$</span>b<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb22-11" data-line-number="11">    }</a>
+<a class="sourceLine" id="cb22-12" data-line-number="12">  ),</a>
+<a class="sourceLine" id="cb22-13" data-line-number="13">  <span class="dt">private =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb22-14" data-line-number="14">    <span class="dt">deep_clone =</span> <span class="cf">function</span>(name, value) {</a>
+<a class="sourceLine" id="cb22-15" data-line-number="15">      <span class="co"># With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for</span></a>
+<a class="sourceLine" id="cb22-16" data-line-number="16">      <span class="co"># each field, with the name and value.</span></a>
+<a class="sourceLine" id="cb22-17" data-line-number="17">      <span class="cf">if</span> (name <span class="op">==</span><span class="st"> "a"</span>) {</a>
+<a class="sourceLine" id="cb22-18" data-line-number="18">        <span class="co"># `a` is an environment, so use this quick way of copying</span></a>
+<a class="sourceLine" id="cb22-19" data-line-number="19">        <span class="kw">list2env</span>(<span class="kw">as.list.environment</span>(value, <span class="dt">all.names =</span> <span class="ot">TRUE</span>),</a>
+<a class="sourceLine" id="cb22-20" data-line-number="20">                 <span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
+<a class="sourceLine" id="cb22-21" data-line-number="21">      } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb22-22" data-line-number="22">        <span class="co"># For all other fields, just return the value</span></a>
+<a class="sourceLine" id="cb22-23" data-line-number="23">        value</a>
+<a class="sourceLine" id="cb22-24" data-line-number="24">      }</a>
+<a class="sourceLine" id="cb22-25" data-line-number="25">    }</a>
+<a class="sourceLine" id="cb22-26" data-line-number="26">  )</a>
+<a class="sourceLine" id="cb22-27" data-line-number="27">)</a>
+<a class="sourceLine" id="cb22-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb22-29" data-line-number="29">c1 &lt;-<span class="st"> </span>CloneEnv<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb22-30" data-line-number="30">c2 &lt;-<span class="st"> </span>c1<span class="op">$</span><span class="kw">clone</span>(<span class="dt">deep =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>When <code>c1$clone(deep=TRUE)</code> is called, the <code>deep_clone</code> method is called for each field in <code>c1</code>, and is passed the name of the field and value. In our version, the <code>a</code> environment gets copied, but <code>b</code> does not, nor does <code>v</code> (but that doesn’t matter since <code>v</code> is not a reference object). We can test out the clone:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># Modifying c1$a doesn't affect c2$a, because they're separate objects</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">c1<span class="op">$</span>a<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">c2<span class="op">$</span>a<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="co">#&gt; [1] 1</span></a>
-<a class="sourceLine" id="cb26-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb26-6" data-line-number="6"><span class="co"># Modifying c1$b does affect c2$b, because they're the same object</span></a>
-<a class="sourceLine" id="cb26-7" data-line-number="7">c1<span class="op">$</span>b<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb26-8" data-line-number="8">c2<span class="op">$</span>b<span class="op">$</span>x</a>
-<a class="sourceLine" id="cb26-9" data-line-number="9"><span class="co">#&gt; [1] 3</span></a>
-<a class="sourceLine" id="cb26-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb26-11" data-line-number="11"><span class="co"># Modifying c1$v doesn't affect c2$v, because they're not reference objects</span></a>
-<a class="sourceLine" id="cb26-12" data-line-number="12">c1<span class="op">$</span>v &lt;-<span class="st"> </span><span class="dv">4</span></a>
-<a class="sourceLine" id="cb26-13" data-line-number="13">c2<span class="op">$</span>v</a>
-<a class="sourceLine" id="cb26-14" data-line-number="14"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co"># Modifying c1$a doesn't affect c2$a, because they're separate objects</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">c1<span class="op">$</span>a<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">c2<span class="op">$</span>a<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="co">#&gt; [1] 1</span></a>
+<a class="sourceLine" id="cb23-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="co"># Modifying c1$b does affect c2$b, because they're the same object</span></a>
+<a class="sourceLine" id="cb23-7" data-line-number="7">c1<span class="op">$</span>b<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">c2<span class="op">$</span>b<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="co">#&gt; [1] 3</span></a>
+<a class="sourceLine" id="cb23-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb23-11" data-line-number="11"><span class="co"># Modifying c1$v doesn't affect c2$v, because they're not reference objects</span></a>
+<a class="sourceLine" id="cb23-12" data-line-number="12">c1<span class="op">$</span>v &lt;-<span class="st"> </span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb23-13" data-line-number="13">c2<span class="op">$</span>v</a>
+<a class="sourceLine" id="cb23-14" data-line-number="14"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
 <p>In the example <code>deep_clone</code> method above, we checked the name of each field to determine what to do with it, but we could also check the value, by using <code>inherits(value, "R6")</code>, or <code>is.environment()</code>, and so on.</p>
 </div>
 </div>
@@ -576,41 +519,41 @@
 <h3 class="hasAnchor">
 <a href="#printing-r6-objects-to-the-screen" class="anchor"></a>Printing R6 objects to the screen</h3>
 <p>R6 objects have a default <code>print</code> method that lists all members of the object. If a class defines a <code>print</code> method, then it overrides the default one.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">PrettyCountingQueue &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"PrettyCountingQueue"</span>,</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">  <span class="dt">inherit =</span> CountingQueue,</a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb27-4" data-line-number="4">    <span class="dt">print =</span> <span class="cf">function</span>(...) {</a>
-<a class="sourceLine" id="cb27-5" data-line-number="5">      <span class="kw">cat</span>(<span class="st">"&lt;PrettyCountingQueue&gt; of "</span>, self<span class="op">$</span><span class="kw">get_total</span>(), <span class="st">" elements</span><span class="ch">\n</span><span class="st">"</span>, <span class="dt">sep =</span> <span class="st">""</span>)</a>
-<a class="sourceLine" id="cb27-6" data-line-number="6">      <span class="kw">invisible</span>(self)</a>
-<a class="sourceLine" id="cb27-7" data-line-number="7">    }</a>
-<a class="sourceLine" id="cb27-8" data-line-number="8">  )</a>
-<a class="sourceLine" id="cb27-9" data-line-number="9">)</a></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">pq &lt;-<span class="st"> </span>PrettyCountingQueue<span class="op">$</span><span class="kw">new</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"foobar"</span>)</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">pq</a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="co">#&gt; &lt;PrettyCountingQueue&gt; of 3 elements</span></a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">PrettyCountingQueue &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"PrettyCountingQueue"</span>,</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">inherit =</span> CountingQueue,</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">    <span class="dt">print =</span> <span class="cf">function</span>(...) {</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">      <span class="kw">cat</span>(<span class="st">"&lt;PrettyCountingQueue&gt; of "</span>, self<span class="op">$</span><span class="kw">get_total</span>(), <span class="st">" elements</span><span class="ch">\n</span><span class="st">"</span>, <span class="dt">sep =</span> <span class="st">""</span>)</a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">      <span class="kw">invisible</span>(self)</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">    }</a>
+<a class="sourceLine" id="cb24-8" data-line-number="8">  )</a>
+<a class="sourceLine" id="cb24-9" data-line-number="9">)</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">pq &lt;-<span class="st"> </span>PrettyCountingQueue<span class="op">$</span><span class="kw">new</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"foobar"</span>)</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">pq</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="co">#&gt; &lt;PrettyCountingQueue&gt; of 3 elements</span></a></code></pre></div>
 </div>
 <div id="finalizers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#finalizers" class="anchor"></a>Finalizers</h3>
 <p>Sometimes it’s useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a <code>finalize()</code> method, which will be called with no arguments when the object is garbage collected.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">A &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"A"</span>, <span class="dt">public =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">  <span class="dt">finalize =</span> <span class="cf">function</span>() {</a>
-<a class="sourceLine" id="cb29-3" data-line-number="3">    <span class="kw">print</span>(<span class="st">"Finalizer has been called!"</span>)</a>
-<a class="sourceLine" id="cb29-4" data-line-number="4">  }</a>
-<a class="sourceLine" id="cb29-5" data-line-number="5">))</a>
-<a class="sourceLine" id="cb29-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb29-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8"><span class="co"># Instantiate an object:</span></a>
-<a class="sourceLine" id="cb29-9" data-line-number="9">obj &lt;-<span class="st"> </span>A<span class="op">$</span><span class="kw">new</span>()</a>
-<a class="sourceLine" id="cb29-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb29-11" data-line-number="11"><span class="co"># Remove the single existing reference to it, and force garbage collection</span></a>
-<a class="sourceLine" id="cb29-12" data-line-number="12"><span class="co"># (normally garbage collection will happen automatically from time</span></a>
-<a class="sourceLine" id="cb29-13" data-line-number="13"><span class="co"># to time)</span></a>
-<a class="sourceLine" id="cb29-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
-<a class="sourceLine" id="cb29-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
-<a class="sourceLine" id="cb29-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb29-17" data-line-number="17"><span class="co">#&gt; Ncells  649745 34.8    1192851 63.8         NA  1192851 63.8</span></a>
-<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="co">#&gt; Vcells 1319023 10.1    8388608 64.0      16384  2605374 19.9</span></a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">A &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"A"</span>, <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">  <span class="dt">finalize =</span> <span class="cf">function</span>() {</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">    <span class="kw">print</span>(<span class="st">"Finalizer has been called!"</span>)</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">  }</a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">))</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb26-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb26-8" data-line-number="8"><span class="co"># Instantiate an object:</span></a>
+<a class="sourceLine" id="cb26-9" data-line-number="9">obj &lt;-<span class="st"> </span>A<span class="op">$</span><span class="kw">new</span>()</a>
+<a class="sourceLine" id="cb26-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb26-11" data-line-number="11"><span class="co"># Remove the single existing reference to it, and force garbage collection</span></a>
+<a class="sourceLine" id="cb26-12" data-line-number="12"><span class="co"># (normally garbage collection will happen automatically from time</span></a>
+<a class="sourceLine" id="cb26-13" data-line-number="13"><span class="co"># to time)</span></a>
+<a class="sourceLine" id="cb26-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
+<a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
+<a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  617948 33.1    1194830 63.9         NA  1194830 63.9</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1246603  9.6    8388608 64.0      16384  2594236 19.8</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 </div>
@@ -627,7 +570,6 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#r6-classes">R6 classes</a></li>
-      <li><a href="#portable-and-non-portable-classes">Portable and non-portable classes</a></li>
       <li><a href="#other-topics">Other topics</a></li>
       <li><a href="#summary">Summary</a></li>
       </ul>
