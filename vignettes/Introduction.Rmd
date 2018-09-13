@@ -59,7 +59,7 @@ ann
 
 The `$new()` method creates the object and calls the `initialize()` method, if it exists.
 
-Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`. Note that by default, `self` is required to access members, although for non-portable classes which we'll see later, it is optional.
+Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`.
 
 Once the object is instantiated, you can access values and methods with `$`:
 
@@ -296,71 +296,6 @@ n2$e$x <- 2
 # n2$e$x does not affect n1$e$x
 n1$e$x
 ```
-
-
-## Portable and non-portable classes
-
-In R6 version 1.0.1, the default was to create **non-portable** classes. In subsequent versions, the default is to create **portable** classes. The two most noticeable differences are that portable classes:
-
-* Support inheritance across different packages. Non-portable classes do not do this very well.
-* Always require the use of `self` and `private` to access members, as in `self$x` and `private$y`. Non-portable classes can access these members with just `x` and `y`, and do assignment to these members with the `<<-` operator.
-
-The implementation of the first point is such that it makes the second point necessary.
-
-### Using `self` and `<<-`
-
-With reference classes, you can access the field without `self`, and assign to fields using `<<-`. For example:
-
-```{r}
-RC <- setRefClass("RC",
-  fields = list(x = 'ANY'),
-  methods = list(
-    getx = function() x,
-    setx = function(value) x <<- value
-  )
-)
-
-rc <- RC$new()
-rc$setx(10)
-rc$getx()
-```
-
-The same is true for non-portable R6 classes:
-
-```{r}
-NP <- R6Class("NP",
-  portable = FALSE,
-  public = list(
-    x = NA,
-    getx = function() x,
-    setx = function(value) x <<- value
-  )
-)
-
-np <- NP$new()
-np$setx(10)
-np$getx()
-```
-
-But for portable R6 classes (this is the default), you must use `self` and/or `private`, and `<<-` assignment doesn't work -- unless you use `self`, of course:
-
-
-```{r}
-P <- R6Class("P",
-  portable = TRUE,  # This is default
-  public = list(
-    x = NA,
-    getx = function() self$x,
-    setx = function(value) self$x <- value
-  )
-)
-
-p <- P$new()
-p$setx(10)
-p$getx()
-```
-
-For more information, see the Portable vignette.
 
 
 ## Other topics
