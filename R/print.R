@@ -34,6 +34,8 @@ print.R6 <- function(x, ...) {
   } else {
     cat(format(x, ...), sep = "\n")
   }
+
+  invisible(x)
 }
 
 #' @export

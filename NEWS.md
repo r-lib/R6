@@ -3,6 +3,8 @@ R6 2.2.2.9001
 
 * Vignettes are no longer included as part of the source package because of their large size. Documentation is now at https://r6.r-lib.org/.
 
+* Fixed [#125](https://github.com/r-lib/R6/issues/125): The `print.R6` method now always returns the object that was passed to it.
+
 * Fixed [#155](https://github.com/r-lib/R6/issues/155): In some cases, a cloned object's methods could refer to the wrong `super` object. ([#156](https://github.com/r-lib/R6/pull/156))
 
 * Fixed [#94](https://github.com/r-lib/R6/issues/94), [#133](https://github.com/r-lib/R6/issues/133): When cloning an object which contained a function that is *not* a method, the corresponding function in the new object would have its environment changed, as though it were a method. Now it no longer has a changed environment. ([#156](https://github.com/r-lib/R6/pull/156))
