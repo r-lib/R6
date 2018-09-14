@@ -97,6 +97,10 @@ generator_funs$clone_method <- function(deep = FALSE) {
     }
   }
 
+  # We'll use these a lot later, and it's faster to refer to them directly.
+  old_1_binding <- old[[1]]$binding
+  old_1_private <- old[[1]]$private
+
   # ---------------------------------------------------------------------------
   # Create representation of the new object
   # ---------------------------------------------------------------------------
@@ -178,18 +182,22 @@ generator_funs$clone_method <- function(deep = FALSE) {
     make_first_new_slice(old[[1]], portable)
   )
 
+  # We'll use these a lot, and it's faster to refer to them directly.
+  new_1_binding <- new[[1]]$binding
+  new_1_private <- new[[1]]$private
+
   # Mirror the super environments from the old object
   if (length(old) > 1) {
-    for (i in seq(2, length(old))) {
+    for (i in seq.int(2, length(old))) {
       new[[i]] <- make_new_slice(
         old[[i]],
-        new[[1]]$binding,
-        new[[1]]$private
+        new_1_binding,
+        new_1_private
       )
     }
 
     # A second pass to add in the `super` to each enclosing environment.
-    for (i in seq(1, length(old)-1)) {
+    for (i in seq.int(1, length(old)-1)) {
       new[[i]]$enclosing$super <- new[[i+1]]$binding
     }
   }
@@ -198,14 +206,15 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # Copy members from old to new
   # ---------------------------------------------------------------------------
   copy_slice <- function(old_slice, new_slice, old_new_enclosing_pairs) {
+
     # Copy the old objects, fix up method environments, and put them into the
     # new binding environment.
     binding_copies <- as.list.environment(old_slice$binding, all.names = TRUE)
 
-    # Don't copy self, private, super, or .__enclos_env__
-    binding_copies <- binding_copies[
-      setdiff(names(binding_copies), c("self", "private", "super", ".__enclos_env__"))
-    ]
+    # Don't copy self, private, super, or .__enclos_env__. Note that using
+    # %in% is significantly faster than setdiff() here.
+    keep_idx <- !(names(binding_copies) %in% c("self", "private", "super", ".__enclos_env__"))
+    binding_copies <- binding_copies[keep_idx]
 
     binding_copies <- remap_func_envs(binding_copies, old_new_enclosing_pairs)
 
@@ -269,35 +278,34 @@ generator_funs$clone_method <- function(deep = FALSE) {
     copy_slice(
       old[[i]],
       new[[i]],
-      old_new_enclosing_pairs[seq(i, length(old))]
+      old_new_enclosing_pairs[seq.int(i, length(old))]
     )
   }
 
-
-  class(new[[1]]$binding) <- class(old[[1]]$binding)
-
   # Lock --------------------------------------------------------------
   # Copy locked state of environment
-  if (environmentIsLocked(old[[1]]$binding)) {
-    lockEnvironment(new[[1]]$binding)
+  if (environmentIsLocked(old_1_binding)) {
+    lockEnvironment(new_1_binding)
   }
-  if (has_private && environmentIsLocked(old[[1]]$private)) {
-    lockEnvironment(new[[1]]$private)
+  if (has_private && environmentIsLocked(old_1_private)) {
+    lockEnvironment(new_1_private)
   }
 
   # Always lock methods
   # R 3.2.0 introduced the sorted=FALSE option, which makes ls() much faster,
   # so at some point we'll be able to switch to that.
-  for (name in ls(new[[1]]$binding)) {
-    if (is.function(.subset2(new[[1]]$binding, name)))
-      lockBinding(name, new[[1]]$binding)
+  for (name in ls(new_1_binding)) {
+    if (is.function(new_1_binding[[name]]))
+      lockBinding(name, new_1_binding)
   }
   if (has_private) {
-    for (name in names(new[[1]]$private)) {
-      if (is.function(new[[1]]$private[[name]]))
-        lockBinding(name, new[[1]]$private)
+    for (name in names(new_1_private)) {
+      if (is.function(new_1_private[[name]]))
+        lockBinding(name, new_1_private)
     }
   }
 
-  new[[1]]$binding
+  class(new_1_binding) <- class(old_1_binding)
+
+  new_1_binding
 }
