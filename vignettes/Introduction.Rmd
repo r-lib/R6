@@ -509,7 +509,6 @@ PrettyCountingQueue <- R6Class("PrettyCountingQueue",
   public = list(
     print = function(...) {
       cat("<PrettyCountingQueue> of ", self$get_total(), " elements\n", sep = "")
-      invisible(self)
     }
   )
 )

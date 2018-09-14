@@ -524,10 +524,9 @@
 <a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
 <a class="sourceLine" id="cb24-4" data-line-number="4">    <span class="dt">print =</span> <span class="cf">function</span>(...) {</a>
 <a class="sourceLine" id="cb24-5" data-line-number="5">      <span class="kw">cat</span>(<span class="st">"&lt;PrettyCountingQueue&gt; of "</span>, self<span class="op">$</span><span class="kw">get_total</span>(), <span class="st">" elements</span><span class="ch">\n</span><span class="st">"</span>, <span class="dt">sep =</span> <span class="st">""</span>)</a>
-<a class="sourceLine" id="cb24-6" data-line-number="6">      <span class="kw">invisible</span>(self)</a>
-<a class="sourceLine" id="cb24-7" data-line-number="7">    }</a>
-<a class="sourceLine" id="cb24-8" data-line-number="8">  )</a>
-<a class="sourceLine" id="cb24-9" data-line-number="9">)</a></code></pre></div>
+<a class="sourceLine" id="cb24-6" data-line-number="6">    }</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb24-8" data-line-number="8">)</a></code></pre></div>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">pq &lt;-<span class="st"> </span>PrettyCountingQueue<span class="op">$</span><span class="kw">new</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"foobar"</span>)</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">pq</a>
 <a class="sourceLine" id="cb25-3" data-line-number="3"><span class="co">#&gt; &lt;PrettyCountingQueue&gt; of 3 elements</span></a></code></pre></div>
@@ -552,8 +551,8 @@
 <a class="sourceLine" id="cb26-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
 <a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
 <a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  617976 33.1    1193701 63.8         NA  1193701 63.8</span></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1247182  9.6    8388608 64.0      16384  2585804 19.8</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  617969 33.1    1193678 63.8         NA  1193678 63.8</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1247112  9.6    8388608 64.0      16384  2585784 19.8</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 <div id="class-methods-vs-member-functions" class="section level3">
