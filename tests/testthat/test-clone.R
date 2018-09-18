@@ -354,6 +354,26 @@ test_that("Cloning active binding in two levels of inheritance", {
 })
 
 
+test_that("Active bindings are not touched during cloning", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1
+    ),
+    active = list(
+      inc = function() {
+        self$x <- self$x + 1
+        self$x
+      }
+    )
+  )
+
+  a <- AC$new()
+  b <- a$clone()
+
+  expect_identical(a$x, 1)
+  expect_identical(b$x, 1)
+})
+
 test_that("Lock state", {
   AC <- R6Class("AC",
     public = list(
@@ -728,7 +748,8 @@ test_that("Cloning with functions that are not methods", {
 
   AC <- R6Class("AC",
     public = list(
-      f = NULL
+      f = NULL,
+      method = function() 100
     )
   )
 
@@ -742,6 +763,16 @@ test_that("Cloning with functions that are not methods", {
   # Clone of a clone
   a3 <- a$clone()
   expect_identical(a3$f(), 1)
+
+  # Make sure that in clones, methods are locked, and non-methods are not
+  # locked.
+  expect_no_error(a$f <- identity)
+  expect_no_error(a2$f <- identity)
+  expect_no_error(a3$f <- identity)
+  expect_error(a$method <- identity)
+  expect_error(a2$method <- identity)
+  expect_error(a3$method <- identity)
+
 
   # ==== With inheritance ====
   local_x2 <- local({

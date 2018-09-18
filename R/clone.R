@@ -205,7 +205,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # ---------------------------------------------------------------------------
   # Copy members from old to new
   # ---------------------------------------------------------------------------
-  copy_slice <- function(old_slice, new_slice, old_new_enclosing_pairs) {
+  copy_slice <- function(old_slice, new_slice, old_new_enclosing_pairs, first_slice = FALSE) {
 
     # Copy the old objects, fix up method environments, and put them into the
     # new binding environment.
@@ -260,6 +260,37 @@ generator_funs$clone_method <- function(deep = FALSE) {
       private_copies <- remap_func_envs(private_copies, old_new_enclosing_pairs)
       list2env2(private_copies, new_slice$private)
     }
+
+    # With the first slice, lock the methods. For other slices, there's no
+    # need to lock lock methods because they're not publicly accessible.
+    if (first_slice) {
+      # A list of the possible environments for methods.
+      method_envs <- lapply(old_new_enclosing_pairs, `[[`, "new")
+
+      # Returns TRUE if the object is a method (or active binding), FALSE
+      # otherwise. Functions that are not methods result in FALSE.
+      is_method <- function(f, method_envs) {
+        env <- environment(f)
+
+        for (i in seq_along(method_envs)) {
+          if (identical(env, method_envs[[i]])) {
+            return(TRUE)
+          }
+        }
+        FALSE
+      }
+
+      for (name in names(binding_copies)) {
+        if (is_method(new_slice$binding[[name]], method_envs))
+          lockBinding(name, new_slice$binding)
+      }
+      if (has_private) {
+        for (name in names(private_copies)) {
+          if (is_method(new_slice$private[[name]], method_envs))
+            lockBinding(name, new_slice$private)
+        }
+      }
+    }
   }
 
 
@@ -278,7 +309,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
     copy_slice(
       old[[i]],
       new[[i]],
-      old_new_enclosing_pairs[seq.int(i, length(old))]
+      old_new_enclosing_pairs[seq.int(i, length(old))],
+      (i == 1)
     )
   }
 
@@ -289,20 +321,6 @@ generator_funs$clone_method <- function(deep = FALSE) {
   }
   if (has_private && environmentIsLocked(old_1_private)) {
     lockEnvironment(new_1_private)
-  }
-
-  # Always lock methods
-  # R 3.2.0 introduced the sorted=FALSE option, which makes ls() much faster,
-  # so at some point we'll be able to switch to that.
-  for (name in ls(new_1_binding)) {
-    if (is.function(new_1_binding[[name]]))
-      lockBinding(name, new_1_binding)
-  }
-  if (has_private) {
-    for (name in names(new_1_private)) {
-      if (is.function(new_1_private[[name]]))
-        lockBinding(name, new_1_private)
-    }
   }
 
   class(new_1_binding) <- class(old_1_binding)
