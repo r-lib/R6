@@ -90,3 +90,15 @@ test_that("Locked class", {
   AC$lock()
   expect_error(AC$set("public", "x", 2))
 })
+
+test_that("Assigning NULL values", {
+  AC <- R6Class("AC",
+    public = list(),
+    private = list()
+  )
+  AC$set("public", "x", NULL)
+
+  a <- AC$new()
+  expect_true("x" %in% names(a))
+  expect_identical(a$x, NULL)
+})

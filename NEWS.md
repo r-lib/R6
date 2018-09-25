@@ -1,4 +1,4 @@
-R6 2.2.2.9001
+R6 2.2.2.9002
 ========
 
 * Vignettes are no longer included as part of the source package because of their large size. Documentation is now at https://r6.r-lib.org/.
@@ -11,6 +11,7 @@ R6 2.2.2.9001
 
 * Fixed [#121](https://github.com/r-lib/R6/issues/121): If a `finalize` method was present, it would prevent objects passed to `initialize` from getting GC'd.
 
+* Fixed [#158](https://github.com/r-lib/R6/issues/158): If a `$set` method of an R6 generator object is given the value `NULL`, it previously removed the named item. Now it adds the named item with the value `NULL`.
 
 R6 2.2.2
 ========

@@ -67,7 +67,13 @@ generator_funs$set <- function(which = NULL, name = NULL, value, overwrite = FAL
   if (is.null(self[[group]]))
     self[[group]] <- list()
 
-  self[[group]][[name]] <- value
+  if (is.null(value)) {
+    # If it's NULL, the item should get a NULL value. The `[[<-` assignment
+    # would instead delete the item; this method gives it a NULL value.
+    self[[group]][name] <- list(NULL)
+  } else {
+    self[[group]][[name]] <- value
+  }
 
   invisible()
 }
