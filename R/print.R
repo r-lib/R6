@@ -111,7 +111,13 @@ object_summaries <- function(x, exclude = NULL) {
       # Plain environments (not envs with classes, like R6 or RefClass objects)
       else if (is.environment(obj) && identical(class(obj), "environment")) "environment"
       else if (is.null(obj)) "NULL"
-      else if (is.atomic(obj)) trim(paste(as.character(obj), collapse = " "))
+      else if (is.atomic(obj)) {
+        # If obj has many elements, paste() can be very slow, so we'll just
+        # use just a subset of it. https://github.com/r-lib/R6/issues/159
+        txt <- as.character(head(obj, 60))
+        txt <- paste(txt, collapse = " ")
+        trim(txt)
+      }
       else paste(class(obj), collapse = ", ")
     }
   }, FUN.VALUE = character(1))

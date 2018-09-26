@@ -13,6 +13,9 @@ R6 2.2.2.9002
 
 * Fixed [#158](https://github.com/r-lib/R6/issues/158): If a `$set` method of an R6 generator object is given the value `NULL`, it previously removed the named item. Now it adds the named item with the value `NULL`.
 
+* Fixed [#159](https://github.com/r-lib/R6/issues/159): Printing an R6 object containing a large vector was slow.
+
+
 R6 2.2.2
 ========
 
