@@ -59,7 +59,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2.9001</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2.9002</span>
       </span>
     </div>
 
@@ -123,14 +123,18 @@
       <small>Source: <a href='https://github.com/r-lib/R6/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="r6-2-2-2-9001" class="section level1">
+    <div id="r6-2-2-2-9002" class="section level1">
 <h1 class="page-header">
-<a href="#r6-2-2-2-9001" class="anchor"></a>R6 2.2.2.9001<small> Unreleased </small>
+<a href="#r6-2-2-2-9002" class="anchor"></a>R6 2.2.2.9002<small> Unreleased </small>
 </h1>
 <ul>
+<li><p>Vignettes are no longer included as part of the source package because of their large size. Documentation is now at <a href="https://r6.r-lib.org/" class="uri">https://r6.r-lib.org/</a>.</p></li>
+<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/125"><a href='https://github.com/r-lib/R6/issues/125'>#125</a></a>: The <code>print.R6</code> method now always returns the object that was passed to it.</p></li>
 <li><p>Fixed <a href="https://github.com/r-lib/R6/issues/155"><a href='https://github.com/r-lib/R6/issues/155'>#155</a></a>: In some cases, a cloned object’s methods could refer to the wrong <code>super</code> object. (<a href="https://github.com/r-lib/R6/pull/156"><a href='https://github.com/r-lib/R6/issues/156'>#156</a></a>)</p></li>
 <li><p>Fixed <a href="https://github.com/r-lib/R6/issues/94"><a href='https://github.com/r-lib/R6/issues/94'>#94</a></a>, <a href="https://github.com/r-lib/R6/issues/133"><a href='https://github.com/r-lib/R6/issues/133'>#133</a></a>: When cloning an object which contained a function that is <em>not</em> a method, the corresponding function in the new object would have its environment changed, as though it were a method. Now it no longer has a changed environment. (<a href="https://github.com/r-lib/R6/pull/156"><a href='https://github.com/r-lib/R6/issues/156'>#156</a></a>)</p></li>
 <li><p>Fixed <a href="https://github.com/r-lib/R6/issues/121"><a href='https://github.com/r-lib/R6/issues/121'>#121</a></a>: If a <code>finalize</code> method was present, it would prevent objects passed to <code>initialize</code> from getting GC’d.</p></li>
+<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/158"><a href='https://github.com/r-lib/R6/issues/158'>#158</a></a>: If a <code>$set</code> method of an R6 generator object is given the value <code>NULL</code>, it previously removed the named item. Now it adds the named item with the value <code>NULL</code>.</p></li>
+<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/159"><a href='https://github.com/r-lib/R6/issues/159'>#159</a></a>: Printing an R6 object containing a large vector was slow.</p></li>
 </ul>
 </div>
     <div id="r6-2-2-2" class="section level1">
@@ -250,7 +254,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#r6-2-2-2-9001">2.2.2.9001</a></li>
+        <li><a href="#r6-2-2-2-9002">2.2.2.9002</a></li>
         <li><a href="#r6-2-2-2">2.2.2</a></li>
         <li><a href="#r6-2-2-1">2.2.1</a></li>
         <li><a href="#r6-2-2-0">2.2.0</a></li>
