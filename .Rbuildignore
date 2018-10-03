@@ -1,3 +1,4 @@
+^revdep$
 ^docs$
 ^_pkgdown\.yml$
 ^.*\.Rproj$
