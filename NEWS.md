@@ -1,4 +1,4 @@
-R6 2.2.2.9002
+R6 2.3.0
 ========
 
 * Vignettes are no longer included as part of the source package because of their large size. Documentation is now at https://r6.r-lib.org/.
