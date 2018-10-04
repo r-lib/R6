@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2.9002</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -431,7 +431,7 @@
 <a class="sourceLine" id="cb19-17" data-line-number="17"><span class="co"># Original is unaffected by changes to the clone</span></a>
 <a class="sourceLine" id="cb19-18" data-line-number="18">s<span class="op">$</span><span class="kw">getx</span>()</a>
 <a class="sourceLine" id="cb19-19" data-line-number="19"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
-<p>If you don’t want a <code>clone</code> method to be added, you can use <code>cloneable=FALSE</code> when creating the class. If any loaded R6 object has a <code>clone</code> method, that function uses 273 kB, but for each additional object, the <code>clone</code> method costs a trivial amount of space (168 bytes).</p>
+<p>If you don’t want a <code>clone</code> method to be added, you can use <code>cloneable=FALSE</code> when creating the class. If any loaded R6 object has a <code>clone</code> method, that function uses 75.1 kB, but for each additional object, the <code>clone</code> method costs a trivial amount of space (112 bytes).</p>
 <div id="deep-cloning" class="section level4">
 <h4 class="hasAnchor">
 <a href="#deep-cloning" class="anchor"></a>Deep cloning</h4>
@@ -551,8 +551,8 @@
 <a class="sourceLine" id="cb26-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
 <a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
 <a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  619111 33.1    1199511 64.1         NA  1199511 64.1</span></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1249120  9.6    8388608 64.0      16384  2611628 20.0</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  611730 32.7    1199437 64.1         NA  1199437 64.1</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1183901  9.1    8388608 64.0      16384  2402993 18.4</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 <div id="class-methods-vs-member-functions" class="section level3">
