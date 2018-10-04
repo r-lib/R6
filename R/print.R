@@ -114,7 +114,7 @@ object_summaries <- function(x, exclude = NULL) {
       else if (is.atomic(obj)) {
         # If obj has many elements, paste() can be very slow, so we'll just
         # use just a subset of it. https://github.com/r-lib/R6/issues/159
-        txt <- as.character(head(obj, 60))
+        txt <- as.character(utils::head(obj, 60))
         txt <- paste(txt, collapse = " ")
         trim(txt)
       }
