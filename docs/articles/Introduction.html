@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0.9000</span>
       </span>
     </div>
 
@@ -99,11 +99,11 @@
 
     
     
-<p>The R6 package provides a type of class which is similar to R’s standard reference classes, but it is more efficient and doesn’t depend on S4 classes and the methods package.</p>
+<p>The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R’s reference classes, but it is more efficient and doesn’t depend on S4 classes and the methods package.</p>
 <div id="r6-classes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#r6-classes" class="anchor"></a>R6 classes</h2>
-<p>R6 classes are similar to R’s standard reference classes, but are lighter weight, and avoid some issues that come along with using S4 classes (R’s reference classes are based on S4). For more information about speed and memory footprint, see the Performance vignette.</p>
+<p>R6 classes are similar to R’s reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R’s reference classes are based on S4). For more information about speed and memory footprint, see the Performance article.</p>
 <p>Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:</p>
 <ul>
 <li>public and private methods</li>
@@ -551,8 +551,8 @@
 <a class="sourceLine" id="cb26-14" data-line-number="14"><span class="kw">rm</span>(obj); <span class="kw">gc</span>()</a>
 <a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; [1] "Finalizer has been called!"</span></a>
 <a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt;           used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)</span></a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  611730 32.7    1199437 64.1         NA  1199437 64.1</span></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1183901  9.1    8388608 64.0      16384  2402993 18.4</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; Ncells  610400 32.6    1197524   64         NA  1197524 64.0</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Vcells 1182855  9.1    8388608   64      16384  2434317 18.6</span></a></code></pre></div>
 <p>Finalizers are implemented using the <code>reg.finalizer()</code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 <div id="class-methods-vs-member-functions" class="section level3">
