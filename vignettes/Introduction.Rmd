@@ -7,11 +7,11 @@ library(pryr)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-The R6 package provides a type of class which is similar to R's standard reference classes, but it is more efficient and doesn't depend on S4 classes and the methods package.
+The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R's reference classes, but it is more efficient and doesn't depend on S4 classes and the methods package.
 
 ## R6 classes
 
-R6 classes are similar to R's standard reference classes, but are lighter weight, and avoid some issues that come along with using S4 classes (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance vignette.
+R6 classes are similar to R's reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance article.
 
 Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:
 
