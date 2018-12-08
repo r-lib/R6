@@ -107,7 +107,7 @@ object_summaries <- function(x, exclude = NULL) {
       "active binding"
     } else {
       obj <- .subset2(x, name)
-      if (is.function(obj)) deparse(args(obj))[[1L]]
+      if (is.function(obj)) "function"
       # Plain environments (not envs with classes, like R6 or RefClass objects)
       else if (is.environment(obj) && identical(class(obj), "environment")) "environment"
       else if (is.null(obj)) "NULL"
@@ -121,6 +121,13 @@ object_summaries <- function(x, exclude = NULL) {
       else paste(class(obj), collapse = ", ")
     }
   }, FUN.VALUE = character(1))
+
+  # Change functions from name to signature
+  for (i in which(values == 'function')){
+      obj_name <- obj_names[[i]]
+      sig <- deparse(args(.subset2(x, obj_name)))[[1L]]
+      obj_names[[i]] <- gsub("^function ", obj_name, sig)
+  }
 
   paste0(obj_names, ": ", values, sep = "")
 }
