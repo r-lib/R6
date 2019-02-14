@@ -124,7 +124,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
       binding_parent   <- emptyenv()
 
       if (has_private) {
-        private_parent   <- emptyenv()
+        private_parent    <- emptyenv()
         new_slice$private <- new.env(private_parent, hash = FALSE)
       }
       new_slice$binding   <- new.env(binding_parent,   hash = FALSE)
@@ -132,14 +132,14 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
     } else {
       if (has_private) {
-        private_parent   <- parent.env(old_slice$private)
+        private_parent    <- parent.env(old_slice$private)
         new_slice$private <- new.env(private_parent, hash = FALSE)
 
-        binding_parent   <- new_slice$private
+        binding_parent    <- new_slice$private
         new_slice$binding <- new.env(binding_parent, hash = FALSE)
 
       } else {
-        binding_parent <- parent.env(old_slice$binding)
+        binding_parent    <- parent.env(old_slice$binding)
         new_slice$binding <- new.env(binding_parent, hash = FALSE)
       }
 
