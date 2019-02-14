@@ -1,5 +1,5 @@
-R6 2.3.0.9001
-=============
+R6 2.4.0
+========
 
 * Fixed [#146](https://github.com/r-lib/R6/issues/146): Finalizers can now be private methods. ([#181](https://github.com/r-lib/R6/pull/181))
 
