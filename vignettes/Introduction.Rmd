@@ -521,16 +521,15 @@ pq
 
 ### Finalizers
 
-Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a `finalize()` method, which will be called with no arguments when the object is garbage collected.
+Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a private `finalize()` method, which will be called with no arguments when the object is garbage collected.
 
 
 ```{r}
-A <- R6Class("A", public = list(
+A <- R6Class("A", private = list(
   finalize = function() {
     print("Finalizer has been called!")
   }
 ))
-
 
 # Instantiate an object:
 obj <- A$new()
@@ -540,6 +539,8 @@ obj <- A$new()
 # to time)
 rm(obj); gc()
 ```
+
+**NOTE:** In R6 version 2.3.0 (released 2018-10-04) and below, the `finalize` method could only be public. As of version 2.4.0, it could be public or private. (Private is preferable because there's no reason a finalizer needs to be publicly accessible.) In future versions of R6, it will emit a message if a finalizer is public; later, it will emit warnings, and finally it will no longer support public finalizers.
 
 Finalizers are implemented using the `reg.finalizer()` function, and they set `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.
 
