@@ -148,7 +148,7 @@ generator_funs$new <- function(...) {
     stop("Called new() with arguments, but there is no initialize method.")
   }
 
-  # Finalize --------------------------------------------------------
+  # Finalizer -------------------------------------------------------
   if (is.function(.subset2(public_bind_env, "finalize"))) {
     # This wraps the user's `finalize` method. The user's finalize method
     # typically does not have an `e` argument, so the wrapper needs to consume
@@ -165,6 +165,20 @@ generator_funs$new <- function(...) {
       finalizer_wrapper,
       onexit = TRUE
     )
+  }
+
+  if (has_priv) {
+    if (is.function(.subset2(private_bind_env, "finalize"))) {
+      finalizer_wrapper <- function(e) {
+        .subset2(e, ".__enclos_env__")$private$finalize()
+      }
+      environment(finalizer_wrapper) <- baseenv()
+      reg.finalizer(
+        public_bind_env,
+        finalizer_wrapper,
+        onexit = TRUE
+      )
+    }
   }
 
   public_bind_env

@@ -364,32 +364,73 @@ test_that("Finalizers and two levels of inheritance, non-portable", {
 
 # Issue #121
 test_that("Finalizer method does not prevent GC of objects passed to initialize", {
-  a_gc <- FALSE
+  a_gc <- 0
   A <- R6Class(
     "A",
-    cloneable = FALSE,
     public = list(
       initialize = function(x) {
         force(x) # Need to eval x
       },
       finalize = function(e) {
-        a_gc <<- TRUE
+        a_gc <<- a_gc + 1
       }
     )
   )
 
-  x_gc <- FALSE
+  x_gc <- 0
   x <- new.env(parent = emptyenv())
-  reg.finalizer(x, function(e) { x_gc <<- TRUE })
+  reg.finalizer(x, function(e) { x_gc <<- x_gc + 1 })
 
   # Pass x to A's initialize method
   a <- A$new(x)
 
   rm(x)
   gc()
-  expect_true(x_gc)  # This is the key test: x should be GC'd
+  expect_identical(x_gc, 1)  # This is the key test: x should be GC'd
 
   rm(a)
   gc()
-  expect_true(a_gc)
+  expect_identical(a_gc, 1)
+
+
+  # Same test, but with clone
+  a_gc <- 0
+  x_gc <- 0
+  x <- new.env(parent = emptyenv())
+  reg.finalizer(x, function(e) { x_gc <<- x_gc + 1 })
+
+  # Pass x to A's initialize method
+  a <- A$new(x)
+  b <- a$clone()
+
+  rm(x)
+  gc()
+  expect_identical(x_gc, 1)  # This is the key test: x should be GC'd
+
+  rm(a)
+  gc()
+  expect_identical(a_gc, 1)
+  rm(b)
+  gc()
+  expect_identical(a_gc, 2)
+
+  expect_identical(x_gc, 1)  # Make sure x's finalizer hasn't somehow run again
+})
+
+
+test_that("Private finalizers work", {
+  sum <- 0
+  C1 <- R6Class("C1",
+    public = list(
+      x = 1
+    ),
+    private = list(
+      finalize = function() sum <<- sum + self$x
+    )
+  )
+
+  a <- C1$new()
+  rm(a)
+  gc()
+  expect_identical(sum, 1)
 })

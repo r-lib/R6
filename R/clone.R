@@ -323,7 +323,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
     lockEnvironment(new_1_private)
   }
 
-  # Finalize --------------------------------------------------------
+  # Finalizer -------------------------------------------------------
   if (is.function(.subset2(new_1_binding, "finalize"))) {
     # This wraps the user's `finalize` method. The user's finalize method
     # typically does not have an `e` argument, so the wrapper needs to consume
@@ -340,6 +340,20 @@ generator_funs$clone_method <- function(deep = FALSE) {
       finalizer_wrapper,
       onexit = TRUE
     )
+  }
+
+  if (has_private) {
+    if (is.function(.subset2(new_1_private, "finalize"))) {
+      finalizer_wrapper <- function(e) {
+        .subset2(e, ".__enclos_env__")$private$finalize()
+      }
+      environment(finalizer_wrapper) <- baseenv()
+      reg.finalizer(
+        new_1_binding,
+        finalizer_wrapper,
+        onexit = TRUE
+      )
+    }
   }
 
   class(new_1_binding) <- class(old_1_binding)

@@ -803,7 +803,7 @@ test_that("Cloning with functions that are not methods", {
 })
 
 
-test_that("Finalizers run on cloned objects", {
+test_that("Finalizers are run on cloned objects", {
   sum <- 0
   C1 <- R6Class("C1",
     public = list(
@@ -883,3 +883,90 @@ test_that("Finalizers run on cloned objects", {
   gc()
   expect_identical(sum, 33)
 })
+
+
+# Same tests as previous block, but with private finalizers
+test_that("Finalizers (private) are run on cloned objects", {
+  sum <- 0
+  C1 <- R6Class("C1",
+    public = list(
+      x = 1
+    ),
+    private = list(
+      finalize = function() sum <<- sum + self$x
+    )
+  )
+
+  a <- C1$new()
+  b <- a$clone()
+  b$x <- 10
+
+  rm(b)
+  gc()
+  expect_identical(sum, 10)
+  rm(a)
+  gc()
+  expect_identical(sum, 11)
+
+  # With inherited finalize method
+  sum <- 0
+  C2 <- R6Class("C2", inherit = C1)
+
+  a <- C2$new()
+  b <- a$clone()
+  b$x <- 10
+
+  rm(b)
+  gc()
+  expect_identical(sum, 10)
+  rm(a)
+  gc()
+  expect_identical(sum, 11)
+
+
+  # With overridden finalize method
+  sum <- 0
+  C3 <- R6Class("C3",
+    inherit = C1,
+    private = list(
+      finalize = function() sum <<- sum + 2*self$x
+    )
+  )
+
+  a <- C3$new()
+  b <- a$clone()
+  b$x <- 10
+
+  rm(b)
+  gc()
+  expect_identical(sum, 20)
+  rm(a)
+  gc()
+  expect_identical(sum, 22)
+
+
+  # With overridden finalize method which calls super$finalize
+  sum <- 0
+  C4 <- R6Class("C4",
+    inherit = C1,
+    private = list(
+      finalize = function() {
+        super$finalize()
+        sum <<- sum + 2*self$x
+      }
+    )
+  )
+
+  a <- C4$new()
+  b <- a$clone()
+  b$x <- 10
+
+  rm(b)
+  gc()
+  expect_identical(sum, 30)
+  rm(a)
+  gc()
+  expect_identical(sum, 33)
+})
+
+
