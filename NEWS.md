@@ -1,3 +1,8 @@
+R6 2.3.0.9000
+=============
+
+* Fixed [#167](https://github.com/r-lib/R6/issues/167): Finalizers now run on cloned objects. ([#180](https://github.com/r-lib/R6/pull/180))
+
 R6 2.3.0
 ========
 
