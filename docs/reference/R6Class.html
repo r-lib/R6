@@ -9,17 +9,17 @@
 <title>Create an R6 reference object generator — R6Class • R6</title>
 
 <!-- jquery -->
-<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
 <!-- sticky kit -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
@@ -41,7 +41,8 @@ packages." />
 
 
 <!-- mathjax -->
-<script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
 
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -65,7 +66,7 @@ packages." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
       </span>
     </div>
 
@@ -139,10 +140,10 @@ packages.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>R6Class</span>(<span class='kw'>classname</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(), <span class='kw'>private</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>R6Class</span>(<span class='kw'>classname</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>private</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>inherit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lock_objects</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>class</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>portable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>lock_class</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cloneable</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>parent_env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>(), <span class='no'>lock</span>)</pre>
+  <span class='kw'>parent_env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sys.parent'>parent.frame</a></span>(), <span class='no'>lock</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -228,7 +229,7 @@ accessed, a function is called with an optional argument. For example, if
 calls the <code>x2()</code> function that was in the <code>active</code> list, with no
 arguments. However, if a value is assigned to it, as in <code>obj$x2 &lt;- 50</code>,
 then the function is called with the right-side value as its argument, as in
-<code>x2(50)</code>. See <code>makeActiveBinding</code> for more information.</p>
+<code>x2(50)</code>. See <code><a href='https://www.rdocumentation.org/packages/base/topics/bindenv'>makeActiveBinding</a></code> for more information.</p>
 <p>If the public or private lists contain any items that have reference
 semantics (for example, an environment), those items will be shared across
 all instances of the class. To avoid this, add an entry for that item with a
@@ -245,8 +246,8 @@ instantiate the object and assign it.</p>
   supplying a public <code>print</code> method. (<code>print</code> members that are not
   functions are ignored.) This method is automatically called whenever the
   object is printed, e.g. when the object's name is typed at the command
-  prompt, or when <code>print(obj)</code> is called. It can also be called directly
-  via <code>obj$print()</code>. All extra arguments from a <code>print(obj, ...)</code>
+  prompt, or when <code><a href='https://www.rdocumentation.org/packages/base/topics/print'>print(obj)</a></code> is called. It can also be called directly
+  via <code>obj$print()</code>. All extra arguments from a <code><a href='https://www.rdocumentation.org/packages/base/topics/print'>print(obj, ...)</a></code>
   call are passed on to the <code>obj$print(...)</code> method.</p>
     
     <h2 class="hasAnchor" id="portable-and-non-portable-classes"><a class="anchor" href="#portable-and-non-portable-classes"></a>Portable and non-portable classes</h2>
@@ -302,27 +303,27 @@ instantiate the object and assign it.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># A queue ---------------------------------------------------------</span>
 <span class='no'>Queue</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"Queue"</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>initialize</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>...</span>) {
-      <span class='kw'>for</span> (<span class='no'>item</span> <span class='kw'>in</span> <span class='fu'>list</span>(<span class='no'>...</span>)) {
+      <span class='kw'>for</span> (<span class='no'>item</span> <span class='kw'>in</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>...</span>)) {
         <span class='no'>self</span>$<span class='fu'>add</span>(<span class='no'>item</span>)
       }
     },
     <span class='kw'>add</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>x</span>) {
-      <span class='no'>private</span>$<span class='no'>queue</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>private</span>$<span class='no'>queue</span>, <span class='fu'>list</span>(<span class='no'>x</span>))
-      <span class='fu'>invisible</span>(<span class='no'>self</span>)
+      <span class='no'>private</span>$<span class='no'>queue</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='no'>private</span>$<span class='no'>queue</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>x</span>))
+      <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/invisible'>invisible</a></span>(<span class='no'>self</span>)
     },
     <span class='kw'>remove</span> <span class='kw'>=</span> <span class='kw'>function</span>() {
-      <span class='kw'>if</span> (<span class='no'>private</span>$<span class='fu'>length</span>() <span class='kw'>==</span> <span class='fl'>0</span>) <span class='fu'>return</span>(<span class='kw'>NULL</span>)
+      <span class='kw'>if</span> (<span class='no'>private</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>() <span class='kw'>==</span> <span class='fl'>0</span>) <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/function'>return</a></span>(<span class='kw'>NULL</span>)
       <span class='co'># Can use private$queue for explicit access</span>
       <span class='no'>head</span> <span class='kw'>&lt;-</span> <span class='no'>private</span>$<span class='no'>queue</span><span class='kw'>[[</span><span class='fl'>1</span>]]
       <span class='no'>private</span>$<span class='no'>queue</span> <span class='kw'>&lt;-</span> <span class='no'>private</span>$<span class='no'>queue</span>[-<span class='fl'>1</span>]
       <span class='no'>head</span>
     }
   ),
-  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'>list</span>(
-    <span class='kw'>queue</span> <span class='kw'>=</span> <span class='fu'>list</span>(),
-    <span class='kw'>length</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='kw pkg'>base</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>private</span>$<span class='no'>queue</span>)
+  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
+    <span class='kw'>queue</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(),
+    <span class='kw'>length</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='kw pkg'>base</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>private</span>$<span class='no'>queue</span>)
   )
 )
 
@@ -332,8 +333,8 @@ instantiate the object and assign it.</p>
 <span class='no'>q</span>$<span class='fu'>add</span>(<span class='st'>"something"</span>)
 <span class='no'>q</span>$<span class='fu'>add</span>(<span class='st'>"another thing"</span>)
 <span class='no'>q</span>$<span class='fu'>add</span>(<span class='fl'>17</span>)
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
 
 <span class='co'># Private members can't be accessed directly</span>
 <span class='no'>q</span>$<span class='no'>queue</span></div><div class='output co'>#&gt; NULL</div><div class='input'><span class='co'>#&gt; NULL</span>
@@ -344,23 +345,23 @@ instantiate the object and assign it.</p>
 <span class='no'>q</span>$<span class='fu'>add</span>(<span class='fl'>10</span>)$<span class='fu'>add</span>(<span class='fl'>11</span>)$<span class='fu'>add</span>(<span class='fl'>12</span>)
 
 <span class='co'># remove() returns the value removed, so it's not chainable</span>
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] "foo"</div><div class='input'><span class='co'>#&gt; [1] "foo"</span>
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] "something"</div><div class='input'><span class='co'>#&gt; [1] "something"</span>
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] "another thing"</div><div class='input'><span class='co'>#&gt; [1] "another thing"</span>
-<span class='no'>q</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 17</div><div class='input'><span class='co'>#&gt; [1] 17</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] "foo"</div><div class='input'><span class='co'>#&gt; [1] "foo"</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] "something"</div><div class='input'><span class='co'>#&gt; [1] "something"</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] "another thing"</div><div class='input'><span class='co'>#&gt; [1] "another thing"</span>
+<span class='no'>q</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 17</div><div class='input'><span class='co'>#&gt; [1] 17</span>
 
 
 <span class='co'># Active bindings -------------------------------------------------</span>
 <span class='no'>Numbers</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"Numbers"</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>100</span>
   ),
-  <span class='kw'>active</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>active</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>x2</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>value</span>) {
-      <span class='kw'>if</span> (<span class='fu'>missing</span>(<span class='no'>value</span>)) <span class='fu'>return</span>(<span class='no'>self</span>$<span class='no'>x</span> * <span class='fl'>2</span>)
+      <span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/missing'>missing</a></span>(<span class='no'>value</span>)) <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/function'>return</a></span>(<span class='no'>self</span>$<span class='no'>x</span> * <span class='fl'>2</span>)
       <span class='kw'>else</span> <span class='no'>self</span>$<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='no'>value</span>/<span class='fl'>2</span>
     },
-    <span class='kw'>rand</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='fu'>rnorm</span>(<span class='fl'>1</span>)
+    <span class='kw'>rand</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='fl'>1</span>)
   )
 )
 
@@ -381,20 +382,20 @@ instantiate the object and assign it.</p>
 <span class='co'># Note that this isn't very efficient - it's just for illustrating inheritance.</span>
 <span class='no'>HistoryQueue</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"HistoryQueue"</span>,
   <span class='kw'>inherit</span> <span class='kw'>=</span> <span class='no'>Queue</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>show</span> <span class='kw'>=</span> <span class='kw'>function</span>() {
-      <span class='fu'>cat</span>(<span class='st'>"Next item is at index"</span>, <span class='no'>private</span>$<span class='no'>head_idx</span> + <span class='fl'>1</span>, <span class='st'>"\n"</span>)
-      <span class='kw'>for</span> (<span class='no'>i</span> <span class='kw'>in</span> <span class='fu'>seq_along</span>(<span class='no'>private</span>$<span class='no'>queue</span>)) {
-        <span class='fu'>cat</span>(<span class='no'>i</span>, <span class='st'>": "</span>, <span class='no'>private</span>$<span class='no'>queue</span><span class='kw'>[[</span><span class='no'>i</span>]], <span class='st'>"\n"</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>""</span>)
+      <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='st'>"Next item is at index"</span>, <span class='no'>private</span>$<span class='no'>head_idx</span> + <span class='fl'>1</span>, <span class='st'>"\n"</span>)
+      <span class='kw'>for</span> (<span class='no'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq_along</a></span>(<span class='no'>private</span>$<span class='no'>queue</span>)) {
+        <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='no'>i</span>, <span class='st'>": "</span>, <span class='no'>private</span>$<span class='no'>queue</span><span class='kw'>[[</span><span class='no'>i</span>]], <span class='st'>"\n"</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>""</span>)
       }
     },
     <span class='kw'>remove</span> <span class='kw'>=</span> <span class='kw'>function</span>() {
-      <span class='kw'>if</span> (<span class='no'>private</span>$<span class='fu'>length</span>() - <span class='no'>private</span>$<span class='no'>head_idx</span> <span class='kw'>==</span> <span class='fl'>0</span>) <span class='fu'>return</span>(<span class='kw'>NULL</span>)
+      <span class='kw'>if</span> (<span class='no'>private</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>() - <span class='no'>private</span>$<span class='no'>head_idx</span> <span class='kw'>==</span> <span class='fl'>0</span>) <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/function'>return</a></span>(<span class='kw'>NULL</span>)
       <span class='no'>private</span>$<span class='no'>head_idx</span> <span class='kw'>&lt;&lt;-</span> <span class='no'>private</span>$<span class='no'>head_idx</span> + <span class='fl'>1</span>
       <span class='no'>private</span>$<span class='no'>queue</span><span class='kw'>[[</span><span class='no'>private</span>$<span class='no'>head_idx</span>]]
     }
   ),
-  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>head_idx</span> <span class='kw'>=</span> <span class='fl'>0</span>
   )
 )
@@ -407,7 +408,7 @@ instantiate the object and assign it.</p>
 <span class='co'>#&gt; 1: 5</span>
 <span class='co'>#&gt; 2: 6</span>
 <span class='co'>#&gt; 3: foo</span>
-<span class='no'>hq</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
+<span class='no'>hq</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
 <span class='no'>hq</span>$<span class='fu'>show</span>()</div><div class='output co'>#&gt; Next item is at index 2 
 #&gt; 1: 5
 #&gt; 2: 6
@@ -415,21 +416,21 @@ instantiate the object and assign it.</p>
 <span class='co'>#&gt; 1: 5</span>
 <span class='co'>#&gt; 2: 6</span>
 <span class='co'>#&gt; 3: foo</span>
-<span class='no'>hq</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
+<span class='no'>hq</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
 
 
 
 <span class='co'># Calling superclass methods with super$ --------------------------</span>
 <span class='no'>CountingQueue</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"CountingQueue"</span>,
   <span class='kw'>inherit</span> <span class='kw'>=</span> <span class='no'>Queue</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>add</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>x</span>) {
       <span class='no'>private</span>$<span class='no'>total</span> <span class='kw'>&lt;&lt;-</span> <span class='no'>private</span>$<span class='no'>total</span> + <span class='fl'>1</span>
       <span class='no'>super</span>$<span class='fu'>add</span>(<span class='no'>x</span>)
     },
     <span class='kw'>get_total</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='no'>private</span>$<span class='no'>total</span>
   ),
-  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>total</span> <span class='kw'>=</span> <span class='fl'>0</span>
   )
 )
@@ -437,8 +438,8 @@ instantiate the object and assign it.</p>
 <span class='no'>cq</span> <span class='kw'>&lt;-</span> <span class='no'>CountingQueue</span>$<span class='fu'>new</span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>)
 <span class='no'>cq</span>$<span class='fu'>get_total</span>()</div><div class='output co'>#&gt; [1] 2</div><div class='input'><span class='co'>#&gt; [1] 2</span>
 <span class='no'>cq</span>$<span class='fu'>add</span>(<span class='st'>"z"</span>)
-<span class='no'>cq</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] "x"</div><div class='input'><span class='co'>#&gt; [1] "x"</span>
-<span class='no'>cq</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] "y"</div><div class='input'><span class='co'>#&gt; [1] "y"</span>
+<span class='no'>cq</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] "x"</div><div class='input'><span class='co'>#&gt; [1] "x"</span>
+<span class='no'>cq</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] "y"</div><div class='input'><span class='co'>#&gt; [1] "y"</span>
 <span class='no'>cq</span>$<span class='fu'>get_total</span>()</div><div class='output co'>#&gt; [1] 3</div><div class='input'><span class='co'>#&gt; [1] 3</span>
 
 
@@ -451,7 +452,7 @@ instantiate the object and assign it.</p>
 
 <span class='no'>NP</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"NP"</span>,
   <span class='kw'>portable</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
     <span class='kw'>getx</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='no'>x</span>,
     <span class='kw'>setx</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>value</span>) <span class='no'>x</span> <span class='kw'>&lt;&lt;-</span> <span class='no'>value</span>
@@ -467,7 +468,7 @@ instantiate the object and assign it.</p>
 <span class='co'># by using the $set() method on the generator.</span>
 
 <span class='no'>Simple</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"Simple"</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>,
     <span class='kw'>getx</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='no'>self</span>$<span class='no'>x</span>
   )
@@ -483,7 +484,7 @@ instantiate the object and assign it.</p>
 
 <span class='co'># Cloning objects -------------------------------------------------</span>
 <span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='no'>Queue</span>$<span class='fu'>new</span>(<span class='fl'>5</span>, <span class='fl'>6</span>)
-<span class='no'>a</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
+<span class='no'>a</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='co'>#&gt; [1] 5</span>
 
 <span class='co'># Clone a. New object gets a's state.</span>
 <span class='no'>b</span> <span class='kw'>&lt;-</span> <span class='no'>a</span>$<span class='fu'>clone</span>()
@@ -492,24 +493,24 @@ instantiate the object and assign it.</p>
 <span class='no'>a</span>$<span class='fu'>add</span>(<span class='fl'>10</span>)
 <span class='no'>b</span>$<span class='fu'>add</span>(<span class='fl'>20</span>)
 
-<span class='no'>a</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
-<span class='no'>a</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 10</div><div class='input'><span class='co'>#&gt; [1] 10</span>
+<span class='no'>a</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
+<span class='no'>a</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 10</div><div class='input'><span class='co'>#&gt; [1] 10</span>
 
-<span class='no'>b</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
-<span class='no'>b</span>$<span class='fu'>remove</span>()</div><div class='output co'>#&gt; [1] 20</div><div class='input'><span class='co'>#&gt; [1] 20</span>
+<span class='no'>b</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 6</div><div class='input'><span class='co'>#&gt; [1] 6</span>
+<span class='no'>b</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>remove</a></span>()</div><div class='output co'>#&gt; [1] 20</div><div class='input'><span class='co'>#&gt; [1] 20</span>
 
 
 <span class='co'># Deep clones -----------------------------------------------------</span>
 
 <span class='no'>Simple</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"Simple"</span>,
- <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+ <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
    <span class='kw'>x</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
    <span class='kw'>initialize</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>val</span>) <span class='no'>self</span>$<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='no'>val</span>
  )
 )
 
 <span class='no'>Cloner</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"Cloner"</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>s</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>y</span> <span class='kw'>=</span> <span class='fl'>1</span>,
     <span class='kw'>initialize</span> <span class='kw'>=</span> <span class='kw'>function</span>() <span class='no'>self</span>$<span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>(<span class='fl'>1</span>)
@@ -537,29 +538,29 @@ instantiate the object and assign it.</p>
 <span class='co'># Deep clones with custom deep_clone method -----------------------</span>
 
 <span class='no'>CustomCloner</span> <span class='kw'>&lt;-</span> <span class='fu'>R6Class</span>(<span class='st'>"CustomCloner"</span>,
-  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>public</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>e</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>s1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>s2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>s3</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>initialize</span> <span class='kw'>=</span> <span class='kw'>function</span>() {
-      <span class='no'>self</span>$<span class='no'>e</span> <span class='kw'>&lt;-</span> <span class='fu'>new.env</span>(<span class='kw'>parent</span> <span class='kw'>=</span> <span class='fu'>emptyenv</span>())
+      <span class='no'>self</span>$<span class='no'>e</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/environment'>new.env</a></span>(<span class='kw'>parent</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/environment'>emptyenv</a></span>())
       <span class='no'>self</span>$<span class='no'>e</span>$<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>
       <span class='no'>self</span>$<span class='no'>s1</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>(<span class='fl'>1</span>)
       <span class='no'>self</span>$<span class='no'>s2</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>(<span class='fl'>1</span>)
       <span class='no'>self</span>$<span class='no'>s3</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>(<span class='fl'>1</span>)
     }
   ),
-  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'>list</span>(
+  <span class='kw'>private</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='co'># When x$clone(deep=TRUE) is called, the deep_clone gets invoked once for</span>
     <span class='co'># each field, with the name and value.</span>
     <span class='kw'>deep_clone</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>name</span>, <span class='no'>value</span>) {
       <span class='kw'>if</span> (<span class='no'>name</span> <span class='kw'>==</span> <span class='st'>"e"</span>) {
         <span class='co'># e1 is an environment, so use this quick way of copying</span>
-        <span class='fu'>list2env</span>(<span class='fu'>as.list.environment</span>(<span class='no'>value</span>, <span class='kw'>all.names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
-                 <span class='kw'>parent</span> <span class='kw'>=</span> <span class='fu'>emptyenv</span>())
+        <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list2env'>list2env</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>as.list.environment</a></span>(<span class='no'>value</span>, <span class='kw'>all.names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>),
+                 <span class='kw'>parent</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/environment'>emptyenv</a></span>())
 
-      } <span class='kw'>else</span> <span class='kw'>if</span> (<span class='no'>name</span> <span class='kw'>%in%</span> <span class='fu'>c</span>(<span class='st'>"s1"</span>, <span class='st'>"s2"</span>)) {
+      } <span class='kw'>else</span> <span class='kw'>if</span> (<span class='no'>name</span> <span class='kw'>%in%</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"s1"</span>, <span class='st'>"s2"</span>)) {
         <span class='co'># s1 and s2 are R6 objects which we can clone</span>
         <span class='no'>value</span>$<span class='fu'>clone</span>()
 
@@ -592,21 +593,21 @@ instantiate the object and assign it.</p>
 </div><span class='co'># NOT RUN {</span>
 <span class='co'># This will enable debugging the getx() method for objects of the 'Simple'</span>
 <span class='co'># class that are instantiated in the future.</span>
-<span class='no'>Simple</span>$<span class='fu'>debug</span>(<span class='st'>"getx"</span>)
+<span class='no'>Simple</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/debug'>debug</a></span>(<span class='st'>"getx"</span>)
 <span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>()
 <span class='no'>s</span>$<span class='fu'>getx</span>()
 
 <span class='co'># Disable debugging for future instances:</span>
-<span class='no'>Simple</span>$<span class='fu'>undebug</span>(<span class='st'>"getx"</span>)
+<span class='no'>Simple</span>$<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/debug'>undebug</a></span>(<span class='st'>"getx"</span>)
 <span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>()
 <span class='no'>s</span>$<span class='fu'>getx</span>()
 
 <span class='co'># To enable and disable debugging for a method in a single instance of an</span>
 <span class='co'># R6 object (this will not affect other objects):</span>
 <span class='no'>s</span> <span class='kw'>&lt;-</span> <span class='no'>Simple</span>$<span class='fu'>new</span>()
-<span class='fu'>debug</span>(<span class='no'>s</span>$<span class='no'>getx</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/debug'>debug</a></span>(<span class='no'>s</span>$<span class='no'>getx</span>)
 <span class='no'>s</span>$<span class='fu'>getx</span>()
-<span class='fu'>undebug</span>(<span class='no'>s</span>$<span class='no'>getx</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/debug'>undebug</a></span>(<span class='no'>s</span>$<span class='no'>getx</span>)
 <span class='co'># }</span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -636,9 +637,8 @@ instantiate the object and assign it.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
-
       </footer>
    </div>
 

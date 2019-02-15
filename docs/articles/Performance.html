@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R6 and Reference Class performance tests • R6</title>
-<!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="R6 and Reference Class performance tests">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
-<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
       </span>
     </div>
 
@@ -103,10 +103,10 @@
 <p>This document tests reference classes against R6 classes (in many variations), as well as against very simple reference objects: environments created by function calls.</p>
 <hr>
 <p>First we’ll load some packages which will be used below:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(microbenchmark)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">microbenchmark.unit =</span> <span class="st">"us"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(pryr)  <span class="co"># For object_size function</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(R6)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(microbenchmark)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">microbenchmark.unit =</span> <span class="st">"us"</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(pryr)  <span class="co"># For object_size function</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(R6)</a></code></pre></div>
 <hr>
 <div id="class-definitions" class="section level1">
 <h1 class="hasAnchor">
@@ -124,8 +124,8 @@
 <h2 class="hasAnchor">
 <a href="#r-reference-class" class="anchor"></a>R reference class</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">RC &lt;-<span class="st"> </span><span class="kw">setRefClass</span>(<span class="st">"RC"</span>,</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) .self<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">    <span class="dt">inc =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>x <span class="op">+</span><span class="st"> </span>n</a>
@@ -143,7 +143,7 @@
 <a href="#r6-class" class="anchor"></a>R6 class</h2>
 <p>Creating an R6 class is similar to the reference class, except that there’s no need to separate the fields and methods, and you can’t specify the types of the fields.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">R6 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6"</span>,</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">x =</span> <span class="ot">NULL</span>,</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) self<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x,</a>
@@ -168,7 +168,7 @@
 <p>It’s possible generate objects without the class attribute, by using <code>class=FALSE</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">R6NoClass &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6NoClass"</span>,</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="dt">class =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">    <span class="dt">x =</span> <span class="ot">NULL</span>,</a>
 <a class="sourceLine" id="cb6-5" data-line-number="5">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) self<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb6-6" data-line-number="6">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x,</a>
@@ -184,7 +184,7 @@
 <p>If <code>portable=FALSE</code> is used, members can be accessed without using <code>self$</code>, and assignment can be done with <code>&lt;&lt;-</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">R6NonPortable &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6NonPortable"</span>,</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="dt">x =</span> <span class="ot">NULL</span>,</a>
 <a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">value =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>value,</a>
 <a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
@@ -199,7 +199,7 @@
 <p>By default, R6 objects have a <code>clone()</code> method, which is a fairly large function. If you do not need this feature, you can save some memory by using <code>cloneable=FALSE</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">R6NonCloneable &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6NonCloneable"</span>,</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">  <span class="dt">cloneable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb8-4" data-line-number="4">    <span class="dt">x =</span> <span class="ot">NULL</span>,</a>
 <a class="sourceLine" id="cb8-5" data-line-number="5">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) self<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb8-6" data-line-number="6">    <span class="dt">getx =</span> <span class="cf">function</span>() self<span class="op">$</span>x,</a>
@@ -215,7 +215,7 @@
 <a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">  <span class="dt">class =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb9-4" data-line-number="4">  <span class="dt">cloneable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb9-6" data-line-number="6">    <span class="dt">x =</span> <span class="ot">NULL</span>,</a>
 <a class="sourceLine" id="cb9-7" data-line-number="7">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">value =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>value,</a>
 <a class="sourceLine" id="cb9-8" data-line-number="8">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
@@ -228,8 +228,8 @@
 <a href="#r6-class-with-public-and-private-members" class="anchor"></a>R6 class, with public and private members</h2>
 <p>This variant has public and private members.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">R6Private &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6Private"</span>,</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="dt">private =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="ot">NULL</span>),</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="dt">private =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="ot">NULL</span>),</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) private<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb10-5" data-line-number="5">    <span class="dt">getx =</span> <span class="cf">function</span>() private<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb10-6" data-line-number="6">    <span class="dt">inc =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) private<span class="op">$</span>x &lt;-<span class="st"> </span>private<span class="op">$</span>x <span class="op">+</span><span class="st"> </span>n</a>
@@ -254,8 +254,8 @@
 <a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">  <span class="dt">class =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb12-4" data-line-number="4">  <span class="dt">cloneable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">  <span class="dt">private =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="ot">NULL</span>),</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  <span class="dt">private =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="ot">NULL</span>),</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb12-7" data-line-number="7">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) private<span class="op">$</span>x &lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb12-8" data-line-number="8">    <span class="dt">getx =</span> <span class="cf">function</span>() x,</a>
 <a class="sourceLine" id="cb12-9" data-line-number="9">    <span class="dt">inc =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>x <span class="op">+</span><span class="st"> </span>n</a>
@@ -269,12 +269,12 @@
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">FunctionEnvClass &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) {</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">  inc &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>x <span class="op">+</span><span class="st"> </span>n</a>
 <a class="sourceLine" id="cb13-3" data-line-number="3">  getx &lt;-<span class="st"> </span><span class="cf">function</span>() x</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">  self &lt;-<span class="st"> </span><span class="kw">environment</span>()</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">  <span class="kw">class</span>(self) &lt;-<span class="st"> "FunctionEnvClass"</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">  self &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">environment</a></span>()</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(self) &lt;-<span class="st"> "FunctionEnvClass"</span></a>
 <a class="sourceLine" id="cb13-6" data-line-number="6">  self</a>
 <a class="sourceLine" id="cb13-7" data-line-number="7">}</a></code></pre></div>
 <p>Even though <code>x</code> isn’t declared in the function body, it gets captured because it’s an argument to the function.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">ls</span>(<span class="kw">FunctionEnvClass</span>())</a>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>(<span class="kw">FunctionEnvClass</span>())</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; [1] "getx" "inc"  "self" "x"</span></a></code></pre></div>
 <p>Objects created this way are very similar to those created by <code>R6</code> generator we created above.</p>
 </div>
@@ -285,10 +285,10 @@
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">FunctionEnvNoClass &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">1</span>) {</a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">  inc &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) x &lt;&lt;-<span class="st"> </span>x <span class="op">+</span><span class="st"> </span>n</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3">  getx &lt;-<span class="st"> </span><span class="cf">function</span>() x</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4">  <span class="kw">environment</span>()</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">environment</a></span>()</a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">}</a></code></pre></div>
 <p>This is simply an environment with some objects in it.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">ls</span>(<span class="kw">FunctionEnvNoClass</span>())</a>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>(<span class="kw">FunctionEnvNoClass</span>())</a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="co">#&gt; [1] "getx" "inc"  "x"</span></a></code></pre></div>
 <hr>
 </div>
@@ -296,7 +296,7 @@
 <div id="tests" class="section level1">
 <h1 class="hasAnchor">
 <a href="#tests" class="anchor"></a>Tests</h1>
-<p>For all the timings using <code><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark()</a></code>, the results are reported in microseconds, and the most useful value is probably the median column.</p>
+<p>For all the timings using <code><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark()</a></code>, the results are reported in microseconds, and the most useful value is probably the median column.</p>
 <div id="memory-footprint" class="section level2">
 <h2 class="hasAnchor">
 <a href="#memory-footprint" class="anchor"></a>Memory footprint</h2>
@@ -332,15 +332,15 @@
 <p>For subsequent instances of these classes, there isn’t nearly as much difference between the different kinds.</p>
 <p>It appeared that using a reference class takes up a huge amount of memory, but much of that is shared between reference classes. Adding an object from a different reference class doesn’t require much more memory — around 38KB:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">RC2 &lt;-<span class="st"> </span><span class="kw">setRefClass</span>(<span class="st">"RC2"</span>,</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">x =</span> <span class="dv">2</span>) .self<span class="op">$</span>x &lt;&lt;-<span class="st"> </span>x,</a>
 <a class="sourceLine" id="cb18-5" data-line-number="5">    <span class="dt">inc =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">2</span>) x &lt;&lt;-<span class="st"> </span>x <span class="op">*</span><span class="st"> </span>n</a>
 <a class="sourceLine" id="cb18-6" data-line-number="6">  )</a>
 <a class="sourceLine" id="cb18-7" data-line-number="7">)</a>
 <a class="sourceLine" id="cb18-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb18-9" data-line-number="9"><span class="co"># Calcualte the size of a new RC2 object, over and above an RC object</span></a>
-<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="kw">as.numeric</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/pryr/topics/object_size">object_size</a></span>(RC<span class="op">$</span><span class="kw">new</span>(), RC2<span class="op">$</span><span class="kw">new</span>()) <span class="op">-</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/pryr/topics/object_size">object_size</a></span>(RC<span class="op">$</span><span class="kw">new</span>()))</a>
+<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/pryr/topics/object_size">object_size</a></span>(RC<span class="op">$</span><span class="kw">new</span>(), RC2<span class="op">$</span><span class="kw">new</span>()) <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/pryr/topics/object_size">object_size</a></span>(RC<span class="op">$</span><span class="kw">new</span>()))</a>
 <a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co">#&gt; [1] 30776</span></a></code></pre></div>
 </div>
 <div id="object-instantiation-speed" class="section level2">
@@ -349,11 +349,11 @@
 <p>How much time does it take to create one of these objects? This shows the median time, in microseconds:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co"># Function to extract the medians from microbenchmark results</span></a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">mb_summary &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">  res &lt;-<span class="st"> </span><span class="kw">summary</span>(x, <span class="dt">unit=</span><span class="st">"us"</span>)</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">  <span class="kw">data.frame</span>(<span class="dt">name =</span> res<span class="op">$</span>expr, <span class="dt">median =</span> res<span class="op">$</span>median)</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">  res &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(x, <span class="dt">unit=</span><span class="st">"us"</span>)</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">name =</span> res<span class="op">$</span>expr, <span class="dt">median =</span> res<span class="op">$</span>median)</a>
 <a class="sourceLine" id="cb19-5" data-line-number="5">}</a>
 <a class="sourceLine" id="cb19-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<a class="sourceLine" id="cb19-7" data-line-number="7">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb19-8" data-line-number="8">  RC<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb19-9" data-line-number="9">  R6<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb19-10" data-line-number="10">  R6NoClass<span class="op">$</span><span class="kw">new</span>(),</a>
@@ -368,16 +368,16 @@
 <a class="sourceLine" id="cb19-19" data-line-number="19">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb19-20" data-line-number="20">speed</a>
 <a class="sourceLine" id="cb19-21" data-line-number="21"><span class="co">#&gt;                    name   median</span></a>
-<a class="sourceLine" id="cb19-22" data-line-number="22"><span class="co">#&gt; 1              RC$new() 389.6825</span></a>
-<a class="sourceLine" id="cb19-23" data-line-number="23"><span class="co">#&gt; 2              R6$new()  57.2515</span></a>
-<a class="sourceLine" id="cb19-24" data-line-number="24"><span class="co">#&gt; 3       R6NoClass$new()  62.2260</span></a>
-<a class="sourceLine" id="cb19-25" data-line-number="25"><span class="co">#&gt; 4   R6NonPortable$new()  63.6910</span></a>
-<a class="sourceLine" id="cb19-26" data-line-number="26"><span class="co">#&gt; 5  R6NonCloneable$new()  54.0040</span></a>
-<a class="sourceLine" id="cb19-27" data-line-number="27"><span class="co">#&gt; 6          R6Bare$new()  51.4750</span></a>
-<a class="sourceLine" id="cb19-28" data-line-number="28"><span class="co">#&gt; 7       R6Private$new()  77.1900</span></a>
-<a class="sourceLine" id="cb19-29" data-line-number="29"><span class="co">#&gt; 8   R6PrivateBare$new()  71.2100</span></a>
-<a class="sourceLine" id="cb19-30" data-line-number="30"><span class="co">#&gt; 9    FunctionEnvClass()   4.2125</span></a>
-<a class="sourceLine" id="cb19-31" data-line-number="31"><span class="co">#&gt; 10 FunctionEnvNoClass()   2.8965</span></a></code></pre></div>
+<a class="sourceLine" id="cb19-22" data-line-number="22"><span class="co">#&gt; 1              RC$new() 257.0190</span></a>
+<a class="sourceLine" id="cb19-23" data-line-number="23"><span class="co">#&gt; 2              R6$new()  40.1350</span></a>
+<a class="sourceLine" id="cb19-24" data-line-number="24"><span class="co">#&gt; 3       R6NoClass$new()  39.7690</span></a>
+<a class="sourceLine" id="cb19-25" data-line-number="25"><span class="co">#&gt; 4   R6NonPortable$new()  41.4020</span></a>
+<a class="sourceLine" id="cb19-26" data-line-number="26"><span class="co">#&gt; 5  R6NonCloneable$new()  42.3565</span></a>
+<a class="sourceLine" id="cb19-27" data-line-number="27"><span class="co">#&gt; 6          R6Bare$new()  39.7205</span></a>
+<a class="sourceLine" id="cb19-28" data-line-number="28"><span class="co">#&gt; 7       R6Private$new()  58.8550</span></a>
+<a class="sourceLine" id="cb19-29" data-line-number="29"><span class="co">#&gt; 8   R6PrivateBare$new()  51.2360</span></a>
+<a class="sourceLine" id="cb19-30" data-line-number="30"><span class="co">#&gt; 9    FunctionEnvClass()   2.3370</span></a>
+<a class="sourceLine" id="cb19-31" data-line-number="31"><span class="co">#&gt; 10 FunctionEnvNoClass()   1.4625</span></a></code></pre></div>
 <p>The plot below shows the median instantiation time.</p>
 <p><img src="Performance_files/figure-html/unnamed-chunk-25-1.png" width="768"></p>
 <p>Reference classes are much slower to instantiate than the other types of classes. Instantiating R6 objects is roughly 5 times faster. Creating an environment with a simple function call is another 20-30 times faster.</p>
@@ -397,7 +397,7 @@
 <a class="sourceLine" id="cb20-9" data-line-number="9">fun_env      &lt;-<span class="st"> </span><span class="kw">FunctionEnvClass</span>()</a>
 <a class="sourceLine" id="cb20-10" data-line-number="10">fun_env_nc   &lt;-<span class="st"> </span><span class="kw">FunctionEnvNoClass</span>()</a></code></pre></div>
 <p>And then get a value from these objects:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">  rc<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">  r6<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb21-4" data-line-number="4">  r6noclass<span class="op">$</span>x,</a>
@@ -412,15 +412,15 @@
 <a class="sourceLine" id="cb21-13" data-line-number="13">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb21-14" data-line-number="14">speed</a>
 <a class="sourceLine" id="cb21-15" data-line-number="15"><span class="co">#&gt;             name median</span></a>
-<a class="sourceLine" id="cb21-16" data-line-number="16"><span class="co">#&gt; 1           rc$x 8.3265</span></a>
-<a class="sourceLine" id="cb21-17" data-line-number="17"><span class="co">#&gt; 2           r6$x 1.3075</span></a>
-<a class="sourceLine" id="cb21-18" data-line-number="18"><span class="co">#&gt; 3    r6noclass$x 0.2960</span></a>
-<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="co">#&gt; 4     r6noport$x 1.3695</span></a>
-<a class="sourceLine" id="cb21-20" data-line-number="20"><span class="co">#&gt; 5    r6noclone$x 1.4150</span></a>
-<a class="sourceLine" id="cb21-21" data-line-number="21"><span class="co">#&gt; 6       r6bare$x 0.2980</span></a>
-<a class="sourceLine" id="cb21-22" data-line-number="22"><span class="co">#&gt; 7       r6priv$x 1.4010</span></a>
-<a class="sourceLine" id="cb21-23" data-line-number="23"><span class="co">#&gt; 8  r6priv_bare$x 0.3095</span></a>
-<a class="sourceLine" id="cb21-24" data-line-number="24"><span class="co">#&gt; 9      fun_env$x 1.1535</span></a>
+<a class="sourceLine" id="cb21-16" data-line-number="16"><span class="co">#&gt; 1           rc$x 8.2555</span></a>
+<a class="sourceLine" id="cb21-17" data-line-number="17"><span class="co">#&gt; 2           r6$x 1.2310</span></a>
+<a class="sourceLine" id="cb21-18" data-line-number="18"><span class="co">#&gt; 3    r6noclass$x 0.3040</span></a>
+<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="co">#&gt; 4     r6noport$x 1.3485</span></a>
+<a class="sourceLine" id="cb21-20" data-line-number="20"><span class="co">#&gt; 5    r6noclone$x 1.3430</span></a>
+<a class="sourceLine" id="cb21-21" data-line-number="21"><span class="co">#&gt; 6       r6bare$x 0.3010</span></a>
+<a class="sourceLine" id="cb21-22" data-line-number="22"><span class="co">#&gt; 7       r6priv$x 1.3505</span></a>
+<a class="sourceLine" id="cb21-23" data-line-number="23"><span class="co">#&gt; 8  r6priv_bare$x 0.3145</span></a>
+<a class="sourceLine" id="cb21-24" data-line-number="24"><span class="co">#&gt; 9      fun_env$x 1.1185</span></a>
 <a class="sourceLine" id="cb21-25" data-line-number="25"><span class="co">#&gt; 10  fun_env_nc$x 0.3070</span></a></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-28-1.png" width="768"></p>
 <p>Accessing the field of a reference class is much slower than the other methods.</p>
@@ -430,7 +430,7 @@
 <h2 class="hasAnchor">
 <a href="#field-setting-speed" class="anchor"></a>Field setting speed</h2>
 <p>How much time does it take to set the value of a field in an object?</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb22-2" data-line-number="2">  rc<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">4</span>,</a>
 <a class="sourceLine" id="cb22-3" data-line-number="3">  r6<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">4</span>,</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4">  r6noclass<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">4</span>,</a>
@@ -445,14 +445,14 @@
 <a class="sourceLine" id="cb22-13" data-line-number="13">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb22-14" data-line-number="14">speed</a>
 <a class="sourceLine" id="cb22-15" data-line-number="15"><span class="co">#&gt;                name  median</span></a>
-<a class="sourceLine" id="cb22-16" data-line-number="16"><span class="co">#&gt; 1         rc$x &lt;- 4 37.9885</span></a>
-<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="co">#&gt; 2         r6$x &lt;- 4  1.9790</span></a>
-<a class="sourceLine" id="cb22-18" data-line-number="18"><span class="co">#&gt; 3  r6noclass$x &lt;- 4  0.9340</span></a>
-<a class="sourceLine" id="cb22-19" data-line-number="19"><span class="co">#&gt; 4   r6noport$x &lt;- 4  2.1605</span></a>
-<a class="sourceLine" id="cb22-20" data-line-number="20"><span class="co">#&gt; 5  r6noclone$x &lt;- 4  2.2040</span></a>
-<a class="sourceLine" id="cb22-21" data-line-number="21"><span class="co">#&gt; 6     r6bare$x &lt;- 4  0.9755</span></a>
-<a class="sourceLine" id="cb22-22" data-line-number="22"><span class="co">#&gt; 7    fun_env$x &lt;- 4  1.9485</span></a>
-<a class="sourceLine" id="cb22-23" data-line-number="23"><span class="co">#&gt; 8 fun_env_nc$x &lt;- 4  0.8675</span></a></code></pre></div>
+<a class="sourceLine" id="cb22-16" data-line-number="16"><span class="co">#&gt; 1         rc$x &lt;- 4 36.8895</span></a>
+<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="co">#&gt; 2         r6$x &lt;- 4  2.1275</span></a>
+<a class="sourceLine" id="cb22-18" data-line-number="18"><span class="co">#&gt; 3  r6noclass$x &lt;- 4  0.9560</span></a>
+<a class="sourceLine" id="cb22-19" data-line-number="19"><span class="co">#&gt; 4   r6noport$x &lt;- 4  2.2670</span></a>
+<a class="sourceLine" id="cb22-20" data-line-number="20"><span class="co">#&gt; 5  r6noclone$x &lt;- 4  2.2325</span></a>
+<a class="sourceLine" id="cb22-21" data-line-number="21"><span class="co">#&gt; 6     r6bare$x &lt;- 4  0.9035</span></a>
+<a class="sourceLine" id="cb22-22" data-line-number="22"><span class="co">#&gt; 7    fun_env$x &lt;- 4  1.9920</span></a>
+<a class="sourceLine" id="cb22-23" data-line-number="23"><span class="co">#&gt; 8 fun_env_nc$x &lt;- 4  0.9305</span></a></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-30-1.png" width="768"></p>
 <p>Reference classes are significantly slower than the others, again. In this case, there’s additional overhead due to type-checking the value.</p>
 <p>Once more, the no-class objects are significantly faster than the others, again probably due to attempted S3 dispatch on the <code>`$&lt;-`</code> function.</p>
@@ -461,7 +461,7 @@
 <h2 class="hasAnchor">
 <a href="#speed-of-method-call-that-accesses-a-field" class="anchor"></a>Speed of method call that accesses a field</h2>
 <p>How much overhead is there when calling a method from one of these objects? All of these <code>getx()</code> methods simply return the value of <code>x</code> in the object. When necessary, this method uses <code>self$x</code> (for R6 classes, when <code>portable=TRUE</code>), and in others, it just uses <code>x</code> (when <code>portable=FALSE</code>, and in reference classes).</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb23-2" data-line-number="2">  rc<span class="op">$</span><span class="kw">getx</span>(),</a>
 <a class="sourceLine" id="cb23-3" data-line-number="3">  r6<span class="op">$</span><span class="kw">getx</span>(),</a>
 <a class="sourceLine" id="cb23-4" data-line-number="4">  r6noclass<span class="op">$</span><span class="kw">getx</span>(),</a>
@@ -476,16 +476,16 @@
 <a class="sourceLine" id="cb23-13" data-line-number="13">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb23-14" data-line-number="14">speed</a>
 <a class="sourceLine" id="cb23-15" data-line-number="15"><span class="co">#&gt;                  name median</span></a>
-<a class="sourceLine" id="cb23-16" data-line-number="16"><span class="co">#&gt; 1           rc$getx() 9.7725</span></a>
-<a class="sourceLine" id="cb23-17" data-line-number="17"><span class="co">#&gt; 2           r6$getx() 3.0220</span></a>
-<a class="sourceLine" id="cb23-18" data-line-number="18"><span class="co">#&gt; 3    r6noclass$getx() 0.7055</span></a>
-<a class="sourceLine" id="cb23-19" data-line-number="19"><span class="co">#&gt; 4     r6noport$getx() 1.6665</span></a>
-<a class="sourceLine" id="cb23-20" data-line-number="20"><span class="co">#&gt; 5    r6noclone$getx() 3.2685</span></a>
-<a class="sourceLine" id="cb23-21" data-line-number="21"><span class="co">#&gt; 6       r6bare$getx() 0.4985</span></a>
-<a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">#&gt; 7       r6priv$getx() 1.8660</span></a>
-<a class="sourceLine" id="cb23-23" data-line-number="23"><span class="co">#&gt; 8  r6priv_bare$getx() 0.4965</span></a>
-<a class="sourceLine" id="cb23-24" data-line-number="24"><span class="co">#&gt; 9      fun_env$getx() 1.5145</span></a>
-<a class="sourceLine" id="cb23-25" data-line-number="25"><span class="co">#&gt; 10  fun_env_nc$getx() 0.5070</span></a></code></pre></div>
+<a class="sourceLine" id="cb23-16" data-line-number="16"><span class="co">#&gt; 1           rc$getx() 9.1675</span></a>
+<a class="sourceLine" id="cb23-17" data-line-number="17"><span class="co">#&gt; 2           r6$getx() 2.9135</span></a>
+<a class="sourceLine" id="cb23-18" data-line-number="18"><span class="co">#&gt; 3    r6noclass$getx() 0.6900</span></a>
+<a class="sourceLine" id="cb23-19" data-line-number="19"><span class="co">#&gt; 4     r6noport$getx() 1.6740</span></a>
+<a class="sourceLine" id="cb23-20" data-line-number="20"><span class="co">#&gt; 5    r6noclone$getx() 3.1720</span></a>
+<a class="sourceLine" id="cb23-21" data-line-number="21"><span class="co">#&gt; 6       r6bare$getx() 0.4905</span></a>
+<a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">#&gt; 7       r6priv$getx() 1.8385</span></a>
+<a class="sourceLine" id="cb23-23" data-line-number="23"><span class="co">#&gt; 8  r6priv_bare$getx() 0.5190</span></a>
+<a class="sourceLine" id="cb23-24" data-line-number="24"><span class="co">#&gt; 9      fun_env$getx() 1.3615</span></a>
+<a class="sourceLine" id="cb23-25" data-line-number="25"><span class="co">#&gt; 10  fun_env_nc$getx() 0.4840</span></a></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-32-1.png" width="768"></p>
 <p>The reference class is the slowest.</p>
 <p><code>r6</code> is also somewhat slower than the others. There are two reasons for this: first, it uses <code>self$x</code> which adds some time, and second, it has a class attribute, which slows down the access of both <code>r6$getx</code> and <code>self$x</code>.</p>
@@ -498,16 +498,16 @@
 </h2>
 <p>With reference classes, you can modify fields using the <code>&lt;&lt;-</code> operator, or by using the <code>.self</code> object. For example, compare the <code>setx()</code> methods of these two classes:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">RCself &lt;-<span class="st"> </span><span class="kw">setRefClass</span>(<span class="st">"RCself"</span>,</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">  <span class="dt">fields =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="dt">methods =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb24-4" data-line-number="4">    <span class="dt">initialize =</span> <span class="cf">function</span>() .self<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb24-5" data-line-number="5">    <span class="dt">setx =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">2</span>) .self<span class="op">$</span>x &lt;-<span class="st"> </span>n</a>
 <a class="sourceLine" id="cb24-6" data-line-number="6">  )</a>
 <a class="sourceLine" id="cb24-7" data-line-number="7">)</a>
 <a class="sourceLine" id="cb24-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb24-9" data-line-number="9">RCnoself &lt;-<span class="st"> </span><span class="kw">setRefClass</span>(<span class="st">"RCnoself"</span>,</a>
-<a class="sourceLine" id="cb24-10" data-line-number="10">  <span class="dt">fields =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
-<a class="sourceLine" id="cb24-11" data-line-number="11">  <span class="dt">methods =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb24-10" data-line-number="10">  <span class="dt">fields =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="st">"numeric"</span>),</a>
+<a class="sourceLine" id="cb24-11" data-line-number="11">  <span class="dt">methods =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb24-12" data-line-number="12">    <span class="dt">initialize =</span> <span class="cf">function</span>() x &lt;&lt;-<span class="st"> </span><span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb24-13" data-line-number="13">    <span class="dt">setx =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">2</span>) x &lt;&lt;-<span class="st"> </span>n</a>
 <a class="sourceLine" id="cb24-14" data-line-number="14">  )</a>
@@ -515,7 +515,7 @@
 <p>Non-portable R6 classes are similar, except they use <code>self</code> instead of <code>.self</code>.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">R6self &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6self"</span>,</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb25-4" data-line-number="4">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5">    <span class="dt">setx =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">2</span>) self<span class="op">$</span>x &lt;-<span class="st"> </span>n</a>
 <a class="sourceLine" id="cb25-6" data-line-number="6">  )</a>
@@ -523,7 +523,7 @@
 <a class="sourceLine" id="cb25-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb25-9" data-line-number="9">R6noself &lt;-<span class="st"> </span><span class="kw"><a href="../reference/R6Class.html">R6Class</a></span>(<span class="st">"R6noself"</span>,</a>
 <a class="sourceLine" id="cb25-10" data-line-number="10">  <span class="dt">portable =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb25-11" data-line-number="11">  <span class="dt">public =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb25-11" data-line-number="11">  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
 <a class="sourceLine" id="cb25-12" data-line-number="12">    <span class="dt">x =</span> <span class="dv">1</span>,</a>
 <a class="sourceLine" id="cb25-13" data-line-number="13">    <span class="dt">setx =</span> <span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">2</span>) x &lt;&lt;-<span class="st"> </span>n</a>
 <a class="sourceLine" id="cb25-14" data-line-number="14">  )</a>
@@ -533,7 +533,7 @@
 <a class="sourceLine" id="cb26-3" data-line-number="3">r6_self   &lt;-<span class="st"> </span>R6self<span class="op">$</span><span class="kw">new</span>()</a>
 <a class="sourceLine" id="cb26-4" data-line-number="4">r6_noself &lt;-<span class="st"> </span>R6noself<span class="op">$</span><span class="kw">new</span>()</a>
 <a class="sourceLine" id="cb26-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb26-6" data-line-number="6">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb26-7" data-line-number="7">  rc_self<span class="op">$</span><span class="kw">setx</span>(),</a>
 <a class="sourceLine" id="cb26-8" data-line-number="8">  rc_noself<span class="op">$</span><span class="kw">setx</span>(),</a>
 <a class="sourceLine" id="cb26-9" data-line-number="9">  r6_self<span class="op">$</span><span class="kw">setx</span>(),</a>
@@ -541,11 +541,11 @@
 <a class="sourceLine" id="cb26-11" data-line-number="11">)</a>
 <a class="sourceLine" id="cb26-12" data-line-number="12">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb26-13" data-line-number="13">speed</a>
-<a class="sourceLine" id="cb26-14" data-line-number="14"><span class="co">#&gt;               name median</span></a>
-<a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; 1   rc_self$setx() 47.075</span></a>
-<a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt; 2 rc_noself$setx() 28.928</span></a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; 3   r6_self$setx()  5.098</span></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; 4 r6_noself$setx()  2.273</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-14" data-line-number="14"><span class="co">#&gt;               name  median</span></a>
+<a class="sourceLine" id="cb26-15" data-line-number="15"><span class="co">#&gt; 1   rc_self$setx() 45.1225</span></a>
+<a class="sourceLine" id="cb26-16" data-line-number="16"><span class="co">#&gt; 2 rc_noself$setx() 27.7970</span></a>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="co">#&gt; 3   r6_self$setx()  4.9090</span></a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; 4 r6_noself$setx()  2.2690</span></a></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-36-1.png" width="768"></p>
 <p>For both reference and non-portable R6 classes, assignment using <code>.self$x &lt;-</code> is somewhat slower than using <code>x &lt;&lt;-</code>.</p>
 <p>Bear in mind that, by default, R6 classes are portable, and can’t use assignment with <code>x &lt;&lt;-</code>.</p>
@@ -560,23 +560,23 @@
 <li>An environment with a class <code>"e3"</code>, which has a <code>$.e3</code> S3 method that simply returns <code>NULL</code>.</li>
 </ol>
 <p>Each one of these environments will contain an object <code>x</code>.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">e1 &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">e2 &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">e3 &lt;-<span class="st"> </span><span class="kw">new.env</span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw">emptyenv</span>())</a>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">e1 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">new.env</a></span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">emptyenv</a></span>())</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">e2 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">new.env</a></span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">emptyenv</a></span>())</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">e3 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">new.env</a></span>(<span class="dt">hash =</span> <span class="ot">FALSE</span>, <span class="dt">parent =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">emptyenv</a></span>())</a>
 <a class="sourceLine" id="cb27-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb27-5" data-line-number="5">e1<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
 <a class="sourceLine" id="cb27-6" data-line-number="6">e2<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
 <a class="sourceLine" id="cb27-7" data-line-number="7">e3<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">1</span></a>
 <a class="sourceLine" id="cb27-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb27-9" data-line-number="9"><span class="kw">class</span>(e2) &lt;-<span class="st"> "e2"</span></a>
-<a class="sourceLine" id="cb27-10" data-line-number="10"><span class="kw">class</span>(e3) &lt;-<span class="st"> "e3"</span></a>
+<a class="sourceLine" id="cb27-9" data-line-number="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(e2) &lt;-<span class="st"> "e2"</span></a>
+<a class="sourceLine" id="cb27-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(e3) &lt;-<span class="st"> "e3"</span></a>
 <a class="sourceLine" id="cb27-11" data-line-number="11"></a>
 <a class="sourceLine" id="cb27-12" data-line-number="12"><span class="co"># Define an S3 method for class e3</span></a>
 <a class="sourceLine" id="cb27-13" data-line-number="13"><span class="st">`</span><span class="dt">$.e3</span><span class="st">`</span> &lt;-<span class="st"> </span><span class="cf">function</span>(x, name) {</a>
 <a class="sourceLine" id="cb27-14" data-line-number="14">  <span class="ot">NULL</span></a>
 <a class="sourceLine" id="cb27-15" data-line-number="15">}</a></code></pre></div>
 <p>Now we can run timing tests for calling <code>$</code> on each type of object. Note that for the <code>e3</code> object, the <code>$</code> function does nothing — it simply returns <code>NULL</code>.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">speed &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb28-2" data-line-number="2">  e1<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb28-3" data-line-number="3">  e2<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb28-4" data-line-number="4">  e3<span class="op">$</span>x</a>
@@ -584,9 +584,9 @@
 <a class="sourceLine" id="cb28-6" data-line-number="6">speed &lt;-<span class="st"> </span><span class="kw">mb_summary</span>(speed)</a>
 <a class="sourceLine" id="cb28-7" data-line-number="7">speed</a>
 <a class="sourceLine" id="cb28-8" data-line-number="8"><span class="co">#&gt;   name median</span></a>
-<a class="sourceLine" id="cb28-9" data-line-number="9"><span class="co">#&gt; 1 e1$x  0.358</span></a>
-<a class="sourceLine" id="cb28-10" data-line-number="10"><span class="co">#&gt; 2 e2$x  1.662</span></a>
-<a class="sourceLine" id="cb28-11" data-line-number="11"><span class="co">#&gt; 3 e3$x  1.355</span></a></code></pre></div>
+<a class="sourceLine" id="cb28-9" data-line-number="9"><span class="co">#&gt; 1 e1$x 0.2610</span></a>
+<a class="sourceLine" id="cb28-10" data-line-number="10"><span class="co">#&gt; 2 e2$x 0.9850</span></a>
+<a class="sourceLine" id="cb28-11" data-line-number="11"><span class="co">#&gt; 3 e3$x 0.8345</span></a></code></pre></div>
 <p>Using <code>$</code> on <code>e2</code> and <code>e3</code> is much slower than on <code>e1</code>. This is because <code>e2</code> and <code>e3</code> have a class attribute. Even though there’s no <code>$</code> method defined for <code>e2</code>, doing <code>e2$x</code> still about 6 times slower than <code>e1$x</code>, simply because R looks for an appropriate S3 method.</p>
 <p><code>e3$x</code> is slightly faster than <code>e2$x</code>; this is probably because the <code>$.e3</code> function doesn’t actually do anything other than return NULL.</p>
 <p>If an object has a class attribute, R will attempt to look for a method every time <code>$</code> is called. This can slow things down considerably, if <code>$</code> is used often.</p>
@@ -596,21 +596,21 @@
 <a href="#lists-vs-environments-and-vs-" class="anchor"></a>Lists vs. environments, and <code>$</code> vs. <code>[[</code>
 </h2>
 <p>Lists could also be used for creating classes (albeit not with reference semantics). How much time does it take to access items using <code>$</code> for lists vs. environments? We’ll also compare using <code>obj$x</code> to <code>obj[['x']]</code>.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">lst &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">x =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">env &lt;-<span class="st"> </span><span class="kw">new.env</span>()</a>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">lst &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">x =</span> <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">env &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/environment">new.env</a></span>()</a>
 <a class="sourceLine" id="cb29-3" data-line-number="3">env<span class="op">$</span>x &lt;-<span class="st"> </span><span class="dv">10</span></a>
 <a class="sourceLine" id="cb29-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="kw">mb_summary</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="kw">mb_summary</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/microbenchmark/topics/microbenchmark">microbenchmark</a></span>(</a>
 <a class="sourceLine" id="cb29-6" data-line-number="6">  <span class="dt">lst =</span> lst<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb29-7" data-line-number="7">  <span class="dt">env =</span> env<span class="op">$</span>x,</a>
 <a class="sourceLine" id="cb29-8" data-line-number="8">  lst[[<span class="st">'x'</span>]],</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">  env[[<span class="st">'x'</span>]]</a>
 <a class="sourceLine" id="cb29-10" data-line-number="10">))</a>
 <a class="sourceLine" id="cb29-11" data-line-number="11"><span class="co">#&gt;         name median</span></a>
-<a class="sourceLine" id="cb29-12" data-line-number="12"><span class="co">#&gt; 1        lst 0.4240</span></a>
-<a class="sourceLine" id="cb29-13" data-line-number="13"><span class="co">#&gt; 2        env 0.3930</span></a>
-<a class="sourceLine" id="cb29-14" data-line-number="14"><span class="co">#&gt; 3 lst[["x"]] 0.3350</span></a>
-<a class="sourceLine" id="cb29-15" data-line-number="15"><span class="co">#&gt; 4 env[["x"]] 0.2715</span></a></code></pre></div>
+<a class="sourceLine" id="cb29-12" data-line-number="12"><span class="co">#&gt; 1        lst 0.2595</span></a>
+<a class="sourceLine" id="cb29-13" data-line-number="13"><span class="co">#&gt; 2        env 0.2455</span></a>
+<a class="sourceLine" id="cb29-14" data-line-number="14"><span class="co">#&gt; 3 lst[["x"]] 0.2020</span></a>
+<a class="sourceLine" id="cb29-15" data-line-number="15"><span class="co">#&gt; 4 env[["x"]] 0.1730</span></a></code></pre></div>
 <p>Performance is comparable across environments and lists.</p>
 <p>The <code>[[</code> operator is slightly faster than <code>$</code>, probably because it doesn’t need to convert the unevaluated symbol to a string.</p>
 <hr>
@@ -630,32 +630,32 @@
 <h2 class="hasAnchor">
 <a href="#functions-for-calculating-object-sizes" class="anchor"></a>Functions for calculating object sizes</h2>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="co"># Utility functions for calculating sizes</span></a>
-<a class="sourceLine" id="cb30-2" data-line-number="2">obj_size &lt;-<span class="st"> </span><span class="cf">function</span>(expr, <span class="dt">.env =</span> <span class="kw">parent.frame</span>()) {</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">obj_size &lt;-<span class="st"> </span><span class="cf">function</span>(expr, <span class="dt">.env =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sys.parent">parent.frame</a></span>()) {</a>
 <a class="sourceLine" id="cb30-3" data-line-number="3">  size_n &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">1</span>) {</a>
-<a class="sourceLine" id="cb30-4" data-line-number="4">    objs &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span>n, <span class="cf">function</span>(x) <span class="kw">eval</span>(expr, .env))</a>
-<a class="sourceLine" id="cb30-5" data-line-number="5">    <span class="kw">as.numeric</span>(<span class="kw">do.call</span>(object_size, objs))</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">    objs &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(<span class="dv">1</span><span class="op">:</span>n, <span class="cf">function</span>(x) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/eval">eval</a></span>(expr, .env))</a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(object_size, objs))</a>
 <a class="sourceLine" id="cb30-6" data-line-number="6">  }</a>
 <a class="sourceLine" id="cb30-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb30-8" data-line-number="8">  <span class="kw">data.frame</span>(<span class="dt">one =</span> <span class="kw">size_n</span>(<span class="dv">1</span>), <span class="dt">incremental =</span> <span class="kw">size_n</span>(<span class="dv">2</span>) <span class="op">-</span><span class="st"> </span><span class="kw">size_n</span>(<span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">one =</span> <span class="kw">size_n</span>(<span class="dv">1</span>), <span class="dt">incremental =</span> <span class="kw">size_n</span>(<span class="dv">2</span>) <span class="op">-</span><span class="st"> </span><span class="kw">size_n</span>(<span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb30-9" data-line-number="9">}</a>
 <a class="sourceLine" id="cb30-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb30-11" data-line-number="11">obj_sizes &lt;-<span class="st"> </span><span class="cf">function</span>(..., <span class="dt">.env =</span> <span class="kw">parent.frame</span>()) {</a>
-<a class="sourceLine" id="cb30-12" data-line-number="12">  exprs &lt;-<span class="st"> </span><span class="kw">as.list</span>(<span class="kw">match.call</span>(<span class="dt">expand.dots =</span> <span class="ot">FALSE</span>)<span class="op">$</span>...)</a>
-<a class="sourceLine" id="cb30-13" data-line-number="13">  <span class="kw">names</span>(exprs) &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(exprs),</a>
+<a class="sourceLine" id="cb30-11" data-line-number="11">obj_sizes &lt;-<span class="st"> </span><span class="cf">function</span>(..., <span class="dt">.env =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sys.parent">parent.frame</a></span>()) {</a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">  exprs &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">as.list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/match.call">match.call</a></span>(<span class="dt">expand.dots =</span> <span class="ot">FALSE</span>)<span class="op">$</span>...)</a>
+<a class="sourceLine" id="cb30-13" data-line-number="13">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(exprs) &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(<span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(exprs),</a>
 <a class="sourceLine" id="cb30-14" data-line-number="14">    <span class="dt">FUN =</span> <span class="cf">function</span>(n) {</a>
-<a class="sourceLine" id="cb30-15" data-line-number="15">      name &lt;-<span class="st"> </span><span class="kw">names</span>(exprs)[n]</a>
-<a class="sourceLine" id="cb30-16" data-line-number="16">      <span class="cf">if</span> (<span class="kw">is.null</span>(name) <span class="op">||</span><span class="st"> </span>name <span class="op">==</span><span class="st"> ""</span>) <span class="kw">paste</span>(<span class="kw">deparse</span>(exprs[[n]]), <span class="dt">collapse =</span> <span class="st">" "</span>)</a>
+<a class="sourceLine" id="cb30-15" data-line-number="15">      name &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(exprs)[n]</a>
+<a class="sourceLine" id="cb30-16" data-line-number="16">      <span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NULL">is.null</a></span>(name) <span class="op">||</span><span class="st"> </span>name <span class="op">==</span><span class="st"> ""</span>) <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/deparse">deparse</a></span>(exprs[[n]]), <span class="dt">collapse =</span> <span class="st">" "</span>)</a>
 <a class="sourceLine" id="cb30-17" data-line-number="17">      <span class="cf">else</span> name</a>
 <a class="sourceLine" id="cb30-18" data-line-number="18">    })</a>
 <a class="sourceLine" id="cb30-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb30-20" data-line-number="20">  sizes &lt;-<span class="st"> </span><span class="kw">mapply</span>(obj_size, exprs, <span class="dt">MoreArgs =</span> <span class="kw">list</span>(<span class="dt">.env =</span> .env), <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb30-21" data-line-number="21">  <span class="kw">do.call</span>(rbind, sizes)</a>
+<a class="sourceLine" id="cb30-20" data-line-number="20">  sizes &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mapply">mapply</a></span>(obj_size, exprs, <span class="dt">MoreArgs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">.env =</span> .env), <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb30-21" data-line-number="21">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(rbind, sizes)</a>
 <a class="sourceLine" id="cb30-22" data-line-number="22">}</a></code></pre></div>
 </div>
 <div id="system-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#system-information" class="anchor"></a>System information</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>()</a>
 <a class="sourceLine" id="cb31-2" data-line-number="2"><span class="co">#&gt; R version 3.5.1 (2018-07-02)</span></a>
 <a class="sourceLine" id="cb31-3" data-line-number="3"><span class="co">#&gt; Platform: x86_64-apple-darwin15.6.0 (64-bit)</span></a>
 <a class="sourceLine" id="cb31-4" data-line-number="4"><span class="co">#&gt; Running under: macOS High Sierra 10.13.6</span></a>
@@ -671,25 +671,22 @@
 <a class="sourceLine" id="cb31-14" data-line-number="14"><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></a>
 <a class="sourceLine" id="cb31-15" data-line-number="15"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb31-16" data-line-number="16"><span class="co">#&gt; other attached packages:</span></a>
-<a class="sourceLine" id="cb31-17" data-line-number="17"><span class="co">#&gt; [1] scales_1.0.0         ggplot2_3.0.0.9000   R6_2.2.2.9002       </span></a>
-<a class="sourceLine" id="cb31-18" data-line-number="18"><span class="co">#&gt; [4] pryr_0.1.4           microbenchmark_1.4-4</span></a>
+<a class="sourceLine" id="cb31-17" data-line-number="17"><span class="co">#&gt; [1] scales_1.0.0         ggplot2_3.1.0        R6_2.3.0            </span></a>
+<a class="sourceLine" id="cb31-18" data-line-number="18"><span class="co">#&gt; [4] pryr_0.1.4           microbenchmark_1.4-6</span></a>
 <a class="sourceLine" id="cb31-19" data-line-number="19"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb31-20" data-line-number="20"><span class="co">#&gt; loaded via a namespace (and not attached):</span></a>
-<a class="sourceLine" id="cb31-21" data-line-number="21"><span class="co">#&gt;  [1] Rcpp_0.12.19         compiler_3.5.1       pillar_1.3.0        </span></a>
-<a class="sourceLine" id="cb31-22" data-line-number="22"><span class="co">#&gt;  [4] plyr_1.8.4           bindr_0.1.1          tools_3.5.1         </span></a>
-<a class="sourceLine" id="cb31-23" data-line-number="23"><span class="co">#&gt;  [7] digest_0.6.17        evaluate_0.11        memoise_1.1.0       </span></a>
-<a class="sourceLine" id="cb31-24" data-line-number="24"><span class="co">#&gt; [10] tibble_1.4.2         gtable_0.2.0         pkgconfig_2.0.2     </span></a>
-<a class="sourceLine" id="cb31-25" data-line-number="25"><span class="co">#&gt; [13] rlang_0.2.2          commonmark_1.5       yaml_2.2.0          </span></a>
-<a class="sourceLine" id="cb31-26" data-line-number="26"><span class="co">#&gt; [16] pkgdown_1.1.0.9000   xfun_0.3             bindrcpp_0.2.2      </span></a>
-<a class="sourceLine" id="cb31-27" data-line-number="27"><span class="co">#&gt; [19] withr_2.1.2          stringr_1.3.1        dplyr_0.7.6         </span></a>
-<a class="sourceLine" id="cb31-28" data-line-number="28"><span class="co">#&gt; [22] roxygen2_6.1.0.9000  xml2_1.2.0           knitr_1.20.15       </span></a>
-<a class="sourceLine" id="cb31-29" data-line-number="29"><span class="co">#&gt; [25] desc_1.2.0           fs_1.2.6             tidyselect_0.2.4    </span></a>
-<a class="sourceLine" id="cb31-30" data-line-number="30"><span class="co">#&gt; [28] rprojroot_1.3-2      grid_3.5.1           glue_1.3.0          </span></a>
-<a class="sourceLine" id="cb31-31" data-line-number="31"><span class="co">#&gt; [31] rmarkdown_1.10       purrr_0.2.5          magrittr_1.5        </span></a>
-<a class="sourceLine" id="cb31-32" data-line-number="32"><span class="co">#&gt; [34] backports_1.1.2      codetools_0.2-15     htmltools_0.3.6.9003</span></a>
-<a class="sourceLine" id="cb31-33" data-line-number="33"><span class="co">#&gt; [37] MASS_7.3-50          assertthat_0.2.0     colorspace_1.3-2    </span></a>
-<a class="sourceLine" id="cb31-34" data-line-number="34"><span class="co">#&gt; [40] labeling_0.3         stringi_1.2.4        lazyeval_0.2.1      </span></a>
-<a class="sourceLine" id="cb31-35" data-line-number="35"><span class="co">#&gt; [43] munsell_0.5.0        crayon_1.3.4</span></a></code></pre></div>
+<a class="sourceLine" id="cb31-21" data-line-number="21"><span class="co">#&gt;  [1] Rcpp_1.0.0       bindr_0.1.1      compiler_3.5.1   pillar_1.3.1    </span></a>
+<a class="sourceLine" id="cb31-22" data-line-number="22"><span class="co">#&gt;  [5] plyr_1.8.4       tools_3.5.1      digest_0.6.18    evaluate_0.12   </span></a>
+<a class="sourceLine" id="cb31-23" data-line-number="23"><span class="co">#&gt;  [9] memoise_1.1.0    tibble_2.0.1     gtable_0.2.0     pkgconfig_2.0.2 </span></a>
+<a class="sourceLine" id="cb31-24" data-line-number="24"><span class="co">#&gt; [13] rlang_0.3.1      rstudioapi_0.9.0 commonmark_1.7   yaml_2.2.0      </span></a>
+<a class="sourceLine" id="cb31-25" data-line-number="25"><span class="co">#&gt; [17] pkgdown_1.3.0    xfun_0.4         bindrcpp_0.2.2   withr_2.1.2     </span></a>
+<a class="sourceLine" id="cb31-26" data-line-number="26"><span class="co">#&gt; [21] stringr_1.3.1    dplyr_0.7.8      roxygen2_6.1.1   xml2_1.2.0      </span></a>
+<a class="sourceLine" id="cb31-27" data-line-number="27"><span class="co">#&gt; [25] knitr_1.21       desc_1.2.0       fs_1.2.6         tidyselect_0.2.5</span></a>
+<a class="sourceLine" id="cb31-28" data-line-number="28"><span class="co">#&gt; [29] rprojroot_1.3-2  grid_3.5.1       glue_1.3.0       rmarkdown_1.11  </span></a>
+<a class="sourceLine" id="cb31-29" data-line-number="29"><span class="co">#&gt; [33] purrr_0.3.0      magrittr_1.5     backports_1.1.3  codetools_0.2-16</span></a>
+<a class="sourceLine" id="cb31-30" data-line-number="30"><span class="co">#&gt; [37] htmltools_0.3.6  MASS_7.3-51.1    assertthat_0.2.0 colorspace_1.4-0</span></a>
+<a class="sourceLine" id="cb31-31" data-line-number="31"><span class="co">#&gt; [41] labeling_0.3     stringi_1.2.4    lazyeval_0.2.1   munsell_0.5.0   </span></a>
+<a class="sourceLine" id="cb31-32" data-line-number="32"><span class="co">#&gt; [45] crayon_1.3.4</span></a></code></pre></div>
 </div>
 </div>
   </div>
@@ -744,9 +741,8 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
-
       </footer>
 </div>
 
