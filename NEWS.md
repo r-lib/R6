@@ -1,6 +1,7 @@
 R6 2.4.0.9000
 ========
 
+* Closed [#104](https://github.com/r-lib/R6/issues/104)The `new()` method for class generators now inherits arguments from the `initialize()` method. This means that tab-completion can be used with `new()`. ([#191](https://github.com/r-lib/R6/pull/191))
 
 R6 2.4.0
 ========
