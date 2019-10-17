@@ -1,8 +1,12 @@
 language: r
 r:
+  - 3.2
   - oldrel
   - release
   - devel
+    env:
+    - _R_ENV2LIST_BUGFIX_=true
+
 sudo: false
 cache: packages
 
