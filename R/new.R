@@ -1,7 +1,24 @@
+# This is the $new() method that is user-facing. It's simply a wrapper that
+# calls .new_dots(). It exists because it will be modified to have the formals
+# from the user-defined initialize method, to support auto-completion.
+generator_funs$new <- function() {
+  .new_impl()
+}
+
+# Modifies the $new method so that it gets the $initialize method's formals.
+inject_new_args <- function(fn, args) {
+  formals(fn) <- args
+  # Change the body of generator_funs$new here. If the args are, for example,
+  # `a, b=1, ...`, then replace `.new_dots()` with `.new_dots(a, b, ...)`.
+  body(fn)[[2]][seq_along(args) + 1] <- lapply(names(args), as.name)
+
+  fn
+}
+
 # This is the $new function for a R6ClassGenerator. This copy of it won't run
 # properly; it needs to be copied, and its parent environment set to the
 # generator object environment.
-generator_funs$.new_dots <- function(...) {
+generator_funs$.new_impl <- function(...) {
   # Get superclass object -------------------------------------------
   inherit <- get_inherit()
 

@@ -505,12 +505,30 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator$self <- generator
 
+  # Capture the unevaluated expression for the superclass; when evaluated in
+  # the parent_env, it should return the superclass object.
+  generator$inherit <- substitute(inherit)
+
   # Set the generator functions to eval in the generator environment
   generator_funs <- assign_func_envs(generator_funs, generator)
 
-  # Add a "new" function that wraps ".new_dots"
-  generator_funs <- generator_funs
-  generator_funs$new <- wrap_dots_fun(generator_funs$.new_dots, ".new_dots", public$initialize)
+  if (is.function(public$initialize)) {
+    # If there's an initialize method, change the `new` method to have
+    # the same arguments, for tab-completion.
+    generator_funs$new <- inject_new_args(
+      generator_funs$new,
+      formals(public$initialize)
+    )
+  } else if (!is.null(generator$inherit)) {
+    # If there's not an initialize method, but there is a superclass, then the
+    # new() method needs to accept `...`, because there might be an inherited
+    # initialize method. Because inheritance is resolved when $new() is called,
+    # we can't inspect the superclass's intialize() method right now.
+    generator_funs$new <- inject_new_args(
+      generator_funs$new,
+      as.pairlist(alist(... = ))
+    )
+  }
 
   # Copy the generator functions into the generator env.
   list2env2(generator_funs, generator)
@@ -532,10 +550,6 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (cloneable)
     generator$public_methods$clone <- generator_funs$clone_method
 
-  # Capture the unevaluated expression for the superclass; when evaluated in
-  # the parent_env, it should return the superclass object.
-  generator$inherit <- substitute(inherit)
-
   # Names of methods for which to enable debugging
   generator$debug_names <- character(0)
 
@@ -544,25 +558,3 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator
 })
-
-wrap_dots_fun <- function(dots_fun, dots_fun_name, arglist_fun) {
-  if (is.null(arglist_fun) || identical(formals(arglist_fun), as.pairlist(alist(... = )))) {
-    return(dots_fun)
-  }
-
-  my_formals <- formals(arglist_fun)
-  my_formals_names <- lapply(names(my_formals), as.name)
-  names(my_formals_names) <- names(my_formals)
-  dots_fun_call <- as.call(c(as.name(dots_fun_name), my_formals_names))
-
-  new_fun <- eval(bquote(
-    function() {
-      .(dots_fun_call)
-    }
-  ))
-
-  environment(new_fun) <- environment(dots_fun)
-  formals(new_fun) <- my_formals
-
-  new_fun
-}

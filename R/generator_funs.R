@@ -69,6 +69,10 @@ generator_funs$set <- function(which = NULL, name = NULL, value, overwrite = FAL
 
   self[[group]][[name]] <- value
 
+  if (name == "initialize" && is.function(value)) {
+    self$new <- inject_new_args(self$new, formals(value))
+  }
+
   invisible()
 }
 
