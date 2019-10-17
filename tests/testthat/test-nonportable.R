@@ -173,21 +173,20 @@ test_that("Validity checks on creation", {
 
 
 test_that("default print method has a trailing newline", {
-
   ## This is kind of hackish, because both capture.output and
   ## expect_output drop the trailing newline. This function
   ## does not work in the general case, but it is good enough
   ## for this test.
 
   expect_output_n <- function(object) {
-    tmp <- file()
-    on.exit(close(tmp))
+    tmp <- tempfile()
+    on.exit(unlink(tmp))
     sink(tmp)
     print(object)
     sink(NULL)
-    output <- readChar(tmp, nchar = 10000)
+    output <- readChar(tmp, nchars = 10000)
     last_char <- substr(output, nchar(output), nchar(output))
-    expect_that(last_char, equals("\n"))
+    expect_identical(last_char, "\n")
   }
 
   AC <- R6Class("AC")
