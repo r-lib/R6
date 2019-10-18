@@ -209,7 +209,20 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
     # Copy the old objects, fix up method environments, and put them into the
     # new binding environment.
-    binding_copies <- as.list.environment(old_slice$binding, all.names = TRUE)
+
+    # Separate active and non-active bindings. We'll copy over just the
+    # non-active bindings now; the active bindings need to be copied over with
+    # a different method later.
+    binding_names <- names(old_slice$binding)
+    active_idx <- vapply(
+      binding_names,
+      bindingIsActive,
+      env = old_slice$binding,
+      TRUE
+    )
+    binding_names <- binding_names[!active_idx]
+
+    binding_copies <- mget(binding_names, envir = old_slice$binding)
 
     # Don't copy self, private, super, or .__enclos_env__. Note that using
     # %in% is significantly faster than setdiff() here.
@@ -217,16 +230,6 @@ generator_funs$clone_method <- function(deep = FALSE) {
     binding_copies <- binding_copies[keep_idx]
 
     binding_copies <- remap_func_envs(binding_copies, old_new_enclosing_pairs)
-
-    # Separate active and non-active bindings
-    active_idx <- vapply(
-      names(binding_copies),
-      bindingIsActive,
-      env = old_slice$binding,
-      TRUE
-    )
-    active_copies  <- binding_copies[active_idx]
-    binding_copies <- binding_copies[!active_idx]
 
     if (deep) {
       binding_copies <- mapply(
@@ -237,13 +240,18 @@ generator_funs$clone_method <- function(deep = FALSE) {
       )
     }
 
-    # Copy in public and active bindings
+    # Copy in public bindings
     list2env2(binding_copies, new_slice$binding)
 
-    if (length(active_copies) > 0) {
+
+    # Now copy over active bindings, if present
+    if (!is.null(old_slice$enclosing$`.__active__`)) {
+      active_copies <- remap_func_envs(old_slice$enclosing$`.__active__`, old_new_enclosing_pairs)
+
       for (name in names(active_copies)) {
         makeActiveBinding(name, active_copies[[name]], new_slice$binding)
       }
+      new_slice$enclosing$`.__active__` <- active_copies
     }
 
     # Copy private members

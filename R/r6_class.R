@@ -536,6 +536,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator$classname    <- classname
   generator$active       <- active
   generator$portable     <- portable
+  generator$cloneable    <- cloneable
   generator$parent_env   <- parent_env
   generator$lock_objects <- lock_objects
   generator$class        <- class
