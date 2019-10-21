@@ -533,10 +533,6 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   # Copy the generator functions into the generator env.
   list2env2(generator_funs, generator)
 
-  # This is here to avoid a potential name collision, if the $initialize()
-  # method has a parameter named `missing`.
-  generator$.__missing__ <- base::missing
-
   generator$classname    <- classname
   generator$active       <- active
   generator$portable     <- portable
