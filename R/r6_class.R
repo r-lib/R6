@@ -505,37 +505,10 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator$self <- generator
 
-  # Capture the unevaluated expression for the superclass; when evaluated in
-  # the parent_env, it should return the superclass object.
-  generator$inherit <- substitute(inherit)
-
-  # Set the generator functions to eval in the generator environment
+  # Set the generator functions to eval in the generator environment, and copy
+  # them into the generator env.
   generator_funs <- assign_func_envs(generator_funs, generator)
-
-  if (is.function(public$initialize)) {
-    # If there's an initialize method, change the `new` method to have
-    # the same arguments, for tab-completion.
-    generator_funs$new <- inject_new_args(
-      generator_funs$new,
-      formals(public$initialize)
-    )
-  } else if (!is.null(generator$inherit)) {
-    # If there's not an initialize method, but there is a superclass, then the
-    # new() method needs to accept `...`, because there might be an inherited
-    # initialize method. Because inheritance is resolved when $new() is called,
-    # we can't inspect the superclass's intialize() method right now.
-    generator_funs$new <- inject_new_args(
-      generator_funs$new,
-      as.pairlist(alist(... = ))
-    )
-  }
-
-  # Copy the generator functions into the generator env.
   list2env2(generator_funs, generator)
-
-  # This is here to avoid a potential name collision, if the $initialize()
-  # method has a parameter named `missing`.
-  generator$.__missing__ <- base::missing
 
   generator$classname    <- classname
   generator$active       <- active
@@ -554,6 +527,10 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   if (cloneable)
     generator$public_methods$clone <- generator_funs$clone_method
+
+  # Capture the unevaluated expression for the superclass; when evaluated in
+  # the parent_env, it should return the superclass object.
+  generator$inherit <- substitute(inherit)
 
   # Names of methods for which to enable debugging
   generator$debug_names <- character(0)
