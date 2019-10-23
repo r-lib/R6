@@ -1,6 +1,5 @@
-R6 2.4.0.9000
+R6 2.4.1
 ========
-
 
 * Cloning active bindings previously relied on buggy behavior in `as.list.environment()`, which would return the active binding's function definition rather than the value from invoking the function. In R 4.0, the behavior will chang so that it returns the value. R6 now no longer relies on this buggy behavior. ([#192](https://github.com/r-lib/R6/pull/192))
 
