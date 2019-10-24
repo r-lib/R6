@@ -214,13 +214,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
     # non-active bindings now; the active bindings need to be copied over with
     # a different method later.
     binding_names <- names(old_slice$binding)
-    active_idx <- vapply(
-      binding_names,
-      bindingIsActive,
-      env = old_slice$binding,
-      TRUE
-    )
-    binding_names <- binding_names[!active_idx]
+    if (!is.null(old_slice$enclosing$`.__active__`)) {
+      binding_names <- setdiff(binding_names, names(old_slice$enclosing$`.__active__`))
+    }
 
     binding_copies <- mget(binding_names, envir = old_slice$binding)
 
