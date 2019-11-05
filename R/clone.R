@@ -213,7 +213,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
     # Separate active and non-active bindings. We'll copy over just the
     # non-active bindings now; the active bindings need to be copied over with
     # a different method later.
-    binding_names <- names(old_slice$binding)
+    binding_names <- ls(old_slice$binding, all.names = TRUE)
     if (!is.null(old_slice$enclosing$`.__active__`)) {
       binding_names <- setdiff(binding_names, names(old_slice$enclosing$`.__active__`))
     }
