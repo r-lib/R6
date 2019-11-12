@@ -123,13 +123,11 @@ generator_funs$new <- function(...) {
       makeActiveBinding(name, active[[name]], public_bind_env)
     }
 
-    # If there are active bindings AND the class is cloneable, then we need to
-    # store a copy of the active bindings in case the object is cloned. This
-    # is because as of R 4.0, there's no way to get the function associated
-    # with an active binding; you can only get the return value.
-    if (cloneable) {
-      enclos_env$`.__active__` <- active
-    }
+    # If there are active bindings, then we need to store a copy of the active
+    # bindings in case the object is cloned. This is because as of R 4.0,
+    # there's no way to get the function associated with an active binding;
+    # you can only get the return value.
+    enclos_env$`.__active__` <- active
   }
 
 
@@ -264,11 +262,9 @@ encapsulate({
       for (name in names(active)) {
         makeActiveBinding(name, active[[name]], super_bind_env)
       }
-      # If there are active bindings AND the class is cloneable, then we need to
-      # store a copy of the active bindings in case the object is cloned.
-      if (cloneable) {
-        super_enclos_env$`.__active__` <- active
-      }
+      # If there are active bindings, then we need to store a copy of the
+      # active bindings in case the object is cloned.
+      super_enclos_env$`.__active__` <- active
     }
 
     # Return an object with all the information needed to merge down
