@@ -1,6 +1,7 @@
 R6 2.4.1.9000
 ========
 
+* Resolved [#195](https://github.com/r-lib/R6/issues/195): Slightly clearer message when there is an error in the `initialize()` method.
 
 R6 2.4.1
 ========
