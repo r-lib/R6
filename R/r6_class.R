@@ -528,6 +528,16 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (cloneable)
     generator$public_methods$clone <- generator_funs$clone_method
 
+  if (!("get_state" %in% names(generator$public_methods))) {
+    generator$public_methods$get_state <-
+      get_state
+  }
+
+  if (!("set_state" %in% names(generator$public_methods))) {
+    generator$public_methods$set_state <-
+      set_state
+  }
+
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.
   generator$inherit <- substitute(inherit)

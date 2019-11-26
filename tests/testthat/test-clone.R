@@ -95,8 +95,8 @@ test_that("Cloning non-portable objects with public only", {
   expect_identical(parent.env(b_enclos_env), parenv)
 
   # Contains correct objects
-  expect_identical(ls(a), c("clone", "getx", "self", "x"))
-  expect_identical(ls(b), c("clone", "getx", "self", "x"))
+  expect_identical(ls(a), c("clone", "get_state", "getx", "self", "set_state", "x"))
+  expect_identical(ls(b), c("clone", "get_state", "getx", "self", "set_state", "x"))
 })
 
 
@@ -152,11 +152,11 @@ test_that("Cloning portable objects with public and private", {
   expect_identical(ls(a_enclos_env), c("private", "self"))
   expect_identical(ls(b_enclos_env), c("private", "self"))
   # public binding env contains just the public members
-  expect_identical(ls(a), c("clone", "getprivate", "getx", "sety", "x"))
-  expect_identical(ls(b), c("clone", "getprivate", "getx", "sety", "x"))
+  expect_identical(ls(a), c("clone", "get_state", "getprivate", "getx", "set_state", "sety", "x"))
+  expect_identical(ls(b), c("clone", "get_state", "getprivate", "getx", "set_state", "sety", "x"))
   # private binding env contains just the private members
   expect_identical(ls(a$getprivate()), c("gety", "y"))
-  expect_identical(ls(b$getprivate()), c("gety", "y"))
+  expect_identical(ls(b$getprivate()),  c("gety", "y"))
 })
 
 
@@ -210,9 +210,9 @@ test_that("Cloning non-portable objects with public and private", {
 
   # Public binding env (AKA enclosing env) contains self, private, and members
   expect_identical(ls(a),
-    c("clone", "getprivate", "getx", "private", "self", "sety", "x"))
+    c("clone", "get_state", "getprivate", "getx", "private", "self", "set_state", "sety", "x"))
   expect_identical(ls(b),
-    c("clone", "getprivate", "getx", "private", "self", "sety", "x"))
+    c("clone", "get_state", "getprivate", "getx", "private", "self", "set_state", "sety", "x"))
   # private binding env contains just the private members
   expect_identical(ls(a$getprivate()), c("gety", "y"))
   expect_identical(ls(b$getprivate()), c("gety", "y"))
