@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# R6: Encapsulated object-oriented programming for R
+# R6: Encapsulated object-oriented programming for R <img src='man/figures/logo.png' align="right" height="139" />
 
 <!-- badges: start -->
 
