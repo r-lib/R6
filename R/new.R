@@ -6,7 +6,7 @@ generator_funs$new <- function(...) {
   # Instantiate a new object from the generator attached method, which can then
   # be initialized
   public_bind_env <-
-    self$.__instantiate()
+    get(".__instantiate", envir = parent.env(environment()))()
 
   # Initialize ------------------------------------------------------
   initialize <- .subset2(public_bind_env, "initialize")

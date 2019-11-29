@@ -49,7 +49,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
     list(
       enclosing = .subset2(self, ".__enclos_env__"),
       binding   = self,      # AKA the public binding environment
-      private   = NULL
+      private   = NULL,
+      .__internal__ = NULL
     )
   )
 
@@ -59,6 +60,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
   old[[1]]$private <- old[[1]]$enclosing$private
   has_private <- !is.null(old[[1]]$private)
+
+  old[[1]]$.__internal__ <- old[[1]]$enclosing$.__internal__
 
   # Figure out if we're in a portable class object
   portable <- !identical(old[[1]]$binding, old[[1]]$enclosing)
@@ -100,6 +103,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
   # We'll use these a lot later, and it's faster to refer to them directly.
   old_1_binding <- old[[1]]$binding
   old_1_private <- old[[1]]$private
+  old_1_internal <- old[[1]]$.__internal__
+
 
   # ---------------------------------------------------------------------------
   # Create representation of the new object
@@ -317,6 +322,11 @@ generator_funs$clone_method <- function(deep = FALSE) {
       (i == 1)
     )
   }
+
+
+  new_1_binding$.__internal__ <- new.env(parent = emptyenv(), hash = FALSE)
+
+  new_1_binding$.__internal__$instance_id <- uuid::UUIDgenerate()
 
   # Lock --------------------------------------------------------------
   # Copy locked state of environment

@@ -67,7 +67,7 @@ generator_funs$.__instantiate <- function() {
     enclos_env <- public_bind_env
   }
 
-  # Add self and private pointer ------------------------------------
+  # Add self, internal and private pointer --------------------------
   enclos_env$self <- public_bind_env
   if (has_priv)
     enclos_env$private <- private_bind_env
@@ -133,6 +133,14 @@ generator_funs$.__instantiate <- function() {
 
   # Add refs to other environments in the object --------------------
   public_bind_env$`.__enclos_env__` <- enclos_env
+
+  # Binding environment for internal objects (where public objects are found)
+  internal_bind_env <- new.env(parent = emptyenv(), hash = FALSE)
+
+  # Assign a unique identifier to the instance internal environment
+  internal_bind_env$instance_id <- uuid::UUIDgenerate()
+
+  public_bind_env$.__internal__ <- internal_bind_env
 
   # Lock ------------------------------------------------------------
   if (lock_objects) {
