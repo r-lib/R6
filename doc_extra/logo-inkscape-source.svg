@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="R6-inkscape-source-10.svg"
+   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
+   id="svg1405"
+   version="1.1"
+   viewBox="0 0 180.16297 208.03427"
+   height="208.03427mm"
+   width="180.16296mm">
+  <defs
+     id="defs1399">
+    <linearGradient
+       osb:paint="solid"
+       id="linearGradient852">
+      <stop
+         id="stop850"
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="193.14699"
+       x2="-41.716195"
+       y1="193.14699"
+       x1="-137.36425"
+       id="linearGradient854"
+       xlink:href="#linearGradient852"
+       inkscape:collect="always" />
+  </defs>
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:window-maximized="0"
+     inkscape:window-y="23"
+     inkscape:window-x="0"
+     inkscape:window-height="1013"
+     inkscape:window-width="1600"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="488.09099"
+     inkscape:cx="116.77743"
+     inkscape:zoom="0.5"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata1402">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     transform="translate(-2.9006658,-5.5959646)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <path
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       d="M 92.98215,210.16613 5.9006685,159.88962 5.9006658,59.336585 92.982145,9.0600662 180.06363,59.33658 l 0,100.55303 z"
+       inkscape:randomized="0"
+       inkscape:rounded="0"
+       inkscape:flatsided="true"
+       sodipodi:arg2="2.0943951"
+       sodipodi:arg1="1.5707963"
+       sodipodi:r2="87.081482"
+       sodipodi:r1="100.55303"
+       sodipodi:cy="109.6131"
+       sodipodi:cx="92.982147"
+       sodipodi:sides="6"
+       id="path1409"
+       style="fill:#161616;fill-opacity:1;stroke:#828282;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:type="star" />
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#f04242;fill-opacity:1"
+       transform="translate(175.74361,-89.313195)"
+       height="100%"
+       width="100%"
+       id="use2039"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#f06e42;fill-opacity:1"
+       transform="translate(179.27402,-86.769904)"
+       height="100%"
+       width="100%"
+       id="use2037"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#f09942;fill-opacity:1"
+       transform="translate(182.80443,-84.226614)"
+       height="100%"
+       width="100%"
+       id="use2035"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#f0c542;fill-opacity:1"
+       transform="translate(186.33483,-81.683323)"
+       height="100%"
+       width="100%"
+       id="use2031"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#f0f042;fill-opacity:1"
+       transform="translate(189.86524,-79.140013)"
+       height="100%"
+       width="100%"
+       id="use2028"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+    <text
+       id="text1994"
+       y="222.31467"
+       x="-142.79536"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:84.66666666999998370px;line-height:1.25;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-6.61458000000000013px;inline-size:131.188;display:inline;fill-opacity:1;stroke:url(#linearGradient854);stroke-width:1.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         sodipodi:role="line"
+         x="-142.79536"
+         y="222.31467"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:84.6667px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-6.61458px;fill-opacity:1;stroke:url(#linearGradient854);stroke-width:1.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">R6</tspan></tspan></text>
+    <use
+       inkscape:export-ydpi="70.489998"
+       inkscape:export-xdpi="70.489998"
+       style="fill:#ededed;fill-opacity:1"
+       transform="translate(193.39565,-76.59672)"
+       height="100%"
+       width="100%"
+       id="use2089"
+       xlink:href="#text1994"
+       y="0"
+       x="0" />
+  </g>
+</svg>

@@ -1,4 +1,4 @@
-R6: Encapsulated object-oriented programming for R
+R6: Encapsulated object-oriented programming for R <img src='man/figures/logo.png' align="right" height="138.5" />
 ==================================================
 
 [![Build Status](https://travis-ci.org/r-lib/R6.svg?branch=master)](https://travis-ci.org/r-lib/R6)
