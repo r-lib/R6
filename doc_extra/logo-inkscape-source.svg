@@ -43,14 +43,14 @@
      fit-margin-top="0"
      inkscape:window-maximized="0"
      inkscape:window-y="23"
-     inkscape:window-x="0"
+     inkscape:window-x="152"
      inkscape:window-height="1013"
      inkscape:window-width="1600"
      showgrid="false"
      inkscape:document-rotation="0"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="488.09099"
+     inkscape:cy="294.73264"
      inkscape:cx="116.77743"
      inkscape:zoom="0.5"
      inkscape:pageshadow="2"
@@ -78,8 +78,8 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <path
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        d="M 92.98215,210.16613 5.9006685,159.88962 5.9006658,59.336585 92.982145,9.0600662 180.06363,59.33658 l 0,100.55303 z"
        inkscape:randomized="0"
        inkscape:rounded="0"
@@ -95,10 +95,10 @@
        style="fill:#161616;fill-opacity:1;stroke:#828282;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        sodipodi:type="star" />
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#f04242;fill-opacity:1"
-       transform="translate(175.74361,-89.313195)"
+       transform="translate(172.03945,-90.371527)"
        height="100%"
        width="100%"
        id="use2039"
@@ -106,10 +106,10 @@
        y="0"
        x="0" />
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#f06e42;fill-opacity:1"
-       transform="translate(179.27402,-86.769904)"
+       transform="translate(176.62819,-87.087406)"
        height="100%"
        width="100%"
        id="use2037"
@@ -117,10 +117,10 @@
        y="0"
        x="0" />
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#f09942;fill-opacity:1"
-       transform="translate(182.80443,-84.226614)"
+       transform="translate(181.21694,-83.803277)"
        height="100%"
        width="100%"
        id="use2035"
@@ -128,10 +128,10 @@
        y="0"
        x="0" />
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#f0c542;fill-opacity:1"
-       transform="translate(186.33483,-81.683323)"
+       transform="translate(185.80568,-80.519148)"
        height="100%"
        width="100%"
        id="use2031"
@@ -139,10 +139,10 @@
        y="0"
        x="0" />
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#f0f042;fill-opacity:1"
-       transform="translate(189.86524,-79.140013)"
+       transform="translate(190.39442,-77.235024)"
        height="100%"
        width="100%"
        id="use2028"
@@ -160,10 +160,10 @@
          y="222.31467"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:84.6667px;font-family:'Avenir Next';-inkscape-font-specification:'Avenir Next Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-6.61458px;fill-opacity:1;stroke:url(#linearGradient854);stroke-width:1.5;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">R6</tspan></tspan></text>
     <use
-       inkscape:export-ydpi="70.489998"
-       inkscape:export-xdpi="70.489998"
+       inkscape:export-ydpi="312.28"
+       inkscape:export-xdpi="312.28"
        style="fill:#ededed;fill-opacity:1"
-       transform="translate(193.39565,-76.59672)"
+       transform="translate(194.98316,-73.950885)"
        height="100%"
        width="100%"
        id="use2089"
