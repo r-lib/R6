@@ -13,7 +13,7 @@ Depends:
 Suggests:
     knitr,
     microbenchmark,
-    pryr,
+    lobstr,
     testthat,
     ggplot2,
     scales,
@@ -22,4 +22,4 @@ License: MIT + file LICENSE
 URL: https://r6.r-lib.org, https://github.com/r-lib/R6/
 LazyData: true
 BugReports: https://github.com/r-lib/R6/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0

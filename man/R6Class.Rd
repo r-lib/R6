@@ -5,10 +5,20 @@
 \alias{R6}
 \title{Create an R6 reference object generator}
 \usage{
-R6Class(classname = NULL, public = list(), private = NULL,
-  active = NULL, inherit = NULL, lock_objects = TRUE, class = TRUE,
-  portable = TRUE, lock_class = FALSE, cloneable = TRUE,
-  parent_env = parent.frame(), lock)
+R6Class(
+  classname = NULL,
+  public = list(),
+  private = NULL,
+  active = NULL,
+  inherit = NULL,
+  lock_objects = TRUE,
+  class = TRUE,
+  portable = TRUE,
+  lock_class = FALSE,
+  cloneable = TRUE,
+  parent_env = parent.frame(),
+  lock
+)
 }
 \arguments{
 \item{classname}{Name of the class. The class name is useful primarily for S3
@@ -250,9 +260,9 @@ HistoryQueue <- R6Class("HistoryQueue",
   inherit = Queue,
   public = list(
     show = function() {
-      cat("Next item is at index", private$head_idx + 1, "\\n")
+      cat("Next item is at index", private$head_idx + 1, "\n")
       for (i in seq_along(private$queue)) {
-        cat(i, ": ", private$queue[[i]], "\\n", sep = "")
+        cat(i, ": ", private$queue[[i]], "\n", sep = "")
       }
     },
     remove = function() {
