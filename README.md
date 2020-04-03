@@ -1,7 +1,11 @@
 R6: Encapsulated object-oriented programming for R <img src='man/figures/logo.png' align="right" height="138.5" />
 ==================================================
 
-[![Build Status](https://travis-ci.org/r-lib/R6.svg?branch=master)](https://travis-ci.org/r-lib/R6)
+<!-- badges: start -->
+[![R build status](https://github.com/r-lib/R6/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/R6/actions)
+[![Codecov test coverage](https://codecov.io/gh/r-lib/R6/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/R6?branch=master)
+<!-- badges: end -->
+
 
 R6 is an implemention of encapsulated object-oriented programming for R, and is a simpler, faster, lighter-weight alternative to R's built-in reference classes. This style of programming is also sometimes referred to as classical object-oriented programming.
 
