@@ -1,9 +1,10 @@
-pandoc: 2.3.1
-pkgdown: 1.3.0
+pandoc: 2.2.1
+pkgdown: 1.5.0
 pkgdown_sha: ~
 articles:
   Debugging: Debugging.html
   Introduction: Introduction.html
   Performance: Performance.html
   Portable: Portable.html
+last_built: 2020-06-12T13:26Z
 
