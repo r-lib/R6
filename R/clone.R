@@ -159,8 +159,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
   # This creates a slice other than the first one.
   make_new_slice <- function(old_slice, self, private) {
-    enclosing_parent <- parent.env(old[[i]]$enclosing)
-    binding_parent   <- parent.env(old[[i]]$binding)
+    enclosing_parent <- parent.env(old_slice$enclosing)
+    binding_parent   <- parent.env(old_slice$binding)
 
     enclosing <- new.env(enclosing_parent, hash = FALSE)
     binding   <- new.env(binding_parent,   hash = FALSE)
