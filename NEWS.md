@@ -3,6 +3,8 @@ R6 2.4.1.9000
 
 * Resolved [#195](https://github.com/r-lib/R6/issues/195): Slightly clearer message when there is an error in the `initialize()` method.
 
+* Fixed #214: When a non-portable object inheritance was cloned, methods that were inherited (and not overridden) had the wrong environment. (#215)
+
 * Printing R6 objects, no longer includes `.__active__`.
 
 R6 2.4.1
