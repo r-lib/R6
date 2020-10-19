@@ -13,7 +13,7 @@ format.R6 <- function(x, ...) {
 
     ret <- c(ret,
       "  Public:",
-      indent(object_summaries(x, exclude = ".__enclos_env__"), 4)
+      indent(object_summaries(x, exclude = c(".__active__", ".__enclos_env__")), 4)
     )
 
     private <- .subset2(.subset2(x, ".__enclos_env__"), "private")
