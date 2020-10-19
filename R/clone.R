@@ -158,12 +158,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
 
   # This creates a slice other than the first one.
-  make_new_slice <- function(old_slice, self, private) {
-    enclosing_parent <- parent.env(old_slice$enclosing)
-    binding_parent   <- parent.env(old_slice$binding)
-
+  make_new_slice <- function(old_slice, self, private, enclosing_parent, portable) {
     enclosing <- new.env(enclosing_parent, hash = FALSE)
-    binding   <- new.env(binding_parent,   hash = FALSE)
+    binding   <- new.env(emptyenv(), hash = FALSE)
 
     enclosing$self <- self
     if (!is.null(private)) {
@@ -183,8 +180,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
   )
 
   # We'll use these a lot, and it's faster to refer to them directly.
-  new_1_binding <- new[[1]]$binding
-  new_1_private <- new[[1]]$private
+  new_1_binding   <- new[[1]]$binding
+  new_1_private   <- new[[1]]$private
+  new_1_enclosing <- new[[1]]$enclosing
 
   # Mirror the super environments from the old object
   if (length(old) > 1) {
@@ -192,7 +190,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
       new[[i]] <- make_new_slice(
         old[[i]],
         new_1_binding,
-        new_1_private
+        new_1_private,
+        new_1_enclosing,
+        portable
       )
     }
 
