@@ -1,4 +1,4 @@
-R6 2.4.1.9001
+R6 2.5.0
 ========
 
 * Resolved #195: Slightly clearer message when there is an error in the `initialize()` method.
