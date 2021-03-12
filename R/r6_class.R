@@ -83,7 +83,7 @@
 #'   the \code{classname} argument, and \code{"R6"}. It is possible to get the
 #'   public environment with no classes, by using \code{class=FALSE}. This will
 #'   result in faster access speeds by avoiding class-based dispatch of
-#'   \code{$}. The benefit is is negligible in most cases.
+#'   \code{$}. The benefit is negligible in most cases.
 #'
 #'   If a class is a subclass of another, the object will have as its classes
 #'   the \code{classname}, the superclass's \code{classname}, and \code{"R6"}
