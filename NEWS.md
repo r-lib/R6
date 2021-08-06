@@ -1,6 +1,7 @@
 R6 2.5.0.9000
 ========
 
+* Removed unused packages from `Suggests` section in DESCRIPTION.
 
 R6 2.5.0
 ========
