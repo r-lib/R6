@@ -17,27 +17,23 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
-
-<!-- bootstrap-toc -->
-<link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -47,7 +43,8 @@
 
 
 <meta property="og:title" content="Changelog" />
-<meta property="og:image" content="/logo.svg" />
+<meta property="og:image" content="/logo.png" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -75,7 +72,7 @@
 
   </head>
 
-  <body data-spy="scroll" data-target="#toc">
+  <body>
     <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -89,7 +86,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.5.0.9001</span>
       </span>
     </div>
 
@@ -97,7 +94,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -131,8 +128,8 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/r-lib/R6/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/r-lib/R6">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -149,80 +146,90 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1 data-toc-skip>Changelog <small></small></h1>
+      <h1>Changelog <small></small></h1>
       <small>Source: <a href='https://github.com/r-lib/R6/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="r6-2-4-1-9000" class="section level1">
-<h1 class="page-header" data-toc-text="2.4.1.9000">
-<a href="#r6-2-4-1-9000" class="anchor"></a>R6 2.4.1.9000<small> Unreleased </small>
+    <div id="r6-2509000" class="section level1">
+<h1 class="page-header">
+<a href="#r6-2509000" class="anchor"></a>R6 2.5.0.9000<small> Unreleased </small>
 </h1>
 <ul>
-<li>Resolved <a href="https://github.com/r-lib/R6/issues/195"><a href='https://github.com/r-lib/R6/issues/195'>#195</a></a>: Slightly clearer message when there is an error in the <code>initialize()</code> method.</li>
+<li>Removed unused packages from <code>Suggests</code> section in DESCRIPTION.</li>
 </ul>
 </div>
-    <div id="r6-2-4-1" class="section level1">
-<h1 class="page-header" data-toc-text="2.4.1">
-<a href="#r6-2-4-1" class="anchor"></a>R6 2.4.1<small> 2019-11-12 </small>
+    <div id="r6-250" class="section level1">
+<h1 class="page-header">
+<a href="#r6-250" class="anchor"></a>R6 2.5.0<small> 2020-10-28 </small>
 </h1>
 <ul>
-<li>Cloning active bindings previously relied on buggy behavior in <code><a href="https://rdrr.io/r/base/list.html">as.list.environment()</a></code>, which would return the active binding’s function definition rather than the value from invoking the function. In R 4.0, the behavior will chang so that it returns the value. R6 now no longer relies on this buggy behavior. (<a href="https://github.com/r-lib/R6/pull/192"><a href='https://github.com/r-lib/R6/issues/192'>#192</a></a>)</li>
+<li><p>Resolved <a href='https://github.com/r-lib/R6/issues/195'>#195</a>: Slightly clearer message when there is an error in the <code>initialize()</code> method.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/214'>#214</a>: When a non-portable object inheritance was cloned, methods that were inherited (and not overridden) had the wrong environment. (<a href='https://github.com/r-lib/R6/issues/215'>#215</a>, <a href='https://github.com/r-lib/R6/issues/217'>#217</a>)</p></li>
+<li><p>Printing R6 objects, no longer includes <code>.__active__</code>.</p></li>
 </ul>
 </div>
-    <div id="r6-2-4-0" class="section level1">
-<h1 class="page-header" data-toc-text="2.4.0">
-<a href="#r6-2-4-0" class="anchor"></a>R6 2.4.0<small> 2019-02-14 </small>
+    <div id="r6-241" class="section level1">
+<h1 class="page-header">
+<a href="#r6-241" class="anchor"></a>R6 2.4.1<small> 2019-11-12 </small>
 </h1>
 <ul>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/146"><a href='https://github.com/r-lib/R6/issues/146'>#146</a></a>: Finalizers can now be private methods. (<a href="https://github.com/r-lib/R6/pull/181"><a href='https://github.com/r-lib/R6/issues/181'>#181</a></a>)</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/167"><a href='https://github.com/r-lib/R6/issues/167'>#167</a></a>: Finalizers now run on cloned objects. (<a href="https://github.com/r-lib/R6/pull/180"><a href='https://github.com/r-lib/R6/issues/180'>#180</a></a>)</p></li>
+<li>Cloning active bindings previously relied on buggy behavior in <code><a href="https://rdrr.io/r/base/list.html">as.list.environment()</a></code>, which would return the active binding’s function definition rather than the value from invoking the function. In R 4.0, the behavior will chang so that it returns the value. R6 now no longer relies on this buggy behavior. (<a href='https://github.com/r-lib/R6/issues/192'>#192</a>)</li>
 </ul>
 </div>
-    <div id="r6-2-3-0" class="section level1">
-<h1 class="page-header" data-toc-text="2.3.0">
-<a href="#r6-2-3-0" class="anchor"></a>R6 2.3.0<small> 2018-10-04 </small>
+    <div id="r6-240" class="section level1">
+<h1 class="page-header">
+<a href="#r6-240" class="anchor"></a>R6 2.4.0<small> 2019-02-14 </small>
+</h1>
+<ul>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/146'>#146</a>: Finalizers can now be private methods. (<a href='https://github.com/r-lib/R6/issues/181'>#181</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/167'>#167</a>: Finalizers now run on cloned objects. (<a href='https://github.com/r-lib/R6/issues/180'>#180</a>)</p></li>
+</ul>
+</div>
+    <div id="r6-230" class="section level1">
+<h1 class="page-header">
+<a href="#r6-230" class="anchor"></a>R6 2.3.0<small> 2018-10-04 </small>
 </h1>
 <ul>
 <li><p>Vignettes are no longer included as part of the source package because of their large size. Documentation is now at <a href="https://r6.r-lib.org/" class="uri">https://r6.r-lib.org/</a>.</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/125"><a href='https://github.com/r-lib/R6/issues/125'>#125</a></a>: The <code>print.R6</code> method now always returns the object that was passed to it.</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/155"><a href='https://github.com/r-lib/R6/issues/155'>#155</a></a>: In some cases, a cloned object’s methods could refer to the wrong <code>super</code> object. (<a href="https://github.com/r-lib/R6/pull/156"><a href='https://github.com/r-lib/R6/issues/156'>#156</a></a>)</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/94"><a href='https://github.com/r-lib/R6/issues/94'>#94</a></a>, <a href="https://github.com/r-lib/R6/issues/133"><a href='https://github.com/r-lib/R6/issues/133'>#133</a></a>: When cloning an object which contained a function that is <em>not</em> a method, the corresponding function in the new object would have its environment changed, as though it were a method. Now it no longer has a changed environment. (<a href="https://github.com/r-lib/R6/pull/156"><a href='https://github.com/r-lib/R6/issues/156'>#156</a></a>)</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/121"><a href='https://github.com/r-lib/R6/issues/121'>#121</a></a>: If a <code>finalize</code> method was present, it would prevent objects passed to <code>initialize</code> from getting GC’d.</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/158"><a href='https://github.com/r-lib/R6/issues/158'>#158</a></a>: If a <code>$set</code> method of an R6 generator object is given the value <code>NULL</code>, it previously removed the named item. Now it adds the named item with the value <code>NULL</code>.</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/159"><a href='https://github.com/r-lib/R6/issues/159'>#159</a></a>: Printing an R6 object containing a large vector was slow.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/125'>#125</a>: The <code>print.R6</code> method now always returns the object that was passed to it.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/155'>#155</a>: In some cases, a cloned object’s methods could refer to the wrong <code>super</code> object. (<a href='https://github.com/r-lib/R6/issues/156'>#156</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/94'>#94</a>, <a href='https://github.com/r-lib/R6/issues/133'>#133</a>: When cloning an object which contained a function that is <em>not</em> a method, the corresponding function in the new object would have its environment changed, as though it were a method. Now it no longer has a changed environment. (<a href='https://github.com/r-lib/R6/issues/156'>#156</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/121'>#121</a>: If a <code>finalize</code> method was present, it would prevent objects passed to <code>initialize</code> from getting GC’d.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/158'>#158</a>: If a <code>$set</code> method of an R6 generator object is given the value <code>NULL</code>, it previously removed the named item. Now it adds the named item with the value <code>NULL</code>.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/159'>#159</a>: Printing an R6 object containing a large vector was slow.</p></li>
 </ul>
 </div>
-    <div id="r6-2-2-2" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.2">
-<a href="#r6-2-2-2" class="anchor"></a>R6 2.2.2<small> 2017-06-17 </small>
+    <div id="r6-222" class="section level1">
+<h1 class="page-header">
+<a href="#r6-222" class="anchor"></a>R6 2.2.2<small> 2017-06-17 </small>
 </h1>
 <ul>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/108"><a href='https://github.com/r-lib/R6/issues/108'>#108</a></a>: When an object with a <code>super</code> object and an active binding in the <code>super</code> object was cloned, the new object’s <code>super</code> object did not get the active binding – it was a normal function.</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/119"><a href='https://github.com/r-lib/R6/issues/119'>#119</a></a>: When a class had two levels of inheritance, an instance of that class’s <code>super</code> object could contain methods that had an incorrect enclosing environment.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/108'>#108</a>: When an object with a <code>super</code> object and an active binding in the <code>super</code> object was cloned, the new object’s <code>super</code> object did not get the active binding – it was a normal function.</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/119'>#119</a>: When a class had two levels of inheritance, an instance of that class’s <code>super</code> object could contain methods that had an incorrect enclosing environment.</p></li>
 </ul>
 </div>
-    <div id="r6-2-2-1" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.1">
-<a href="#r6-2-2-1" class="anchor"></a>R6 2.2.1<small> 2017-05-10 </small>
+    <div id="r6-221" class="section level1">
+<h1 class="page-header">
+<a href="#r6-221" class="anchor"></a>R6 2.2.1<small> 2017-05-10 </small>
 </h1>
 <ul>
 <li><p>Vignettes now only try use the microbenchmark package if it is present. This is so that the package builds properly on platforms where microbenchmark is not present, like Solaris.</p></li>
 <li><p>Fixed ending position for <code>trim()</code>.</p></li>
 </ul>
 </div>
-    <div id="r6-2-2-0" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.0">
-<a href="#r6-2-2-0" class="anchor"></a>R6 2.2.0<small> 2016-10-05 </small>
+    <div id="r6-220" class="section level1">
+<h1 class="page-header">
+<a href="#r6-220" class="anchor"></a>R6 2.2.0<small> 2016-10-05 </small>
 </h1>
 <ul>
-<li><p>Classes can define finalizers explicitly, by defining a public <code>finalize</code> method. (<a href="https://github.com/r-lib/R6/issues/92"><a href='https://github.com/r-lib/R6/issues/92'>#92</a></a>, <a href="https://github.com/r-lib/R6/pull/93"><a href='https://github.com/r-lib/R6/issues/93'>#93</a></a>)</p></li>
-<li><p>Added function <code><a href="../reference/is.R6.html">is.R6()</a></code> and <code><a href="../reference/is.R6.html">is.R6Class()</a></code>. (<a href="https://github.com/r-lib/R6/pull/95"><a href='https://github.com/r-lib/R6/issues/95'>#95</a></a>)</p></li>
-<li><p>Fixed <a href="https://github.com/r-lib/R6/issues/96"><a href='https://github.com/r-lib/R6/issues/96'>#96</a></a>: R6 now avoids using <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> after the class has been assigned to the object. This allows the user to provide their own methods for <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> without causing problems to R6’s operation.</p></li>
+<li><p>Classes can define finalizers explicitly, by defining a public <code>finalize</code> method. (<a href='https://github.com/r-lib/R6/issues/92'>#92</a>, <a href='https://github.com/r-lib/R6/issues/93'>#93</a>)</p></li>
+<li><p>Added function <code><a href="../reference/is.R6.html">is.R6()</a></code> and <code><a href="../reference/is.R6.html">is.R6Class()</a></code>. (<a href='https://github.com/r-lib/R6/issues/95'>#95</a>)</p></li>
+<li><p>Fixed <a href='https://github.com/r-lib/R6/issues/96'>#96</a>: R6 now avoids using <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> after the class has been assigned to the object. This allows the user to provide their own methods for <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> and <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> without causing problems to R6’s operation.</p></li>
 </ul>
 </div>
-    <div id="r6-2-1-3" class="section level1">
-<h1 class="page-header" data-toc-text="2.1.3">
-<a href="#r6-2-1-3" class="anchor"></a>R6 2.1.3<small> 2016-08-19 </small>
+    <div id="r6-213" class="section level1">
+<h1 class="page-header">
+<a href="#r6-213" class="anchor"></a>R6 2.1.3<small> 2016-08-19 </small>
 </h1>
 <ul>
 <li><p>The <code>plot</code> S3 method for R6 objects will call <code>$plot</code> on the object if present. (<a href='https://github.com/r-lib/R6/issues/77'>#77</a>)</p></li>
@@ -231,9 +238,9 @@
 <li><p>Added <code>as.list.R6</code> method. (<a href='https://github.com/r-lib/R6/issues/91'>#91</a>)</p></li>
 </ul>
 </div>
-    <div id="r6-2-1-2" class="section level1">
-<h1 class="page-header" data-toc-text="2.1.2">
-<a href="#r6-2-1-2" class="anchor"></a>R6 2.1.2<small> 2016-01-26 </small>
+    <div id="r6-212" class="section level1">
+<h1 class="page-header">
+<a href="#r6-212" class="anchor"></a>R6 2.1.2<small> 2016-01-26 </small>
 </h1>
 <ul>
 <li><p>Implemented <code>format.R6()</code> and <code>format.R6ClassGenerator</code>, the former calls a public <code>format</code> method if defined. This might change the functionality of existing classes that define a public <code>format</code> method intended for other purposes (<a href='https://github.com/r-lib/R6/issues/73'>#73</a>. Thanks to Kirill Müller)</p></li>
@@ -241,18 +248,18 @@
 <li><p>R6 objects and generators print out which class they inherit from. (<a href='https://github.com/r-lib/R6/issues/67'>#67</a>)</p></li>
 </ul>
 </div>
-    <div id="r6-2-1-1" class="section level1">
-<h1 class="page-header" data-toc-text="2.1.1">
-<a href="#r6-2-1-1" class="anchor"></a>R6 2.1.1<small> 2015-08-19 </small>
+    <div id="r6-211" class="section level1">
+<h1 class="page-header">
+<a href="#r6-211" class="anchor"></a>R6 2.1.1<small> 2015-08-19 </small>
 </h1>
 <ul>
 <li><p>Fixed a bug with printing R6 objects when a <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code> method is defined for the class. (<a href='https://github.com/r-lib/R6/issues/70'>#70</a>)</p></li>
 <li><p>Fixed cloning of objects that call a <code>super</code> method which accesses <code>private</code>. (<a href='https://github.com/r-lib/R6/issues/72'>#72</a>)</p></li>
 </ul>
 </div>
-    <div id="r6-2-1-0" class="section level1">
-<h1 class="page-header" data-toc-text="2.1.0">
-<a href="#r6-2-1-0" class="anchor"></a>R6 2.1.0<small> 2015-07-04 </small>
+    <div id="r6-210" class="section level1">
+<h1 class="page-header">
+<a href="#r6-210" class="anchor"></a>R6 2.1.0<small> 2015-07-04 </small>
 </h1>
 <ul>
 <li><p>Added support for making clones of R6 objects with a <code>clone()</code> method on R6 objects. The <code>deep=TRUE</code> option allows for making clones that have copies of fields with reference semantics (like other R6 objects). (<a href='https://github.com/r-lib/R6/issues/27'>#27</a>)</p></li>
@@ -263,18 +270,18 @@
 <li><p>Fixed printing of NULL fields.</p></li>
 </ul>
 </div>
-    <div id="r6-2-0-1" class="section level1">
-<h1 class="page-header" data-toc-text="2.0.1">
-<a href="#r6-2-0-1" class="anchor"></a>R6 2.0.1<small> 2014-10-29 </small>
+    <div id="r6-201" class="section level1">
+<h1 class="page-header">
+<a href="#r6-201" class="anchor"></a>R6 2.0.1<small> 2014-10-29 </small>
 </h1>
 <ul>
 <li><p>A superclass is validated on object instantation, not on class creation.</p></li>
 <li><p>Added <code>debug</code> and <code>undebug</code> methods to generator object.</p></li>
 </ul>
 </div>
-    <div id="r6-2-0" class="section level1">
-<h1 class="page-header" data-toc-text="2.0">
-<a href="#r6-2-0" class="anchor"></a>R6 2.0<small> 2014-08-19 </small>
+    <div id="r6-20" class="section level1">
+<h1 class="page-header">
+<a href="#r6-20" class="anchor"></a>R6 2.0<small> 2014-08-19 </small>
 </h1>
 <ul>
 <li><p>[BREAKING CHANGE] Added <code>portable</code> option, which allows inheritance across different package namespaces, and made it the default.</p></li>
@@ -286,18 +293,18 @@
 <li><p>The <code>print</code> method of R6 objects can be redefined. (Thanks to Gabor Csardi)</p></li>
 </ul>
 </div>
-    <div id="r6-1-0-1" class="section level1">
-<h1 class="page-header" data-toc-text="1.0.1">
-<a href="#r6-1-0-1" class="anchor"></a>R6 1.0.1<small> 2014-07-17 </small>
+    <div id="r6-101" class="section level1">
+<h1 class="page-header">
+<a href="#r6-101" class="anchor"></a>R6 1.0.1<small> 2014-07-17 </small>
 </h1>
 <ul>
 <li><p>First release on CRAN.</p></li>
 <li><p>Removed pryr from suggested packages.</p></li>
 </ul>
 </div>
-    <div id="r6-1-0" class="section level1">
-<h1 class="page-header" data-toc-text="1.0">
-<a href="#r6-1-0" class="anchor"></a>R6 1.0<small> Unreleased </small>
+    <div id="r6-10" class="section level1">
+<h1 class="page-header">
+<a href="#r6-10" class="anchor"></a>R6 1.0<small> Unreleased </small>
 </h1>
 <ul>
 <li>First release</li>
@@ -305,10 +312,28 @@
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <nav id="toc" data-toggle="toc" class="sticky-top">
-      <h2 data-toc-skip>Contents</h2>
-    </nav>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#r6-2509000">2.5.0.9000</a></li>
+        <li><a href="#r6-250">2.5.0</a></li>
+        <li><a href="#r6-241">2.4.1</a></li>
+        <li><a href="#r6-240">2.4.0</a></li>
+        <li><a href="#r6-230">2.3.0</a></li>
+        <li><a href="#r6-222">2.2.2</a></li>
+        <li><a href="#r6-221">2.2.1</a></li>
+        <li><a href="#r6-220">2.2.0</a></li>
+        <li><a href="#r6-213">2.1.3</a></li>
+        <li><a href="#r6-212">2.1.2</a></li>
+        <li><a href="#r6-211">2.1.1</a></li>
+        <li><a href="#r6-210">2.1.0</a></li>
+        <li><a href="#r6-201">2.0.1</a></li>
+        <li><a href="#r6-20">2.0</a></li>
+        <li><a href="#r6-101">1.0.1</a></li>
+        <li><a href="#r6-10">1.0</a></li>
+      </ul>
+    </div>
   </div>
 
 </div>
@@ -320,7 +345,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>
