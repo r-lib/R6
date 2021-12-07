@@ -111,7 +111,7 @@ R6 2.1.0
 R6 2.0.1
 ========
 
-* A superclass is validated on object instantation, not on class creation.
+* A superclass is validated on object instantiation, not on class creation.
 
 * Added `debug` and `undebug` methods to generator object.
 
