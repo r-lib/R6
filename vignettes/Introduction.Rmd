@@ -583,7 +583,7 @@ a$fn()
 #> [1] 100
 ```
 
-As of R6 2.5.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:
+As of R6 2.3.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:
 
 ```R
 b <- a$clone()
