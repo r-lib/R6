@@ -1,6 +1,13 @@
 R6 2.5.1.9000
 ========
 
+* The deprecated `lock` parameter has been removed.
+
+* `R6Class()` now prints a message when a `finalize` method is public instead of private.
+
+R6 2.5.1
+========
+
 * Removed unused packages from `Suggests` section in DESCRIPTION.
 
 R6 2.5.0
