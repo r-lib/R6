@@ -16,8 +16,7 @@ R6Class(
   portable = TRUE,
   lock_class = FALSE,
   cloneable = TRUE,
-  parent_env = parent.frame(),
-  lock
+  parent_env = parent.frame()
 )
 }
 \arguments{
@@ -59,8 +58,6 @@ have method named \code{$clone}, which makes a copy of the object.}
 
 \item{parent_env}{An environment to use as the parent of newly-created
 objects.}
-
-\item{lock}{Deprecated as of version 2.1; use \code{lock_class} instead.}
 }
 \description{
 R6 objects are essentially environments, structured in a way that makes them

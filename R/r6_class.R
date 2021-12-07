@@ -122,7 +122,6 @@
 #'   and change the locked state of the class.
 #' @param cloneable If \code{TRUE} (the default), the generated objects will
 #'   have method named \code{$clone}, which makes a copy of the object.
-#' @param lock Deprecated as of version 2.1; use \code{lock_class} instead.
 #' @examples
 #' # A queue ---------------------------------------------------------
 #' Queue <- R6Class("Queue",
@@ -470,7 +469,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
                                 inherit = NULL, lock_objects = TRUE,
                                 class = TRUE, portable = TRUE,
                                 lock_class = FALSE, cloneable = TRUE,
-                                parent_env = parent.frame(), lock) {
+                                parent_env = parent.frame()) {
 
   if (!all_named(public) || !all_named(private) || !all_named(active))
     stop("All elements of public, private, and active must be named.")
@@ -491,14 +490,6 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   if (length(get_nonfunctions(active)) != 0)
     stop("All items in active must be functions.")
-
-  if (!missing(lock)) {
-    message(paste0(
-      "R6Class ", classname, ": 'lock' argument has been renamed to 'lock_objects' as of version 2.1.",
-      "This code will continue to work, but the 'lock' option will be removed in a future version of R6."
-    ))
-    lock_objects <- lock
-  }
 
   # Create the generator object, which is an environment
   generator <- new.env(parent = capsule)
