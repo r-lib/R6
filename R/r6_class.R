@@ -495,7 +495,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (!missing(lock)) {
     message(paste0(
       "R6Class ", classname, ": 'lock' argument has been renamed to 'lock_objects' as of version 2.1.",
-      "This code will continue to work, but the 'lock' option will be removed in a later version of R6"
+      "This code will continue to work, but the 'lock' option will be removed in a future version of R6."
     ))
     lock_objects <- lock
   }
@@ -537,6 +537,16 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   attr(generator, "name") <- paste0(classname, "_generator")
   class(generator) <- "R6ClassGenerator"
+
+  # Print message; in a future version, this will be upgraded to a warning.
+  if ("finalize" %in% names(generator$public_methods)) {
+    message(
+      "R6Class ", classname,
+      ": finalize() method is public, but it should be private as of R6 2.4.0. ",
+      "This code will continue to work, but in a future version of R6, ",
+      "finalize() will be required to be private."
+    )
+  }
 
   generator
 })

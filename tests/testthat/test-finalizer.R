@@ -5,7 +5,7 @@ test_that("Finalizers are called, portable", {
   parenv <- new.env()
   parenv$peekaboo <- FALSE
   AC <- R6Class("AC",
-    public = list(finalize = function() peekaboo <<- TRUE),
+    private = list(finalize = function() peekaboo <<- TRUE),
     portable = TRUE,
     parent_env = parenv
   )
@@ -20,7 +20,7 @@ test_that("Finalizers are called, non-portable", {
   parenv <- new.env()
   parenv$peekaboo <- FALSE
   AC <- R6Class("AC",
-    public = list(finalize = function() peekaboo <<- TRUE),
+    private = list(finalize = function() peekaboo <<- TRUE),
     portable = FALSE,
     parent_env = parenv
   )
@@ -37,10 +37,10 @@ test_that("Finalizers have the right environment, portable", {
   AC <- R6Class(
     "AC",
     public = list(
-      finalize = function() { pub <<- self$mypub; priv <<- private$mypriv },
       mypub = TRUE
     ),
     private = list(
+      finalize = function() { pub <<- self$mypub; priv <<- private$mypriv },
       mypriv = TRUE
     ),
     portable = TRUE,
@@ -60,10 +60,10 @@ test_that("Finalizers have the right environment, non-portable #1", {
   AC <- R6Class(
     "AC",
     public = list(
-      finalize = function() { pub <<- self$mypub; priv <<- private$mypriv },
       mypub = TRUE
     ),
     private = list(
+      finalize = function() { pub <<- self$mypub; priv <<- private$mypriv },
       mypriv = TRUE
     ),
     portable = FALSE,
@@ -83,10 +83,10 @@ test_that("Finalizers have the right environment, non-portable #2", {
   AC <- R6Class(
     "AC",
     public = list(
-      finalize = function() { pub <<- mypub; priv <<- mypriv },
       mypub = TRUE
     ),
     private = list(
+      finalize = function() { pub <<- mypub; priv <<- mypriv },
       mypriv = TRUE
     ),
     portable = FALSE,
@@ -104,7 +104,7 @@ test_that("Finalizers are inherited, portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() print("An AC was just deleted")
     )
   )
@@ -123,7 +123,7 @@ test_that("Children can override finalizers, portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted")
     )
   )
@@ -131,7 +131,7 @@ test_that("Children can override finalizers, portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() cat("A BC was just deleted")
     )
   )
@@ -146,7 +146,7 @@ test_that("Children can call finalizers in the parent, portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted\n")
     )
   )
@@ -154,7 +154,7 @@ test_that("Children can call finalizers in the parent, portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A BC was just deleted\n")
@@ -173,7 +173,7 @@ test_that("Children can call finalizers in the parent, portable", {
 test_that("Finalizers and two levels of inheritance, portable", {
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted\n")
     )
   )
@@ -181,7 +181,7 @@ test_that("Finalizers and two levels of inheritance, portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A BC was just deleted\n")
@@ -192,7 +192,7 @@ test_that("Finalizers and two levels of inheritance, portable", {
   CC <- R6Class(
     "CC",
     inherit = BC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A CC was just deleted\n")
@@ -212,7 +212,7 @@ test_that("Finalizers are inherited, non-portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() print("An AC was just deleted")
     ),
     portable = FALSE
@@ -233,7 +233,7 @@ test_that("Children can override finalizers, non-portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted")
     ),
     portable = FALSE
@@ -242,7 +242,7 @@ test_that("Children can override finalizers, non-portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() cat("A BC was just deleted")
     ),
     portable = FALSE
@@ -258,7 +258,7 @@ test_that("Children can call finalizers in the parent, non-portable", {
 
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted\n")
     ),
     portable = FALSE
@@ -267,7 +267,7 @@ test_that("Children can call finalizers in the parent, non-portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A BC was just deleted\n")
@@ -287,7 +287,7 @@ test_that("Children can call finalizers in the parent, non-portable", {
 test_that("Finalizers and two levels of inheritance, portable", {
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted\n")
     )
   )
@@ -295,7 +295,7 @@ test_that("Finalizers and two levels of inheritance, portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A BC was just deleted\n")
@@ -306,7 +306,7 @@ test_that("Finalizers and two levels of inheritance, portable", {
   CC <- R6Class(
     "CC",
     inherit = BC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A CC was just deleted\n")
@@ -324,7 +324,7 @@ test_that("Finalizers and two levels of inheritance, portable", {
 test_that("Finalizers and two levels of inheritance, non-portable", {
   AC <- R6Class(
     "AC",
-    public = list(
+    private = list(
       finalize = function() cat("An AC was just deleted\n")
     ),
     portable = FALSE
@@ -333,7 +333,7 @@ test_that("Finalizers and two levels of inheritance, non-portable", {
   BC <- R6Class(
     "BC",
     inherit = AC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A BC was just deleted\n")
@@ -345,7 +345,7 @@ test_that("Finalizers and two levels of inheritance, non-portable", {
   CC <- R6Class(
     "CC",
     inherit = BC,
-    public = list(
+    private = list(
       finalize = function() {
         super$finalize()
         cat("A CC was just deleted\n")
@@ -370,7 +370,9 @@ test_that("Finalizer method does not prevent GC of objects passed to initialize"
     public = list(
       initialize = function(x) {
         force(x) # Need to eval x
-      },
+      }
+    ),
+    private = list(
       finalize = function(e) {
         a_gc <<- a_gc + 1
       }
@@ -418,19 +420,13 @@ test_that("Finalizer method does not prevent GC of objects passed to initialize"
 })
 
 
-test_that("Private finalizers work", {
-  sum <- 0
-  C1 <- R6Class("C1",
-    public = list(
-      x = 1
-    ),
-    private = list(
-      finalize = function() sum <<- sum + self$x
+test_that("Public finalizers emit message", {
+  expect_message(
+    R6Class("C1",
+      public = list(
+        x = 1,
+        finalize = function() NULL
+      )
     )
   )
-
-  a <- C1$new()
-  rm(a)
-  gc()
-  expect_identical(sum, 1)
 })
