@@ -207,7 +207,7 @@ This scenario is entirely possible when installing packages from CRAN. It is ver
 
 If this problem happens, the remedy is to rebuild pkgB against pkgA 2.0. I don't know if CRAN rebuilds all downstream dependencies when a package is updated. If it doesn't, then it's possible for CRAN to have incompatible binary builds of pkgA and pkgB, and users would then have to install pkgB from source, with `install.packages("pkgB", type = "source")`.
 
-To avoid this problem entirely, objects of `ClassB` must not be instantiated at build time. You can either instantiate them only in functions or at package load time, by adding an `.onLoad` function to your package. For example:
+To avoid this problem entirely, objects of `ClassB` must not be instantiated at build time. You can either (A) instantiate them only in functions, or (B) instantiate them at package load time, by adding an `.onLoad` function to your package. For example:
 
 
 ```{r eval=FALSE}
