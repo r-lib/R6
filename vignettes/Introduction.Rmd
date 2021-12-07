@@ -50,7 +50,7 @@ Person <- R6Class("Person",
 )
 ```
 
-To instantiate an object of this class, use `$new()` method:
+To instantiate an object of this class, use `$new()`:
 
 ```{r}
 ann <- Person$new("Ann", "black")
