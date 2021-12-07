@@ -3,7 +3,7 @@ title: "Introduction"
 ---
 
 ```{r echo = FALSE}
-library(pryr)
+library(lobstr)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
@@ -382,21 +382,20 @@ NonCloneable <- R6Class("NonCloneable", cloneable = FALSE)
 c1 <- Cloneable$new()
 c2 <- Cloneable$new()
 # Bytes for each new cloneable object
-cloneable_delta <- object_size(c1, c2) - object_size(c2)
+cloneable_delta <- obj_size(c1, c2) - obj_size(c2)
 
 nc1 <- NonCloneable$new()
 nc2 <- NonCloneable$new()
 # Bytes for each new noncloneable object
-noncloneable_delta <- object_size(nc1, nc2) - object_size(nc2)
+noncloneable_delta <- obj_size(nc1, nc2) - obj_size(nc2)
 
 # Number of bytes used by each copy of clone method
 additional_clone_method_bytes <- cloneable_delta - noncloneable_delta
-additional_clone_method_bytes_str <- capture.output(print(additional_clone_method_bytes))
+additional_clone_method_bytes
 
 # Number of bytes used by first copy of a clone method
-first_clone_method_bytes <- object_size(c1) - object_size(nc1)
-# Need some trickery to get the nice output from pryr::print.bytes
-first_clone_method_bytes_str <- capture.output(print(first_clone_method_bytes))
+first_clone_method_bytes <- obj_size(c1) - obj_size(nc1)
+first_clone_method_bytes
 ```
 
 If you don't want a `clone` method to be added, you can use `cloneable=FALSE` when creating the class. If any loaded R6 object has a `clone` method, that function uses `r first_clone_method_bytes_str`, but for each additional object, the `clone` method costs a trivial amount of space (`r additional_clone_method_bytes` bytes).
