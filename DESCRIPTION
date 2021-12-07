@@ -1,6 +1,6 @@
 Package: R6
 Title: Encapsulated Classes with Reference Semantics
-Version: 2.5.0.9001
+Version: 2.5.1
 Authors@R: person("Winston", "Chang", role = c("aut", "cre"), email = "winston@stdout.org")
 Description: Creates classes with reference semantics, similar to R's built-in
     reference classes. Compared to reference classes, R6 classes are simpler
