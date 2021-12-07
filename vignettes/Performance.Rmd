@@ -47,7 +47,7 @@ First we'll load some packages which will be used below:
 ```{r eval = FALSE}
 library(microbenchmark)
 options(microbenchmark.unit = "us")
-library(pryr)  # For object_size function
+library(lobstr)  # For obj_size function
 library(R6)
 ```
 
@@ -59,7 +59,7 @@ if (requireNamespace("microbenchmark", quietly = TRUE)) {
   library(microbenchmark)
 }
 options(microbenchmark.unit = "us")
-library(pryr)  # For object_size function
+library(lobstr)  # For obj_size function
 library(R6)
 ```
 
@@ -310,7 +310,7 @@ For all the timings using `microbenchmark()`, the results are reported in micros
 obj_size <- function(expr, .env = parent.frame()) {
   size_n <- function(n = 1) {
     objs <- lapply(1:n, function(x) eval(expr, .env))
-    as.numeric(do.call(object_size, objs))
+    as.numeric(do.call(obj_size, objs))
   }
 
   data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
@@ -402,7 +402,7 @@ RC2 <- setRefClass("RC2",
 )
 
 # Calcualte the size of a new RC2 object, over and above an RC object
-as.numeric(object_size(RC$new(), RC2$new()) - object_size(RC$new()))
+as.numeric(obj_size(RC$new(), RC2$new()) - obj_size(RC$new()))
 ```
 
 ## Object instantiation speed
@@ -748,7 +748,7 @@ Appendix
 obj_size <- function(expr, .env = parent.frame()) {
   size_n <- function(n = 1) {
     objs <- lapply(1:n, function(x) eval(expr, .env))
-    as.numeric(do.call(object_size, objs))
+    as.numeric(do.call(obj_size, objs))
   }
 
   data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))

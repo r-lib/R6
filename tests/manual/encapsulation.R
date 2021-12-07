@@ -1,4 +1,4 @@
-library(pryr)
+library(lobstr)
 library(testthat)
 library(inline)
 

@@ -392,8 +392,8 @@ test_that("Inheritance is dynamic", {
 
   # BC doesn't contain AC, and it has less stuff in it, so it should be smaller
   # than AC.
-  if (requireNamespace("pryr", quietly = TRUE)) {
-    expect_true(pryr::object_size(BC) < pryr::object_size(AC))
+  if (requireNamespace("lobstr", quietly = TRUE)) {
+    expect_true(lobstr::obj_size(BC) < lobstr::obj_size(AC))
   }
 })
 
