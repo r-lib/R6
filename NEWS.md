@@ -1,4 +1,4 @@
-R6 2.5.1
+R6 2.5.1.9000
 ========
 
 * Removed unused packages from `Suggests` section in DESCRIPTION.
