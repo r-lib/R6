@@ -1,9 +1,0 @@
-pandoc: 2.11.4
-pkgdown: 1.4.1
-pkgdown_sha: ~
-articles:
-  Debugging: Debugging.html
-  Introduction: Introduction.html
-  Performance: Performance.html
-  Portable: Portable.html
-
