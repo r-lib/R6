@@ -391,14 +391,14 @@ noncloneable_delta <- obj_size(nc1, nc2) - obj_size(nc2)
 
 # Number of bytes used by each copy of clone method
 additional_clone_method_bytes <- cloneable_delta - noncloneable_delta
-additional_clone_method_bytes
+additional_clone_method_bytes_str <- format(additional_clone_method_bytes, big.mark = ",", scientific = FALSE)
 
 # Number of bytes used by first copy of a clone method
 first_clone_method_bytes <- obj_size(c1) - obj_size(nc1)
-first_clone_method_bytes
+first_clone_method_bytes_str <- format(first_clone_method_bytes, big.mark = ",", scientific = FALSE)
 ```
 
-If you don't want a `clone` method to be added, you can use `cloneable=FALSE` when creating the class. If any loaded R6 object has a `clone` method, that function uses `r first_clone_method_bytes_str`, but for each additional object, the `clone` method costs a trivial amount of space (`r additional_clone_method_bytes` bytes).
+If you don't want a `clone` method to be added, you can use `cloneable=FALSE` when creating the class. If any loaded R6 object has a `clone` method, that function uses `r first_clone_method_bytes_str` bytes, but for each additional object, the `clone` method costs a trivial amount of space (`r additional_clone_method_bytes_str` bytes).
 
 
 #### Deep cloning

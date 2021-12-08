@@ -10,3 +10,5 @@
 ^appveyor\.yml$
 ^\.github$
 ^vignettes$
+^pkgdown$
+^codecov\.yml$

@@ -310,7 +310,7 @@ For all the timings using `microbenchmark()`, the results are reported in micros
 obj_size <- function(expr, .env = parent.frame()) {
   size_n <- function(n = 1) {
     objs <- lapply(1:n, function(x) eval(expr, .env))
-    as.numeric(do.call(obj_size, objs))
+    as.numeric(do.call(lobstr::obj_size, objs))
   }
 
   data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
@@ -748,7 +748,7 @@ Appendix
 obj_size <- function(expr, .env = parent.frame()) {
   size_n <- function(n = 1) {
     objs <- lapply(1:n, function(x) eval(expr, .env))
-    as.numeric(do.call(obj_size, objs))
+    as.numeric(do.call(lobstr::obj_size, objs))
   }
 
   data.frame(one = size_n(1), incremental = size_n(2) - size_n(1))
