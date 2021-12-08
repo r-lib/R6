@@ -18,4 +18,6 @@ URL: https://r6.r-lib.org, https://github.com/r-lib/R6/
 BugReports: https://github.com/r-lib/R6/issues
 RoxygenNote: 7.1.2
 Config/Needs/website:
-    microbenchmark
+    ggplot2,
+    microbenchmark,
+    scales
