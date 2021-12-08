@@ -1,4 +1,4 @@
-R6: Encapsulated object-oriented programming for R <img src='/man/figures/logo.png' align="right" height="138.5" />
+R6: Encapsulated object-oriented programming for R <img src='man/figures/logo.png' align="right" height="138.5" />
 ==================================================
 
   <!-- badges: start -->
