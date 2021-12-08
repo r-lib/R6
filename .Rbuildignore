@@ -11,3 +11,4 @@
 ^\.github$
 ^vignettes$
 ^pkgdown$
+^codecov\.yml$
