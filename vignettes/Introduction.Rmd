@@ -7,11 +7,11 @@ library(lobstr)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R's reference classes, but it is more efficient and doesn't depend on S4 classes and the methods package.
+The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R's reference classes, but it is more efficient and doesn't depend on S4 classes and the *methods* package.
 
 ## R6 classes
 
-R6 classes are similar to R's reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R's reference classes are based on S4). For more information about speed and memory footprint, see the Performance article.
+R6 classes are similar to R's reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R's reference classes are based on S4). For more information about speed and memory footprint, see `vignette("Performance")`.
 
 Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:
 
@@ -59,7 +59,7 @@ ann
 
 The `$new()` method creates the object and calls the `initialize()` method, if it exists.
 
-Inside methods of the class, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`.
+Inside class methods, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`.
 
 Once the object is instantiated, you can access values and methods with `$`:
 
@@ -70,7 +70,7 @@ ann$set_hair("red")
 ann$hair
 ```
 
-Implementation note: The external face of an R6 object is basically an environment with the public members in it. This is also known as the *public environment*. An R6 object's methods have a separate *enclosing environment* which, roughly speaking, is the environment they "run in". This is where `self` binding is found, and it is simply a reference back to public environment.
+Implementation note: The external face of an R6 object is basically an environment with the public members in it. This is also known as the *public environment*. An R6 object's methods have a separate *enclosing environment* which, roughly speaking, is the environment they "run in". This is where `self` binding is found, and it is simply a reference back to the public environment.
 
 ### Private members
 
@@ -254,7 +254,7 @@ cq$get_total()
 
 ### Fields containing reference objects
 
-If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, and environments), those fields should be populated in the `initialize` method. If the field set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here's an example:
+If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the `initialize` method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here's an example:
 
 ```{r}
 SimpleClass <- R6Class("SimpleClass",
@@ -403,7 +403,7 @@ If you don't want a `clone` method to be added, you can use `cloneable=FALSE` wh
 
 #### Deep cloning
 
-If there are any fields which are objects with reference sematics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
+If there are any fields which are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
 
 For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because the original's and the clone's `s` fields both refer to the same object, modifying it from one results in a change that is reflect in the other.
 
@@ -443,7 +443,7 @@ The default behavior of `clone(deep=TRUE)` is to copy fields which are R6 object
 
 If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named `deep_clone`. Below is an example of an R6 object with two fields, `a` and `b`, both of which which are environments, and both of which contain a value `x`. It also has a field `v` which is a regular (non-reference) value, and a private `deep_clone` method.
 
-The `deep_clone` method is be called once for each field. It is passed the name and value of the field, and the value it returns is be used in the clone.
+The `deep_clone` method is called once for each field. It is passed the name and value of the field, and the value it returns is used in the clone.
 
 ```{r}
 CloneEnv <- R6Class("CloneEnv",
