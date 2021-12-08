@@ -1,5 +1,8 @@
 url: https://r6.r-lib.org/
 
+# development:
+#   mode: auto
+
 template:
   params:
     ganalytics: UA-115082821-1
