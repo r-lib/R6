@@ -19,6 +19,7 @@ Depends:
 Suggests:
     lobstr,
     testthat
-Config/Needs/website: ggplot2, microbenchmark, scales
+Config/Needs/website: tidyverse/tidytemplate, ggplot2, microbenchmark,
+    scales
 Encoding: UTF-8
 RoxygenNote: 7.1.2
