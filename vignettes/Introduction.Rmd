@@ -267,7 +267,7 @@ myMallard$quack()
 
 ### Fields containing reference objects
 
-If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the `initialize` method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of that R6 class. 
+If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the `$initialize()` method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of that R6 class. 
 
 Here's an example:
 
@@ -420,7 +420,7 @@ If you don't want a `clone` method to be added, you can use `cloneable=FALSE` wh
 
 If there are any fields that are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
 
-For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because both the original and the clone object's `s` field refers to the same object, and modifying it from one results in a change that is reflected in the other.
+For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because both the original and the clone object's `s` field refers to the same object, modifying it from one results in a change that is reflected in the other.
 
 ```{r}
 Simple <- R6Class("Simple", public = list(x = 1))
@@ -580,7 +580,7 @@ obj <- A$new()
 rm(obj); gc()
 ```
 
-**NOTE:** In R6 version 2.3.0 (released 2018-10-04) and below, the `finalize` method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there's no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to `R6 (>= 2.4.0)`. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.
+**NOTE:** In R6 version 2.3.0 (released 2018-10-04) and below, the `$finalize()` method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there's no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to `R6 (>= 2.4.0)`. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.
 
 Finalizers are implemented using the `reg.finalizer()` function, and they set `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.
 
