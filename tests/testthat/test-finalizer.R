@@ -1,6 +1,3 @@
-# context("finalizer")
-
-
 test_that("Finalizers are called, portable", {
   parenv <- new.env()
   parenv$peekaboo <- FALSE

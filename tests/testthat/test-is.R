@@ -1,5 +1,3 @@
-# context("is R6 object or generator")
-
 test_that("Checking R6 class objects are recognized correctly by `is.R6()`", {
   Person <- R6Class("Person")
   Bob <- Person$new()

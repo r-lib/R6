@@ -1,5 +1,3 @@
-# context("as.list")
-
 test_that("list of public members is generated as expected by as.list.R6 method", {
   Person <- R6Class("Person",
     public = list(
