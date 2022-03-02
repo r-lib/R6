@@ -1,4 +1,4 @@
-context("S3 methods")
+# context("S3 methods")
 
 test_that("`$` and `[[` methods don't interfere with R6 operations", {
   # Make sure that these method aren't used anywhere in internal R6 code

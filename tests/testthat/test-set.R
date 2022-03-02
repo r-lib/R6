@@ -1,4 +1,4 @@
-context("set")
+# context("set")
 
 test_that("Setting values set values on generator", {
   AC <- R6Class("AC",

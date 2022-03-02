@@ -1,4 +1,4 @@
-context("clone")
+# context("clone")
 
 test_that("Can't use reserved name 'clone'", {
   expect_error(R6Class("AC", public = list(clone = function() NULL)))

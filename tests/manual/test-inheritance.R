@@ -1,5 +1,5 @@
 library(testthat)
-context("Inheritance across packages")
+# context("Inheritance across packages")
 
 ## Helper functions to create a new package, with some
 ## R code, and install it temporarily

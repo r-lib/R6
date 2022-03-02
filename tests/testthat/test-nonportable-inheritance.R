@@ -1,4 +1,4 @@
-context("nonportable-inheritance")
+# context("nonportable-inheritance")
 
 test_that("Inheritance", {
   AC <- R6Class("AC",

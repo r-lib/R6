@@ -1,4 +1,4 @@
-context("finalizer")
+# context("finalizer")
 
 
 test_that("Finalizers are called, portable", {
