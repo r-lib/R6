@@ -1,8 +1,12 @@
 url: https://r6.r-lib.org/
 
-# development:
-#   mode: auto
-
 template:
-  params:
-    ganalytics: UA-115082821-1
+  package: tidytemplate
+  bootstrap: 5
+
+  includes:
+    in_header: |
+      <script defer data-domain="r6.r-lib.org,all.tidyverse.org" src="https://plausible.io/js/plausible.js"></script>
+
+development:
+  mode: auto
