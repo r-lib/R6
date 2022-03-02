@@ -19,7 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Introduction">
 <meta property="og:description" content="R6">
-<meta property="og:image" content="https://r6.r-lib.org/logo.svg">
+<meta property="og:image" content="/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -46,7 +46,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">R6</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
 
       
 
-      </header><script src="Introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction</h1>
@@ -110,11 +110,11 @@
 
     
     
-<p>The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R’s reference classes, but it is more efficient and doesn’t depend on S4 classes and the <em>methods</em> package.</p>
+<p>The R6 package provides an implementation of encapsulated object-oriented programming for R (also sometimes referred to as classical object-oriented programming). It is similar to R’s reference classes, but it is more efficient and doesn’t depend on S4 classes and the methods package.</p>
 <div class="section level2">
 <h2 id="r6-classes">R6 classes<a class="anchor" aria-label="anchor" href="#r6-classes"></a>
 </h2>
-<p>R6 classes are similar to R’s reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R’s reference classes are based on S4). For more information about speed and memory footprint, see <code><a href="../articles/Performance.html">vignette("Performance")</a></code>.</p>
+<p>R6 classes are similar to R’s reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R’s reference classes are based on S4). For more information about speed and memory footprint, see the Performance article.</p>
 <p>Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:</p>
 <ul>
 <li>public and private methods</li>
@@ -128,7 +128,7 @@
 </h3>
 <p>Here’s how to create a simple R6 class. The <code>public</code> argument is a list of items, which can be functions and fields (non-functions). Functions will be used as methods.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r6.r-lib.org">R6</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r6.r-lib.org" class="external-link">R6</a></span><span class="op">)</span>
 
 <span class="va">Person</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Person"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
@@ -161,7 +161,7 @@
 <span class="co">#&gt;     name: Ann</span>
 <span class="co">#&gt;     set_hair: function (val)</span></code></pre></div>
 <p>The <code>$new()</code> method creates the object and calls the <code>initialize()</code> method, if it exists.</p>
-<p>Inside class methods, <code>self</code> refers to the object. Public members of the object (all you’ve seen so far) are accessed with <code>self$x</code>, and assignment is done with <code>self$x &lt;- y</code>.</p>
+<p>Inside methods of the class, <code>self</code> refers to the object. Public members of the object (all you’ve seen so far) are accessed with <code>self$x</code>, and assignment is done with <code>self$x &lt;- y</code>.</p>
 <p>Once the object is instantiated, you can access values and methods with <code>$</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ann</span><span class="op">$</span><span class="va">hair</span>
@@ -171,7 +171,7 @@
 <span class="va">ann</span><span class="op">$</span><span class="fu">set_hair</span><span class="op">(</span><span class="st">"red"</span><span class="op">)</span>
 <span class="va">ann</span><span class="op">$</span><span class="va">hair</span>
 <span class="co">#&gt; [1] "red"</span></code></pre></div>
-<p>Implementation note: The external face of an R6 object is basically an environment with the public members in it. This is also known as the <em>public environment</em>. An R6 object’s methods have a separate <em>enclosing environment</em> which, roughly speaking, is the environment they “run in”. This is where <code>self</code> binding is found, and it is simply a reference back to the public environment.</p>
+<p>Implementation note: The external face of an R6 object is basically an environment with the public members in it. This is also known as the <em>public environment</em>. An R6 object’s methods have a separate <em>enclosing environment</em> which, roughly speaking, is the environment they “run in”. This is where <code>self</code> binding is found, and it is simply a reference back to public environment.</p>
 </div>
 <div class="section level3">
 <h3 id="private-members">Private members<a class="anchor" aria-label="anchor" href="#private-members"></a>
@@ -347,7 +347,7 @@
 <div class="section level3">
 <h3 id="fields-containing-reference-objects">Fields containing reference objects<a class="anchor" aria-label="anchor" href="#fields-containing-reference-objects"></a>
 </h3>
-<p>If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the <code>initialize</code> method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here’s an example:</p>
+<p>If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, and environments), those fields should be populated in the <code>initialize</code> method. If the field set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here’s an example:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">SimpleClass</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"SimpleClass"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
@@ -461,11 +461,11 @@
 <span class="co"># Original is unaffected by changes to the clone</span>
 <span class="va">s</span><span class="op">$</span><span class="fu">getx</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] 1</span></code></pre></div>
-<p>If you don’t want a <code>clone</code> method to be added, you can use <code>cloneable=FALSE</code> when creating the class. If any loaded R6 object has a <code>clone</code> method, that function uses 83,552 bytes, but for each additional object, the <code>clone</code> method costs a trivial amount of space (112 bytes).</p>
+<p>If you don’t want a <code>clone</code> method to be added, you can use <code>cloneable=FALSE</code> when creating the class. If any loaded R6 object has a <code>clone</code> method, that function uses 83,552 B, but for each additional object, the <code>clone</code> method costs a trivial amount of space (112 bytes).</p>
 <div class="section level4">
 <h4 id="deep-cloning">Deep cloning<a class="anchor" aria-label="anchor" href="#deep-cloning"></a>
 </h4>
-<p>If there are any fields which are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.</p>
+<p>If there are any fields which are objects with reference sematics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.</p>
 <p>For example, we’ll create an object <code>c1</code> which contains another R6 object, <code>s</code>, and then clone it. Because the original’s and the clone’s <code>s</code> fields both refer to the same object, modifying it from one results in a change that is reflect in the other.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Simple</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Simple"</span>, public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
@@ -498,7 +498,7 @@
 <span class="co">#&gt; [1] 2</span></code></pre></div>
 <p>The default behavior of <code>clone(deep=TRUE)</code> is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).</p>
 <p>If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named <code>deep_clone</code>. Below is an example of an R6 object with two fields, <code>a</code> and <code>b</code>, both of which which are environments, and both of which contain a value <code>x</code>. It also has a field <code>v</code> which is a regular (non-reference) value, and a private <code>deep_clone</code> method.</p>
-<p>The <code>deep_clone</code> method is called once for each field. It is passed the name and value of the field, and the value it returns is used in the clone.</p>
+<p>The <code>deep_clone</code> method is be called once for each field. It is passed the name and value of the field, and the value it returns is be used in the clone.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">CloneEnv</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"CloneEnv"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
@@ -587,9 +587,9 @@
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Finalizer has been called!"</span>
 <span class="co">#&gt;           used (Mb) gc trigger (Mb) max used (Mb)</span>
-<span class="co">#&gt; Ncells  678820 36.3    1349101 72.1  1349101 72.1</span>
-<span class="co">#&gt; Vcells 1273761  9.8    8388608 64.0  3247078 24.8</span></code></pre></div>
-<p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>finalize</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally it will no longer support public finalizers.</p>
+<span class="co">#&gt; Ncells  711088 38.0    1412951 75.5  1412951 75.5</span>
+<span class="co">#&gt; Vcells 1321387 10.1    8388608 64.0  3298741 25.2</span></code></pre></div>
+<p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>finalize</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In future versions, R6 will emit a message if a finalizer is public; later, it will emit warnings, and finally it will no longer support public finalizers.</p>
 <p>Finalizers are implemented using the <code><a href="https://rdrr.io/r/base/reg.finalizer.html" class="external-link">reg.finalizer()</a></code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 <div class="section level3">
@@ -660,7 +660,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
