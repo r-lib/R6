@@ -179,6 +179,8 @@ n$x
 If the function takes no arguments, it's not possible to use it with `<-`:
 
 ```{r error=TRUE}
+set.seed(123) # for reproducibility
+
 n$rand
 n$rand
 n$rand <- 3
