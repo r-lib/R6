@@ -120,9 +120,11 @@ q$remove()
 
 However, private members can't be accessed directly:
 
-```{r, error=TRUE}
+```{r eval = FALSE}
 q$queue
+#> NULL
 q$length()
+#> Error: attempt to apply non-function
 ```
 
 A useful design pattern is for methods to return `self` (invisibly) when possible, because it makes them chainable. For example, the `add()` method returns `self` so you can chain them together:
@@ -178,12 +180,13 @@ n$x
 
 If the function takes no arguments, it's not possible to use it with `<-`:
 
-```{r error=TRUE}
-set.seed(123) # for reproducibility
-
+```{r eval=FALSE}
 n$rand
+#> [1] 0.2648
 n$rand
+#> [1] 2.171
 n$rand <- 3
+#> Error: unused argument (quote(3))
 ```
 
 Implementation note: Active bindings are bound in the public environment. The enclosing environment for these functions is also the public environment.
