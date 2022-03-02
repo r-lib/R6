@@ -5,4 +5,5 @@
 *.sublime-workspace
 src/*.so
 src/*.o
-docs
+docs/
+`
