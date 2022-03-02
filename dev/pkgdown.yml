@@ -1,4 +1,4 @@
-pandoc: 2.14.2
+pandoc: 2.7.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
@@ -6,7 +6,7 @@ articles:
   Introduction: Introduction.html
   Performance: Performance.html
   Portable: Portable.html
-last_built: 2022-03-02T01:28Z
+last_built: 2022-03-02T02:02Z
 urls:
   reference: https://r6.r-lib.org/reference
   article: https://r6.r-lib.org/articles
