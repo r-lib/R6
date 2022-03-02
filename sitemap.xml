@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://r6.r-lib.org/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://r6.r-lib.org/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/articles/Debugging.html</loc>
+    <loc>https://r6.r-lib.org/articles/Debugging.html</loc>
   </url>
   <url>
-    <loc>/articles/Introduction.html</loc>
+    <loc>https://r6.r-lib.org/articles/Introduction.html</loc>
   </url>
   <url>
-    <loc>/articles/Performance.html</loc>
+    <loc>https://r6.r-lib.org/articles/Performance.html</loc>
   </url>
   <url>
-    <loc>/articles/Portable.html</loc>
+    <loc>https://r6.r-lib.org/articles/Portable.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://r6.r-lib.org/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://r6.r-lib.org/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://r6.r-lib.org/index.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>https://r6.r-lib.org/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/R6Class.html</loc>
+    <loc>https://r6.r-lib.org/reference/R6Class.html</loc>
   </url>
   <url>
-    <loc>/reference/as.list.R6.html</loc>
+    <loc>https://r6.r-lib.org/reference/as.list.R6.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://r6.r-lib.org/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/is.R6.html</loc>
+    <loc>https://r6.r-lib.org/reference/is.R6.html</loc>
   </url>
 </urlset>
