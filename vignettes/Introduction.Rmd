@@ -253,7 +253,7 @@ cq$get_total()
 
 Note that, unlike classical OOP in other languages (e.g. C++), R6 subclasses also have access to the private methods in superclass.
 
-For instance, in the following example, the `Duck` class has a private method `$quack()`, but its subcalss `Mallard` can access it using `super$quack()`.
+For instance, in the following example, the `Duck` class has a private method `$quack()`, but its subclass `Mallard` can access it using `super$quack()`.
 
 ```{r}
 Duck <- R6Class("Duck",
@@ -552,7 +552,7 @@ Creature <- R6Class("Creature",
 )
 ```
 
-Now, the sublass will respect `cloneable` property in the subclass:
+The subclass will now respect `cloneable` property of the subclass:
 
 ```{r}
 Human <- R6Class("Human",
