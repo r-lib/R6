@@ -518,17 +518,16 @@ In the example `deep_clone` method above, we checked the name of each field to d
 
 #### Cloning inheritance
 
-If a given R6 class is a subclass, the specified cloning behavior in this subclass will be overridden by that in the superclass.
+If a given R6 class is a subclass, its cloning behavior will be contingent on the cloning behavior of its superclass. Specifically, there are two possibilities:
 
-For example, let's create R6 class called `Creature`. Instances of this class can be cloned by setting `cloneable=TRUE`.
+1. If the superclass has `cloneable = TRUE`, no matter what subclass has set for `cloneable`, cloning will always work.
+
+For example, let's create R6 class called `Creature` with `cloneable` set to `TRUE`.
 
 ```{r}
 Creature <- R6Class("Creature",
   cloneable = TRUE
 )
-
-# cloning for class objects possible
-Creature$new()$clone()
 ```
 
 If we now create R6 subclass `Human` that inherits from `Creature` class, even if we set `cloneable=FALSE`, cloning instances of this subclass will still be possible because the superclass allows cloning:
@@ -541,6 +540,37 @@ Human <- R6Class("Human",
 
 # cloning still possible even when `cloneable` is set to `FALSE`
 Human$new()$clone()
+```
+
+2. If the superclass has `cloneable = FALSE`, the `cloneable` property of the subclass will be respected.
+
+Let's use the same example as before but set `cloneable` to `FALSE` this time.
+
+```{r}
+Creature <- R6Class("Creature",
+  cloneable = FALSE
+)
+```
+
+Now, the sublass will respect `cloneable` property in the subclass:
+
+```{r}
+Human <- R6Class("Human",
+  inherit = Creature,
+  cloneable = TRUE
+)
+
+Human$new()$clone()
+```
+
+```{r, eval=FALSE}
+Human <- R6Class("Human",
+  inherit = Creature,
+  cloneable = FALSE
+)
+
+Human$new()$clone()
+#> Error: attempt to apply non-function
 ```
 
 ### Printing R6 objects to the screen
