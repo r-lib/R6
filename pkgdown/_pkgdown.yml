@@ -12,7 +12,7 @@ development:
   mode: auto
 
 articles:
-- title: Working with R6
+- title: ~
   navbar: ~
   contents:
     - Introduction
