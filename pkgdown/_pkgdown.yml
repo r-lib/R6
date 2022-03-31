@@ -10,3 +10,12 @@ template:
 
 development:
   mode: auto
+
+articles:
+- title: Working with R6
+  navbar: ~
+  contents:
+    - Introduction
+    - Portable
+    - Debugging
+    - Performance
