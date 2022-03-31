@@ -520,7 +520,7 @@ In the example `deep_clone` method above, we checked the name of each field to d
 
 If a given R6 class is a subclass, its cloning behavior will be contingent on the cloning behavior of its superclass. Specifically, there are two possibilities:
 
-1. If the superclass has `cloneable = TRUE`, no matter what subclass has set for `cloneable`, cloning will always work.
+1. If the superclass has `cloneable=TRUE`, no matter what subclass has set for `cloneable`, cloning will always work.
 
 For example, let's create R6 class called `Creature` with `cloneable` set to `TRUE`.
 
