@@ -11,7 +11,7 @@ The R6 package provides an implementation of encapsulated object-oriented progra
 
 ## R6 classes
 
-R6 classes are similar to R's reference classes but are smaller in size, and avoid some issues that come along with using S4 (R's reference classes are based on S4). For more information about speed and memory footprint, see `vignette("Performance")`.
+R6 classes are similar to R's reference classes, but are lighter weight, and avoid some issues that come along with using S4 (R's reference classes are based on S4). For more information about speed and memory footprint, see `vignette("Performance")`.
 
 Unlike many objects in R, instances (objects) of R6 classes have reference semantics. R6 classes also support:
 
@@ -423,9 +423,9 @@ If you don't want a `clone` method to be added, you can use `cloneable=FALSE` wh
 
 #### Deep cloning
 
-If there are any fields that are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
+If there are any fields which are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
 
-For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because both the original and the clone object's `s` field refers to the same object, modifying it from one results in a change that is reflected in the other.
+For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because the original's and the clone's `s` fields both refer to the same object, modifying it from one results in a change that is reflected in the other.
 
 ```{r}
 Simple <- R6Class("Simple", public = list(x = 1))
@@ -447,7 +447,7 @@ c1$s$x <- 2
 c2$s$x
 ```
 
-To make sure that the clone receives a *copy* of `s`, we can use the `deep=TRUE` option:
+To make it so the clone receives a *copy* of `s`, we can use the `deep=TRUE` option:
 
 ```{r}
 c3 <- c1$clone(deep = TRUE)
@@ -459,7 +459,7 @@ c1$s$x <- 3
 c3$s$x
 ```
 
-The default behavior of `$clone(deep=TRUE)` is to copy fields that are R6 objects, but not to copy fields that are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).
+The default behavior of `$clone(deep=TRUE)` is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).
 
 If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named `deep_clone`. Below is an example of an R6 object with two fields, `a` and `b`, both of which which are environments, and both of which contain a value `x`. It also has a field `v` which is a regular (non-reference) value, and a private `deep_clone` method.
 
