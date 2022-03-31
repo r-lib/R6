@@ -569,7 +569,7 @@ When an R6 class definition contains functions in the public or private sections
 
 In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the `$initialize()` method, or after the object has been instantiated. These functions are not class methods, and they will not have access to `self`, `private`, or `super`.
 
-Here is a trivial class that has a method `$get_self()` that simply returns `self`, as well as an empty member, `fn`. In this example, we'll assign a function to `fn` with the same body as `get_self`. However, since it's a regular function, `self` will refer to something other than the R6 object:
+Here is a trivial class which has a method `get_self()` that simply returns `self`, as well as an empty member, `fn`. In this example, we'll assign a function to `fn` which has the same body as `get_self`. However, since it's a regular function, `self` will refer to something other than the R6 object:
 
 ```{r}
 FunctionWrapper <- R6Class("FunctionWrapper",
