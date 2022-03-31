@@ -18,8 +18,8 @@ Depends:
     R (>= 3.0)
 Suggests:
     lobstr,
-    testthat
-Config/Needs/website: tidyverse/tidytemplate, ggplot2, microbenchmark,
-    scales
+    testthat (>= 3.0.0)
+Config/Needs/website: tidyverse/tidytemplate, ggplot2, microbenchmark, scales
+Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.1.2

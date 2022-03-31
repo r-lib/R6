@@ -1,5 +1,3 @@
-context("nonportable")
-
 test_that("initialization", {
   AC <- R6Class("AC",
     portable = FALSE,
