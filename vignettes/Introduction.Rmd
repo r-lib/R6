@@ -542,7 +542,7 @@ Human <- R6Class("Human",
 Human$new()$clone()
 ```
 
-2. If the superclass has `cloneable = FALSE`, the `cloneable` property of the subclass will be respected.
+2. If the superclass has `cloneable=FALSE`, the `cloneable` property of the subclass will be respected.
 
 Let's use the same example as before but set `cloneable` to `FALSE` this time.
 
