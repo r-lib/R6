@@ -81,8 +81,7 @@
 
 
 
-
-<div class="row">
+<script src="Introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Introduction</h1>
             
@@ -145,7 +144,7 @@
 <span class="co">#&gt;     set_hair: function (val)</span></code></pre></div>
 <p>The <code>$new()</code> method creates the object and calls the <code>initialize()</code> method, if it exists.</p>
 <p>Inside class methods, <code>self</code> refers to the object. Public members of the object (all you’ve seen so far) are accessed with <code>self$x</code>, and assignment is done with <code>self$x &lt;- y</code>.</p>
-<p>Once the object is instantiated, you can access values and methods with <code>$</code>:</p>
+<p>Once the object is instantiated, you can access public fields and methods with <code>$</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ann</span><span class="op">$</span><span class="va">hair</span>
 <span class="co">#&gt; [1] "black"</span>
@@ -326,12 +325,28 @@
 <span class="co">#&gt; [1] "y"</span>
 <span class="va">cq</span><span class="op">$</span><span class="fu">get_total</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] 3</span></code></pre></div>
+<p>Note that, unlike classical OOP in other languages (e.g. C++), R6 subclasses also have access to the private methods in superclass.</p>
+<p>For instance, in the following example, the <code>Duck</code> class has a private method <code>$quack()</code>, but its subclass <code>Mallard</code> can access it using <code>super$quack()</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">Duck</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Duck"</span>,
+  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>quack <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"Quack Quack"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">Mallard</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Mallard"</span>,
+  inherit <span class="op">=</span> <span class="va">Duck</span>,
+  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>quack <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">super</span><span class="op">$</span><span class="fu">quack</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">myMallard</span> <span class="op">&lt;-</span> <span class="va">Mallard</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
+<span class="va">myMallard</span><span class="op">$</span><span class="fu">quack</span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "Quack Quack"</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fields-containing-reference-objects">Fields containing reference objects<a class="anchor" aria-label="anchor" href="#fields-containing-reference-objects"></a>
 </h3>
-<p>If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the <code>initialize</code> method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here’s an example:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the <code>$initialize()</code> method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of that R6 class.</p>
+<p>Here’s an example:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">SimpleClass</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"SimpleClass"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 <span class="op">)</span>
@@ -352,7 +367,7 @@
 <span class="va">s1</span><span class="op">$</span><span class="va">e</span><span class="op">$</span><span class="va">x</span>
 <span class="co">#&gt; [1] 2</span></code></pre></div>
 <p>To avoid this, populate the field in the <code>initialize</code> method:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">NonSharedField</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"NonSharedField"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     e <span class="op">=</span> <span class="cn">NULL</span>,
@@ -378,7 +393,7 @@
 <h3 id="adding-members-to-an-existing-class">Adding members to an existing class<a class="anchor" aria-label="anchor" href="#adding-members-to-an-existing-class"></a>
 </h3>
 <p>It is sometimes useful to add members to a class after the class has already been created. This can be done using the <code>$set()</code> method on the generator object.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Simple</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Simple"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     x <span class="op">=</span> <span class="fl">1</span>,
@@ -388,7 +403,7 @@
 
 <span class="va">Simple</span><span class="op">$</span><span class="fu">set</span><span class="op">(</span><span class="st">"public"</span>, <span class="st">"getx2"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">self</span><span class="op">$</span><span class="va">x</span><span class="op">*</span><span class="fl">2</span><span class="op">)</span>
 
-<span class="co"># To replace an existing member, use overwrite=TRUE</span>
+<span class="co"># To replace an existing member, use `overwrite=TRUE`</span>
 <span class="va">Simple</span><span class="op">$</span><span class="fu">set</span><span class="op">(</span><span class="st">"public"</span>, <span class="st">"x"</span>, <span class="fl">10</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">Simple</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
@@ -398,7 +413,7 @@
 <span class="co">#&gt; [1] 20</span></code></pre></div>
 <p>The new members will be present only in instances that are created after <code>$set()</code> has been called.</p>
 <p>To prevent modification of a class, you can use <code>lock_class=TRUE</code> when creating the class. You can also lock and unlock a class as follows:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Create a locked class</span>
 <span class="va">Simple</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Simple"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
@@ -409,7 +424,8 @@
 <span class="op">)</span>
 
 <span class="co"># This would result in an error</span>
-<span class="co"># Simple$set("public", "y", 2)</span>
+<span class="va">Simple</span><span class="op">$</span><span class="fu">set</span><span class="op">(</span><span class="st">"public"</span>, <span class="st">"y"</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="co">#&gt; Error in Simple$set("public", "y", 2): Can't modify a locked R6 class.</span>
 
 <span class="co"># Unlock the class</span>
 <span class="va">Simple</span><span class="op">$</span><span class="fu">unlock</span><span class="op">(</span><span class="op">)</span>
@@ -423,8 +439,8 @@
 <div class="section level3">
 <h3 id="cloning-objects">Cloning objects<a class="anchor" aria-label="anchor" href="#cloning-objects"></a>
 </h3>
-<p>By default, R6 objects have method named <code>clone</code> for making a copy of the object.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<p>By default, R6 objects have a method named <code>$clone()</code> for making a copy of the object.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Simple</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Simple"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     x <span class="op">=</span> <span class="fl">1</span>,
@@ -449,8 +465,8 @@
 <h4 id="deep-cloning">Deep cloning<a class="anchor" aria-label="anchor" href="#deep-cloning"></a>
 </h4>
 <p>If there are any fields which are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.</p>
-<p>For example, we’ll create an object <code>c1</code> which contains another R6 object, <code>s</code>, and then clone it. Because the original’s and the clone’s <code>s</code> fields both refer to the same object, modifying it from one results in a change that is reflect in the other.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<p>For example, we’ll create an object <code>c1</code> which contains another R6 object, <code>s</code>, and then clone it. Because the original’s and the clone’s <code>s</code> fields both refer to the same object, modifying it from one results in a change that is reflected in the other.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Simple</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Simple"</span>, public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">Cloneable</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"Cloneable"</span>,
@@ -470,7 +486,7 @@
 <span class="va">c2</span><span class="op">$</span><span class="va">s</span><span class="op">$</span><span class="va">x</span>
 <span class="co">#&gt; [1] 2</span></code></pre></div>
 <p>To make it so the clone receives a <em>copy</em> of <code>s</code>, we can use the <code>deep=TRUE</code> option:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">c3</span> <span class="op">&lt;-</span> <span class="va">c1</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># Change c1's `s` field</span>
@@ -479,10 +495,10 @@
 <span class="co"># c2's `s` is different</span>
 <span class="va">c3</span><span class="op">$</span><span class="va">s</span><span class="op">$</span><span class="va">x</span>
 <span class="co">#&gt; [1] 2</span></code></pre></div>
-<p>The default behavior of <code>clone(deep=TRUE)</code> is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).</p>
+<p>The default behavior of <code>$clone(deep=TRUE)</code> is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).</p>
 <p>If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named <code>deep_clone</code>. Below is an example of an R6 object with two fields, <code>a</code> and <code>b</code>, both of which which are environments, and both of which contain a value <code>x</code>. It also has a field <code>v</code> which is a regular (non-reference) value, and a private <code>deep_clone</code> method.</p>
 <p>The <code>deep_clone</code> method is called once for each field. It is passed the name and value of the field, and the value it returns is used in the clone.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">CloneEnv</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"CloneEnv"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     a <span class="op">=</span> <span class="cn">NULL</span>,
@@ -514,7 +530,7 @@
 <span class="va">c1</span> <span class="op">&lt;-</span> <span class="va">CloneEnv</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
 <span class="va">c2</span> <span class="op">&lt;-</span> <span class="va">c1</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>When <code>c1$clone(deep=TRUE)</code> is called, the <code>deep_clone</code> method is called for each field in <code>c1</code>, and is passed the name of the field and value. In our version, the <code>a</code> environment gets copied, but <code>b</code> does not, nor does <code>v</code> (but that doesn’t matter since <code>v</code> is not a reference object). We can test out the clone:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Modifying c1$a doesn't affect c2$a, because they're separate objects</span>
 <span class="va">c1</span><span class="op">$</span><span class="va">a</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">c2</span><span class="op">$</span><span class="va">a</span><span class="op">$</span><span class="va">x</span>
@@ -535,8 +551,8 @@
 <div class="section level3">
 <h3 id="printing-r6-objects-to-the-screen">Printing R6 objects to the screen<a class="anchor" aria-label="anchor" href="#printing-r6-objects-to-the-screen"></a>
 </h3>
-<p>R6 objects have a default <code>print</code> method that lists all members of the object. If a class defines a <code>print</code> method, then it overrides the default one.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p>R6 objects have a default <code>$print()</code> method that lists all members of the object. If a class defines a <code>$print()</code> method, then it overrides the default one.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">PrettyCountingQueue</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"PrettyCountingQueue"</span>,
   inherit <span class="op">=</span> <span class="va">CountingQueue</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
@@ -545,7 +561,7 @@
     <span class="op">}</span>
   <span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pq</span> <span class="op">&lt;-</span> <span class="va">PrettyCountingQueue</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="st">"foobar"</span><span class="op">)</span>
 <span class="va">pq</span>
 <span class="co">#&gt; &lt;PrettyCountingQueue&gt; of 3 elements</span></code></pre></div>
@@ -553,8 +569,8 @@
 <div class="section level3">
 <h3 id="finalizers">Finalizers<a class="anchor" aria-label="anchor" href="#finalizers"></a>
 </h3>
-<p>Sometimes it’s useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a private <code>finalize()</code> method, which will be called with no arguments when the object is garbage collected.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<p>Sometimes it’s useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a private <code>$finalize()</code> method, which will be called with no arguments when the object is garbage collected.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">A</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"A"</span>, private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
   finalize <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"Finalizer has been called!"</span><span class="op">)</span>
@@ -570,18 +586,18 @@
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Finalizer has been called!"</span>
 <span class="co">#&gt;           used (Mb) gc trigger (Mb) max used (Mb)</span>
-<span class="co">#&gt; Ncells  708775 37.9    1415401 75.6  1415401 75.6</span>
-<span class="co">#&gt; Vcells 1322220 10.1    8388608 64.0  3085190 23.6</span></code></pre></div>
-<p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>finalize</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally it will no longer support public finalizers.</p>
+<span class="co">#&gt; Ncells  709766 38.0    1415555 75.6  1415555 75.6</span>
+<span class="co">#&gt; Vcells 1324737 10.2    8388608 64.0  3126312 23.9</span></code></pre></div>
+<p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>$finalize()</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.</p>
 <p>Finalizers are implemented using the <code><a href="https://rdrr.io/r/base/reg.finalizer.html" class="external-link">reg.finalizer()</a></code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
 <div class="section level3">
 <h3 id="class-methods-vs--member-functions">Class methods vs. member functions<a class="anchor" aria-label="anchor" href="#class-methods-vs--member-functions"></a>
 </h3>
 <p>When an R6 class definition contains functions in the public or private sections, those functions are <em>class methods</em>: they can access <code>self</code> (as well as <code>private</code> and <code>super</code> when available). When an R6 object is cloned, the resulting object’s methods will have a <code>self</code> that refers to the new object. This works by changing the <em>enclosing environment</em> of the method in the cloned object.</p>
-<p>In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the <code>initialize</code> method, or after the object has been instantiated. These functions are not class methods, and they will not have access to <code>self</code>, <code>private</code>, or <code>super</code>.</p>
+<p>In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the <code>$initialize()</code> method, or after the object has been instantiated. These functions are not class methods, and they will not have access to <code>self</code>, <code>private</code>, or <code>super</code>.</p>
 <p>Here is a trivial class which has a method <code>get_self()</code> that simply returns <code>self</code>, as well as an empty member, <code>fn</code>. In this example, we’ll assign a function to <code>fn</code> which has the same body as <code>get_self</code>. However, since it’s a regular function, <code>self</code> will refer to something other than the R6 object:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">FunctionWrapper</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"FunctionWrapper"</span>,
   public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     get_self <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
@@ -603,21 +619,21 @@
 <span class="va">a</span><span class="op">$</span><span class="fu">get_self</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; &lt;FunctionWrapper&gt;</span>
 <span class="co">#&gt;   Public:</span>
-<span class="co">#&gt;     clone: function (deep = FALSE)</span>
-<span class="co">#&gt;     fn: function ()</span>
+<span class="co">#&gt;     clone: function (deep = FALSE) </span>
+<span class="co">#&gt;     fn: function () </span>
 <span class="co">#&gt;     get_self: function ()</span>
 
 <span class="va">a</span><span class="op">$</span><span class="fu">fn</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] 100</span></code></pre></div>
 <p>As of R6 2.3.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">a</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span>
 
 <span class="va">b</span><span class="op">$</span><span class="fu">get_self</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; &lt;FunctionWrapper&gt;</span>
 <span class="co">#&gt;   Public:</span>
-<span class="co">#&gt;     clone: function (deep = FALSE)</span>
-<span class="co">#&gt;     fn: function ()</span>
+<span class="co">#&gt;     clone: function (deep = FALSE) </span>
+<span class="co">#&gt;     fn: function () </span>
 <span class="co">#&gt;     get_self: function ()</span>
 
 <span class="va">b</span><span class="op">$</span><span class="fu">fn</span><span class="op">(</span><span class="op">)</span>
