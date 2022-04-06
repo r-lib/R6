@@ -33,18 +33,18 @@ test_that("Setting values set values on generator", {
 
 
   # Can't set existing names
-  expect_error(AC$set("public", "x", 99))
-  expect_error(AC$set("public", "getxyz", function() 99))
-  expect_error(AC$set("private", "y", 99))
-  expect_error(AC$set("private", "z", function() 99))
-  expect_error(AC$set("active", "x2", function(value) 99))
+  expect_snapshot_error(AC$set("public", "x", 99))
+  expect_snapshot_error(AC$set("public", "getxyz", function() 99))
+  expect_snapshot_error(AC$set("private", "y", 99))
+  expect_snapshot_error(AC$set("private", "z", function() 99))
+  expect_snapshot_error(AC$set("active", "x2", function(value) 99))
 
   # Can't set existing names in different group
-  expect_error(AC$set("private", "x", 99))
-  expect_error(AC$set("private", "getxyz", function() 99))
-  expect_error(AC$set("active", "y", 99))
-  expect_error(AC$set("public", "z", function() 99))
-  expect_error(AC$set("private", "x2", function(value) 99))
+  expect_snapshot_error(AC$set("private", "x", 99))
+  expect_snapshot_error(AC$set("private", "getxyz", function() 99))
+  expect_snapshot_error(AC$set("active", "y", 99))
+  expect_snapshot_error(AC$set("public", "z", function() 99))
+  expect_snapshot_error(AC$set("private", "x2", function(value) 99))
 
   # Can set existing names if overwrite = TRUE
   AC$set("public", "x", 99, overwrite = TRUE)
@@ -54,11 +54,11 @@ test_that("Setting values set values on generator", {
   AC$set("active", "x2", function(value) 99, overwrite = TRUE)
 
   # Can't set existing names in different group, even if overwrite = TRUE
-  expect_error(AC$set("private", "x", 99, overwrite = TRUE))
-  expect_error(AC$set("private", "getxyz", function() 99, overwrite = TRUE))
-  expect_error(AC$set("active", "y", 99, overwrite = TRUE))
-  expect_error(AC$set("public", "z", function() 99, overwrite = TRUE))
-  expect_error(AC$set("private", "x2", function(value) 99, overwrite = TRUE))
+  expect_snapshot_error(AC$set("private", "x", 99, overwrite = TRUE))
+  expect_snapshot_error(AC$set("private", "getxyz", function() 99, overwrite = TRUE))
+  expect_snapshot_error(AC$set("active", "y", 99, overwrite = TRUE))
+  expect_snapshot_error(AC$set("public", "z", function() 99, overwrite = TRUE))
+  expect_snapshot_error(AC$set("private", "x2", function(value) 99, overwrite = TRUE))
 })
 
 
@@ -78,15 +78,15 @@ test_that("Setting values with empty public or private", {
 
 test_that("Locked class", {
   AC <- R6Class("AC", lock_class = TRUE)
-  expect_error(AC$set("public", "x", 1))
-  expect_error(AC$set("private", "x", 1))
+  expect_snapshot_error(AC$set("public", "x", 1))
+  expect_snapshot_error(AC$set("private", "x", 1))
 
   expect_true(AC$is_locked())
   AC$unlock()
   expect_false(AC$is_locked())
   AC$set("public", "x", 1)
   AC$lock()
-  expect_error(AC$set("public", "x", 2))
+  expect_snapshot_error(AC$set("public", "x", 2))
 })
 
 test_that("Assigning NULL values", {

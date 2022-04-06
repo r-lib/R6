@@ -1,7 +1,7 @@
 test_that("Can't use reserved name 'clone'", {
-  expect_error(R6Class("AC", public = list(clone = function() NULL)))
-  expect_error(R6Class("AC", private = list(clone = function() NULL)))
-  expect_error(R6Class("AC", active = list(clone = function() NULL)))
+  expect_snapshot_error(R6Class("AC", public = list(clone = function() NULL)))
+  expect_snapshot_error(R6Class("AC", private = list(clone = function() NULL)))
+  expect_snapshot_error(R6Class("AC", active = list(clone = function() NULL)))
 })
 
 
@@ -387,13 +387,13 @@ test_that("Lock state", {
 
   a <- AC$new()
   b <- a$clone()
-  expect_error(a$z <- 1)
-  expect_error(b$z <- 1)
+  expect_snapshot_error(a$z <- 1)
+  expect_snapshot_error(b$z <- 1)
 
   expect_identical(a$yval(), NULL)
   expect_identical(b$yval(), NULL)
-  expect_error(a$yval(1))
-  expect_error(b$yval(1))
+  expect_snapshot_error(a$yval(1))
+  expect_snapshot_error(b$yval(1))
 
   # With lock = FALSE
   AC <- R6Class("AC",
@@ -1212,9 +1212,9 @@ test_that("Cloning with functions that are not methods", {
   expect_no_error(a$f <- identity)
   expect_no_error(a2$f <- identity)
   expect_no_error(a3$f <- identity)
-  expect_error(a$method <- identity)
-  expect_error(a2$method <- identity)
-  expect_error(a3$method <- identity)
+  expect_snapshot_error(a$method <- identity)
+  expect_snapshot_error(a2$method <- identity)
+  expect_snapshot_error(a3$method <- identity)
 
 
   # ==== With inheritance ====

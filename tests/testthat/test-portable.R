@@ -20,7 +20,7 @@ test_that("initialization", {
 
   # No initialize method: throw error if arguments are passed in
   AC <- R6Class("AC", portable = TRUE, public = list(x = 1))
-  expect_error(AC$new(3))
+  expect_snapshot_error(AC$new(3))
 })
 
 
@@ -135,7 +135,7 @@ test_that("Active bindings work", {
   expect_identical(A$x, 30)
 
   A$x <- -2
-  expect_error(A$sqrt_of_x)
+  expect_snapshot_error(A$sqrt_of_x)
   # print does not throw an error trying to read
   # the active binding variables
   muted_print <- function(x) capture.output(print(x))
@@ -159,12 +159,12 @@ test_that("Locking works", {
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
-  expect_error(A$getx <- function() 1)
-  expect_error(A$gety <- function() 2)
+  expect_snapshot_error(A$getx <- function() 1)
+  expect_snapshot_error(A$gety <- function() 2)
 
   # Can't add members
-  expect_error(A$z <- 1)
-  expect_error(A$private$z <- 1)
+  expect_snapshot_error(A$z <- 1)
+  expect_snapshot_error(A$private$z <- 1)
 
 
   # Not locked
@@ -183,8 +183,8 @@ test_that("Locking works", {
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
-  expect_error(A$getx <- function() 1)
-  expect_error(A$private$gety <- function() 2)
+  expect_snapshot_error(A$getx <- function() 1)
+  expect_snapshot_error(A$private$gety <- function() 2)
 
   # Can add members
   expect_no_error(A$z <- 1)

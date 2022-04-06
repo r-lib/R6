@@ -20,7 +20,7 @@ test_that("initialization", {
 
   # No initialize method: throw error if arguments are passed in
   AC <- R6Class("AC", portable = FALSE, public = list(x = 1))
-  expect_error(AC$new(3))
+  expect_snapshot_error(AC$new(3))
 })
 
 test_that("empty members and methods are allowed", {
@@ -61,7 +61,7 @@ test_that("Private members are private, and self/private environments", {
   # Behavioral tests
   expect_identical(A$x, 1)
   expect_null(A$y)
-  expect_error(A$getx_priv3())
+  expect_snapshot_error(A$getx_priv3())
   expect_identical(A$gety(), 2)  # Explicit access: private$y
   expect_identical(A$gety2(), 2) # Implicit access: y
   expect_identical(A$getx(), 1)  # Explicit access: self$x
@@ -111,12 +111,12 @@ test_that("Locking objects", {
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
-  expect_error(A$getx <- function() 1)
-  expect_error(A$gety <- function() 2)
+  expect_snapshot_error(A$getx <- function() 1)
+  expect_snapshot_error(A$gety <- function() 2)
 
   # Can't add members
-  expect_error(A$z <- 1)
-  expect_error(A$private$z <- 1)
+  expect_snapshot_error(A$z <- 1)
+  expect_snapshot_error(A$private$z <- 1)
 
 
   # Not locked
@@ -135,8 +135,8 @@ test_that("Locking objects", {
   expect_identical(A$private$y, 5)
 
   # Can't modify methods
-  expect_error(A$getx <- function() 1)
-  expect_error(A$private$gety <- function() 2)
+  expect_snapshot_error(A$getx <- function() 1)
+  expect_snapshot_error(A$private$gety <- function() 2)
 
   # Can add members
   expect_no_error(A$z <- 1)
@@ -150,23 +150,23 @@ test_that("Validity checks on creation", {
   fun <- function() 1  # Dummy function for tests
 
   # All arguments must be named
-  expect_error(R6Class("AC", public = list(1)))
-  expect_error(R6Class("AC", private = list(1)))
-  expect_error(R6Class("AC", active = list(fun)))
+  expect_snapshot_error(R6Class("AC", public = list(1)))
+  expect_snapshot_error(R6Class("AC", private = list(1)))
+  expect_snapshot_error(R6Class("AC", active = list(fun)))
 
   # Names can't be duplicated
-  expect_error(R6Class("AC", public = list(a=1, a=2)))
-  expect_error(R6Class("AC", public = list(a=1), private = list(a=1)))
-  expect_error(R6Class("AC", private = list(a=1), active = list(a=fun)))
+  expect_snapshot_error(R6Class("AC", public = list(a=1, a=2)))
+  expect_snapshot_error(R6Class("AC", public = list(a=1), private = list(a=1)))
+  expect_snapshot_error(R6Class("AC", private = list(a=1), active = list(a=fun)))
 
   # Reserved names
-  expect_error(R6Class("AC", public = list(self = 1)))
-  expect_error(R6Class("AC", private = list(private = 1)))
-  expect_error(R6Class("AC", active = list(super = 1)))
+  expect_snapshot_error(R6Class("AC", public = list(self = 1)))
+  expect_snapshot_error(R6Class("AC", private = list(private = 1)))
+  expect_snapshot_error(R6Class("AC", active = list(super = 1)))
 
   # `initialize` only allowed in public
-  expect_error(R6Class("AC", private = list(initialize = fun)))
-  expect_error(R6Class("AC", active = list(initialize = fun)))
+  expect_snapshot_error(R6Class("AC", private = list(initialize = fun)))
+  expect_snapshot_error(R6Class("AC", active = list(initialize = fun)))
 })
 
 
