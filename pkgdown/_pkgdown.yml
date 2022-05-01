@@ -10,3 +10,12 @@ template:
 
 development:
   mode: auto
+
+articles:
+- title: ~
+  navbar: ~
+  contents:
+    - Introduction
+    - Portable
+    - Debugging
+    - Performance
