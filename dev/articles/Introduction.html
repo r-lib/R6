@@ -51,10 +51,10 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/Debugging.html">Debugging</a>
     <a class="dropdown-item" href="../articles/Introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/Performance.html">R6 and Reference Class performance tests</a>
     <a class="dropdown-item" href="../articles/Portable.html">Portable and non-portable R6 classes</a>
+    <a class="dropdown-item" href="../articles/Debugging.html">Debugging</a>
+    <a class="dropdown-item" href="../articles/Performance.html">R6 and Reference Class performance tests</a>
   </div>
 </li>
 <li class="nav-item">
@@ -81,8 +81,7 @@
 
 
 
-
-<div class="row">
+<script src="Introduction_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Introduction</h1>
             
@@ -587,8 +586,8 @@
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Finalizer has been called!"</span>
 <span class="co">#&gt;           used (Mb) gc trigger (Mb) max used (Mb)</span>
-<span class="co">#&gt; Ncells  709725 38.0    1444084 77.2  1444084 77.2</span>
-<span class="co">#&gt; Vcells 1324642 10.2    8388608 64.0  3123637 23.9</span></code></pre></div>
+<span class="co">#&gt; Ncells  713628 38.2    1439722 76.9  1439722 76.9</span>
+<span class="co">#&gt; Vcells 1336648 10.2    8388608 64.0  3192730 24.4</span></code></pre></div>
 <p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>$finalize()</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.</p>
 <p>Finalizers are implemented using the <code><a href="https://rdrr.io/r/base/reg.finalizer.html" class="external-link">reg.finalizer()</a></code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
@@ -656,7 +655,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
   </div></footer>
