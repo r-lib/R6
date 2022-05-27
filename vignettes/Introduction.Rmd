@@ -61,7 +61,7 @@ The `$new()` method creates the object and calls the `initialize()` method, if i
 
 Inside class methods, `self` refers to the object. Public members of the object (all you've seen so far) are accessed with `self$x`, and assignment is done with `self$x <- y`.
 
-Once the object is instantiated, you can access values and methods with `$`:
+Once the object is instantiated, you can access public fields and methods with `$`:
 
 ```{r}
 ann$hair
@@ -251,10 +251,30 @@ cq$remove()
 cq$get_total()
 ```
 
+Note that, unlike classical OOP in other languages (e.g. C++), R6 subclasses also have access to the private methods in superclass.
+
+For instance, in the following example, the `Duck` class has a private method `$quack()`, but its subclass `Mallard` can access it using `super$quack()`.
+
+```{r}
+Duck <- R6Class("Duck",
+  private = list(quack = function() print("Quack Quack"))
+)
+
+Mallard <- R6Class("Mallard",
+  inherit = Duck,
+  public = list(quack = function() super$quack())
+)
+
+myMallard <- Mallard$new()
+myMallard$quack()
+```
+
 
 ### Fields containing reference objects
 
-If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the `initialize` method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of the R6 objects. Here's an example:
+If your R6 class contains any fields that also have reference semantics (e.g., other R6 objects, environments), those fields should be populated in the `$initialize()` method. If the field is set to the reference object directly in the class definition, that object will be shared across all instances of that R6 class. 
+
+Here's an example:
 
 ```{r}
 SimpleClass <- R6Class("SimpleClass",
@@ -314,7 +334,7 @@ Simple <- R6Class("Simple",
 
 Simple$set("public", "getx2", function() self$x*2)
 
-# To replace an existing member, use overwrite=TRUE
+# To replace an existing member, use `overwrite=TRUE`
 Simple$set("public", "x", 10, overwrite = TRUE)
 
 s <- Simple$new()
@@ -326,7 +346,7 @@ The new members will be present only in instances that are created after `$set()
 
 To prevent modification of a class, you can use `lock_class=TRUE` when creating the class. You can also lock and unlock a class as follows:
 
-```{r}
+```{r, error=TRUE}
 # Create a locked class
 Simple <- R6Class("Simple",
   public = list(
@@ -337,7 +357,7 @@ Simple <- R6Class("Simple",
 )
 
 # This would result in an error
-# Simple$set("public", "y", 2)
+Simple$set("public", "y", 2)
 
 # Unlock the class
 Simple$unlock()
@@ -352,7 +372,7 @@ Simple$lock()
 
 ### Cloning objects
 
-By default, R6 objects have method named `clone` for making a copy of the object.
+By default, R6 objects have a method named `$clone()` for making a copy of the object.
 
 ```{r}
 Simple <- R6Class("Simple",
@@ -405,7 +425,7 @@ If you don't want a `clone` method to be added, you can use `cloneable=FALSE` wh
 
 If there are any fields which are objects with reference semantics (environments, R6 objects, reference class objects), the copy will get a reference to the same object. This is sometimes desirable, but often it is not.
 
-For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because the original's and the clone's `s` fields both refer to the same object, modifying it from one results in a change that is reflect in the other.
+For example, we'll create an object `c1` which contains another R6 object, `s`, and then clone it. Because the original's and the clone's `s` fields both refer to the same object, modifying it from one results in a change that is reflected in the other.
 
 ```{r}
 Simple <- R6Class("Simple", public = list(x = 1))
@@ -439,7 +459,7 @@ c1$s$x <- 3
 c3$s$x
 ```
 
-The default behavior of `clone(deep=TRUE)` is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).
+The default behavior of `$clone(deep=TRUE)` is to copy fields which are R6 objects, but not copy fields which are environments, reference class objects, or other data structures which contain other reference-type objects (for example, a list with an R6 object).
 
 If your R6 object contains these types of objects and you want to make a deep clone of them, you must provide your own function for deep cloning, in a private method named `deep_clone`. Below is an example of an R6 object with two fields, `a` and `b`, both of which which are environments, and both of which contain a value `x`. It also has a field `v` which is a regular (non-reference) value, and a private `deep_clone` method.
 
@@ -550,11 +570,10 @@ Human$new()$clone()
 #> Error: attempt to apply non-function
 ```
 
-
 ### Printing R6 objects to the screen
 
-R6 objects have a default `print` method that lists all members of the object.
-If a class defines a `print` method, then it overrides the default one.
+R6 objects have a default `$print()` method that lists all members of the object.
+If a class defines a `$print()` method, then it overrides the default one.
 
 ```{r}
 PrettyCountingQueue <- R6Class("PrettyCountingQueue",
@@ -574,7 +593,7 @@ pq
 
 ### Finalizers
 
-Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a private `finalize()` method, which will be called with no arguments when the object is garbage collected.
+Sometimes it's useful to run a function when the object is garbage collected. For example, you may want to make sure a file or database connection gets closed. To do this, you can define a private `$finalize()` method, which will be called with no arguments when the object is garbage collected.
 
 
 ```{r}
@@ -593,7 +612,7 @@ obj <- A$new()
 rm(obj); gc()
 ```
 
-**NOTE:** In R6 version 2.3.0 (released 2018-10-04) and below, the `finalize` method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there's no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to `R6 (>= 2.4.0)`. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally it will no longer support public finalizers.
+**NOTE:** In R6 version 2.3.0 (released 2018-10-04) and below, the `$finalize()` method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there's no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to `R6 (>= 2.4.0)`. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.
 
 Finalizers are implemented using the `reg.finalizer()` function, and they set `onexit=TRUE`, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.
 
@@ -602,11 +621,11 @@ Finalizers are implemented using the `reg.finalizer()` function, and they set `o
 
 When an R6 class definition contains functions in the public or private sections, those functions are *class methods*: they can access `self` (as well as `private` and `super` when available). When an R6 object is cloned, the resulting object's methods will have a `self` that refers to the new object. This works by changing the *enclosing environment* of the method in the cloned object.
 
-In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the `initialize` method, or after the object has been instantiated. These functions are not class methods, and they will not have access to `self`, `private`, or `super`.
+In contrast to class methods, you can also add regular functions as members of an R6 object. This can be done by assigning the function to a field in the `$initialize()` method, or after the object has been instantiated. These functions are not class methods, and they will not have access to `self`, `private`, or `super`.
 
 Here is a trivial class which has a method `get_self()` that simply returns `self`, as well as an empty member, `fn`. In this example, we'll assign a function to `fn` which has the same body as `get_self`. However, since it's a regular function, `self` will refer to something other than the R6 object:
 
-```R
+```{r}
 FunctionWrapper <- R6Class("FunctionWrapper",
   public = list(
     get_self = function() {
@@ -626,28 +645,16 @@ a$fn <- function() {
 }
 
 a$get_self()
-#> <FunctionWrapper>
-#>   Public:
-#>     clone: function (deep = FALSE)
-#>     fn: function ()
-#>     get_self: function ()
 
 a$fn()
-#> [1] 100
 ```
 
 As of R6 2.3.0, if the object is cloned, member (non-method) functions will not have their enclosing environment changed, which is what one would normally expect. It will behave this way:
 
-```R
+```{r}
 b <- a$clone()
 
 b$get_self()
-#> <FunctionWrapper>
-#>   Public:
-#>     clone: function (deep = FALSE)
-#>     fn: function ()
-#>     get_self: function ()
 
 b$fn()
-#> [1] 100
 ```
