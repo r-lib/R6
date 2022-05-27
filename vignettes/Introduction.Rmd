@@ -604,3 +604,51 @@ b$get_self()
 
 b$fn()
 ```
+
+### Using package objects in R6 classes
+
+When creating R6 classes in a package, some special care needs to be taken if you wish to use package objects (doesn't matter if they are exported or not).
+
+For example, let's say you define a new class in a file called `medical-data.R`:
+
+```{r, eval=FALSE}
+#' @title R6 Class for Medical Data
+#' @field species Name of the species. Available options listed in `Species`.
+MedicalData <- R6::R6Class("MedicalData",
+  public = list(
+    species = Species$human
+  )
+)
+```
+
+The public field `species` in this class is supplied with a default value using package object `Species`, which is defined in a file called (e.g.) `species.R`:
+
+```{r, eval=FALSE}
+#' List of species for which medical data is available.
+Species <- list(
+  "human"  = "Homo sapiens",
+  "mouse"  = "Mus musculus"
+)
+```
+
+But if you try to document/load/build the package, you will get the following error:
+
+```{r}
+#> Error in all_named(public) : object 'Species' not found
+```
+
+This is because by default the package files are collated alphabetically and since `medical-data.R` file comes before `species.R`, the class cannot find the `Species` object.
+
+You can solve this issue by supplying custom [collation order](https://roxygen2.r-lib.org/reference/update_collate.html), such that the file containing package objects that R6 classes refer to come before the files containing class definitions:
+
+```{r, eval=FALSE}
+#' @title R6 Class for Medical Data
+#' @field species Name of the species. Available options listed in `Species`.
+#' @include species.R
+MedicalData <- R6::R6Class("MedicalData",
+  public = list(
+    species = Species$human
+  )
+)
+```
+
