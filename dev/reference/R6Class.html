@@ -89,42 +89,63 @@ packages.</p>
     <dl><dt>classname</dt>
 <dd><p>Name of the class. The class name is useful primarily for S3
 method dispatch.</p></dd>
+
+
 <dt>public</dt>
 <dd><p>A list of public members, which can be functions (methods) and
 non-functions (fields).</p></dd>
+
+
 <dt>private</dt>
 <dd><p>An optional list of private members, which can be functions
 and non-functions.</p></dd>
+
+
 <dt>active</dt>
 <dd><p>An optional list of active binding functions.</p></dd>
+
+
 <dt>inherit</dt>
 <dd><p>A R6ClassGenerator object to inherit from; in other words, a
 superclass. This is captured as an unevaluated expression which is
 evaluated in <code>parent_env</code> each time an object is instantiated.</p></dd>
+
+
 <dt>lock_objects</dt>
 <dd><p>Should the environments of the generated objects be
 locked? If locked, new members can't be added to the objects.</p></dd>
+
+
 <dt>class</dt>
 <dd><p>Should a class attribute be added to the object? Default is
 <code>TRUE</code>. If <code>FALSE</code>, the objects will simply look like
 environments, which is what they are.</p></dd>
+
+
 <dt>portable</dt>
 <dd><p>If <code>TRUE</code> (the default), this class will work with
 inheritance across different packages. Note that when this is enabled,
 fields and members must be accessed with  <code>self$x</code> or
 <code>private$x</code>; they can't be accessed with just <code>x</code>.</p></dd>
+
+
 <dt>lock_class</dt>
 <dd><p>If <code>TRUE</code>, it won't be possible to add more members to
 the generator object with <code>$set</code>. If <code>FALSE</code> (the default), then
 it will be possible to add more members with <code>$set</code>. The methods
 <code>$is_locked</code>, <code>$lock</code>, and <code>$unlock</code> can be used to query
 and change the locked state of the class.</p></dd>
+
+
 <dt>cloneable</dt>
 <dd><p>If <code>TRUE</code> (the default), the generated objects will
 have method named <code>$clone</code>, which makes a copy of the object.</p></dd>
+
+
 <dt>parent_env</dt>
 <dd><p>An environment to use as the parent of newly-created
 objects.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -313,10 +334,10 @@ instantiate the object and assign it.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># If the function takes no arguments, it's not possible to use it with &lt;-:</span></span>
 <span class="r-in"><span class="va">n</span><span class="op">$</span><span class="va">rand</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.7687374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.978457</span>
 <span class="r-in"><span class="co">#&gt; [1] 0.2648</span></span>
 <span class="r-in"><span class="va">n</span><span class="op">$</span><span class="va">rand</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.058307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.082386</span>
 <span class="r-in"><span class="co">#&gt; [1] 2.171</span></span>
 <span class="r-in"><span class="co"># n$rand &lt;- 3</span></span>
 <span class="r-in"><span class="co">#&gt; Error: unused argument (quote(3))</span></span>
@@ -614,7 +635,7 @@ instantiate the object and assign it.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
   </div></footer></body></html>
