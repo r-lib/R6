@@ -22,4 +22,4 @@ Suggests:
 Config/Needs/website: tidyverse/tidytemplate, ggplot2, microbenchmark, scales
 Config/testthat/edition: 3
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
