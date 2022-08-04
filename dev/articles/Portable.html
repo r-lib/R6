@@ -14,9 +14,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><link href="../deps/_Source%20Sans%20Pro-0.4.1/font.css" rel="stylesheet">
-<link href="../deps/_Source%20Code%20Pro-0.4.1/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><link href="../deps/Source_Sans_Pro-0.4.2/font.css" rel="stylesheet">
+<link href="../deps/Source_Code_Pro-0.4.2/font.css" rel="stylesheet">
 <!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Portable and non-portable R6 classes">
@@ -100,94 +100,94 @@
 <p>If ClassB inherits <code>foo</code>, it will try to call <code>fun</code> – but since ClassB objects are created in pkgB namespace (which is an environment) instead of the pkgA namespace, it won’t be able to find <code>fun</code>.</p>
 <p>Something similar happens with R6 when the <code>portable=FALSE</code> option is used. For example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r6.r-lib.org">R6</a></span><span class="op">)</span>
-<span class="co"># Simulate packages by creating environments</span>
-<span class="va">pkgA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">pkgB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># Create a function in pkgA but not pkgB</span>
-<span class="va">pkgA</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fl">10</span>
-
-<span class="va">ClassA</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassA"</span>,
-  portable <span class="op">=</span> <span class="cn">FALSE</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span>
-  <span class="op">)</span>,
-  parent_env <span class="op">=</span> <span class="va">pkgA</span>
-<span class="op">)</span>
-
-<span class="co"># ClassB inherits from ClassA</span>
-<span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,
-  portable <span class="op">=</span> <span class="cn">FALSE</span>,
-  inherit <span class="op">=</span> <span class="va">ClassA</span>,
-  parent_env <span class="op">=</span> <span class="va">pkgB</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r6.r-lib.org">R6</a></span><span class="op">)</span></span>
+<span><span class="co"># Simulate packages by creating environments</span></span>
+<span><span class="va">pkgA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pkgB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a function in pkgA but not pkgB</span></span>
+<span><span class="va">pkgA</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fl">10</span></span>
+<span></span>
+<span><span class="va">ClassA</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassA"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  parent_env <span class="op">=</span> <span class="va">pkgA</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ClassB inherits from ClassA</span></span>
+<span><span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  inherit <span class="op">=</span> <span class="va">ClassA</span>,</span>
+<span>  parent_env <span class="op">=</span> <span class="va">pkgB</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>When we create an instance of ClassA, it works as expected:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">ClassA</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] 10</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">ClassA</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
 <p>But with ClassB, it can’t find the <code>foo</code> function:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="va">b</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error in b$foo() : could not find function "fun"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in b$foo() : could not find function "fun"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="portable-r6">Portable R6<a class="anchor" aria-label="anchor" href="#portable-r6"></a>
 </h2>
 <p>R6 supports inheritance across different packages, with the default <code>portable=TRUE</code> option. In this example, we’ll again simulate different packages by creating separate parent environments for the classes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pkgA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">pkgB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">pkgA</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
-  <span class="st">"This function `fun` in pkgA"</span>
-<span class="op">}</span>
-
-<span class="va">ClassA</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassA"</span>,
-  portable <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># The default</span>
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span>
-  <span class="op">)</span>,
-  parent_env <span class="op">=</span> <span class="va">pkgA</span>
-<span class="op">)</span>
-
-<span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,
-  portable <span class="op">=</span> <span class="cn">TRUE</span>,
-  inherit <span class="op">=</span> <span class="va">ClassA</span>,
-  parent_env <span class="op">=</span> <span class="va">pkgB</span>
-<span class="op">)</span>
-
-
-<span class="va">a</span> <span class="op">&lt;-</span> <span class="va">ClassA</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="va">a</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "This function `fun` in pkgA"</span>
-
-<span class="va">b</span> <span class="op">&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="va">b</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "This function `fun` in pkgA"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pkgA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pkgB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pkgA</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="st">"This function `fun` in pkgA"</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ClassA</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassA"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># The default</span></span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  parent_env <span class="op">=</span> <span class="va">pkgA</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  inherit <span class="op">=</span> <span class="va">ClassA</span>,</span>
+<span>  parent_env <span class="op">=</span> <span class="va">pkgB</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">ClassA</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">a</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "This function `fun` in pkgA"</span></span>
+<span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">b</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "This function `fun` in pkgA"</span></span></code></pre></div>
 <p>When a method is inherited from a superclass, that method also gets that class’s environment. In other words, method “runs in” the superclass’s environment. This makes it possible for inheritance to work across packages.</p>
 <p>When a method is defined in the subclass, that method gets the subclass’s environment. For example, here ClassC is a subclass of ClassA, and defines its own <code>foo</code> method which overrides the <code>foo</code> method from ClassA. It happens that the method looks the same as ClassA’s – it just calls <code>fun</code>. But this time it finds <code>pkgC$fun</code> instead of <code>pkgA$fun</code>. This is in contrast to ClassB, which inherited the <code>foo</code> method and environment from ClassA.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pkgC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">pkgC</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
-  <span class="st">"This function `fun` in pkgC"</span>
-<span class="op">}</span>
-
-<span class="va">ClassC</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassC"</span>,
-  portable <span class="op">=</span> <span class="cn">TRUE</span>,
-  inherit <span class="op">=</span> <span class="va">ClassA</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span>
-  <span class="op">)</span>,
-  parent_env <span class="op">=</span> <span class="va">pkgC</span>
-<span class="op">)</span>
-
-<span class="va">cc</span> <span class="op">&lt;-</span> <span class="va">ClassC</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="co"># This method is defined in ClassC, so finds pkgC$fun</span>
-<span class="va">cc</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "This function `fun` in pkgC"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pkgC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pkgC</span><span class="op">$</span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="st">"This function `fun` in pkgC"</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ClassC</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassC"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  inherit <span class="op">=</span> <span class="va">ClassA</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    foo <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">fun</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  parent_env <span class="op">=</span> <span class="va">pkgC</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cc</span> <span class="op">&lt;-</span> <span class="va">ClassC</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># This method is defined in ClassC, so finds pkgC$fun</span></span>
+<span><span class="va">cc</span><span class="op">$</span><span class="fu">foo</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "This function `fun` in pkgC"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="using-self">Using <code>self</code><a class="anchor" aria-label="anchor" href="#using-self"></a>
@@ -195,65 +195,65 @@
 <p>One important difference between non-portable and portable classes is that with non-portable classes, it’s possible to access members with just the name of the member, and with portable classes, member access always requires using <code>self$</code> or <code>private$</code>. This is a consequence of the inheritance implementation.</p>
 <p>Here’s an example of a non-portable class with two methods: <code>sety</code>, which sets the private field <code>y</code> using the <code>&lt;&lt;-</code> operator, and <code>getxy</code>, which returns a vector with the values of fields <code>x</code> and <code>y</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">NP</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"NP"</span>,
-  portable <span class="op">=</span> <span class="cn">FALSE</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="fl">1</span>,
-    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,
-    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">y</span> <span class="op">&lt;&lt;-</span> <span class="va">value</span>
-  <span class="op">)</span>,
-  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    y <span class="op">=</span> <span class="cn">NA</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">np</span> <span class="op">&lt;-</span> <span class="va">NP</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">np</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>
-<span class="va">np</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1]  1 20</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">NP</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"NP"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,</span>
+<span>    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">y</span> <span class="op">&lt;&lt;-</span> <span class="va">value</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">np</span> <span class="op">&lt;-</span> <span class="va">NP</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">np</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">np</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1 20</span></span></code></pre></div>
 <p>If we attempt the same with a portable class, it results in an error:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"P"</span>,
-  portable <span class="op">=</span> <span class="cn">TRUE</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="fl">1</span>,
-    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,
-    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">y</span> <span class="op">&lt;&lt;-</span> <span class="va">value</span>
-  <span class="op">)</span>,
-  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    y <span class="op">=</span> <span class="cn">NA</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="va">P</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># No error, but instead of setting private$y, this sets y in the global</span>
-<span class="co"># environment! This is because of the semantics of &lt;&lt;-.</span>
-<span class="va">p</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>
-<span class="va">y</span>
-<span class="co">#&gt; [1] 20</span>
-
-<span class="va">p</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error in p$getxy() : object 'y' not found</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"P"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,</span>
+<span>    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">y</span> <span class="op">&lt;&lt;-</span> <span class="va">value</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">P</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># No error, but instead of setting private$y, this sets y in the global</span></span>
+<span><span class="co"># environment! This is because of the semantics of &lt;&lt;-.</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">y</span></span>
+<span><span class="co">#&gt; [1] 20</span></span>
+<span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in p$getxy() : object 'y' not found</span></span></code></pre></div>
 <p>To make this work with a portable class, we need to use <code>self$x</code> and <code>private$y</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">P2</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"P2"</span>,
-  portable <span class="op">=</span> <span class="cn">TRUE</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="fl">1</span>,
-    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="va">x</span>, <span class="va">private</span><span class="op">$</span><span class="va">y</span><span class="op">)</span>,
-    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">private</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">value</span>
-  <span class="op">)</span>,
-  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-    y <span class="op">=</span> <span class="cn">NA</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">P2</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="va">p2</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>
-<span class="va">p2</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1]  1 20</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">P2</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"P2"</span>,</span>
+<span>  portable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    getxy <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="va">x</span>, <span class="va">private</span><span class="op">$</span><span class="va">y</span><span class="op">)</span>,</span>
+<span>    sety <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="va">private</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  private <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">P2</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">p2</span><span class="op">$</span><span class="fu">sety</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">p2</span><span class="op">$</span><span class="fu">getxy</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1 20</span></span></code></pre></div>
 <p>There is a small performance penalty for using <code>self$x</code> as opposed to <code>x</code>. In most cases, this is negligible, but it can be noticeable in some situations where there are tens of thousands or more accesses per second. For more information, see <code><a href="../articles/Performance.html">vignette("Performance")</a></code>.</p>
 </div>
 <div class="section level2">
@@ -267,18 +267,18 @@
 <p>If this problem happens, the remedy is to rebuild pkgB against pkgA 2.0. I don’t know if CRAN rebuilds all downstream dependencies when a package is updated. If it doesn’t, then it’s possible for CRAN to have incompatible binary builds of pkgA and pkgB, and users would then have to install pkgB from source, with <code>install.packages("pkgB", type = "source")</code>.</p>
 <p>To avoid this problem entirely, objects of <code>ClassB</code> must not be instantiated at build time. You can either (A) instantiate them only in functions, or (B) instantiate them at package load time, by adding an <code>.onLoad</code> function to your package. For example:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,
-  inherit <span class="op">=</span> <span class="fu">pkgA</span><span class="fu">::</span><span class="va">ClassA</span>,
-  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># We'll fill this at load time</span>
-<span class="va">objB</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-
-<span class="va">.onLoad</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">libname</span>, <span class="va">pkgname</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co"># The namespace is locked after loading; we can still modify objB at this time.</span>
-  <span class="va">objB</span> <span class="op">&lt;&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ClassB</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"ClassB"</span>,</span>
+<span>  inherit <span class="op">=</span> <span class="fu">pkgA</span><span class="fu">::</span><span class="va">ClassA</span>,</span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We'll fill this at load time</span></span>
+<span><span class="va">objB</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span></span>
+<span><span class="va">.onLoad</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">libname</span>, <span class="va">pkgname</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># The namespace is locked after loading; we can still modify objB at this time.</span></span>
+<span>  <span class="va">objB</span> <span class="op">&lt;&lt;-</span> <span class="va">ClassB</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>You might be wondering why <code>ClassB</code> (the class, not the instance of the class <code>objB</code>) doesn’t save a copy of <code>pkgA::ClassA</code> inside of it when the package is built. This is because, for the <code>inherit</code> argument, <code>R6Class</code> saves the unevaluated expression (<code>pkgA::ClassA</code>), and evaluates it when <code>$new()</code> is called.</p>
 </div>
 <div class="section level2">
@@ -305,7 +305,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
   </div></footer>
