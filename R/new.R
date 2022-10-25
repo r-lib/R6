@@ -13,6 +13,15 @@ generator_funs$new <- function(...) {
     if (!identical(portable, inherit$portable))
       stop("Sub and superclass must both be portable or non-portable.")
 
+    if (!identical(cloneable, inherit$cloneable)) {
+      message(c(
+        "Sub and superclass have different cloneable properties. ",
+        "Subclass property will override superclass property."
+      ))
+
+      inherit[["public_methods"]][["clone"]] <- NULL
+    }
+
     # Merge fields over superclass fields, recursively --------------
     recursive_merge <- function(obj, which) {
       if (is.null(obj)) return(NULL)
@@ -91,12 +100,10 @@ generator_funs$new <- function(...) {
     if (portable) {
       # Set up the superclass objects
       super_struct <- create_super_env(inherit, public_bind_env,
-                                       private_bind_env, portable = TRUE,
-                                       cloneable = cloneable)
+                                       private_bind_env, portable = TRUE)
     } else {
       # Set up the superclass objects
-      super_struct <- create_super_env(inherit, public_bind_env, portable = FALSE,
-                                       cloneable = cloneable)
+      super_struct <- create_super_env(inherit, public_bind_env, portable = FALSE)
     }
 
     enclos_env$super <- super_struct$bind_env
@@ -201,7 +208,7 @@ encapsulate({
   # recursing early on in the function, and then fill the methods downward by
   # doing the work for each level and passing the needed information down.
   create_super_env <- function(inherit, public_bind_env, private_bind_env = NULL,
-                               portable = TRUE, cloneable = TRUE) {
+                               portable = TRUE) {
     public_methods  <- inherit$public_methods
     private_methods <- inherit$private_methods
     active          <- inherit$active
@@ -247,7 +254,7 @@ encapsulate({
     inherit_inherit <- inherit$get_inherit()
     if (!is.null(inherit_inherit)) {
       super_struct <- create_super_env(inherit_inherit, public_bind_env,
-                                       private_bind_env, portable, cloneable)
+                                       private_bind_env, portable)
       super_enclos_env$super <- super_struct$bind_env
 
       # Merge this level's methods over the superclass methods
