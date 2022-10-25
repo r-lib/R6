@@ -5,6 +5,8 @@ R6 2.5.1.9000
 
 * `R6Class()` now prints a message when a `finalize` method is public instead of private.
 
+* When subclass' `cloneable` property differs from superclass', the former will override the latter (@IndrajeetPatil, #247).
+
 R6 2.5.1
 ========
 
