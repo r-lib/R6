@@ -6,7 +6,7 @@ test_that("Subclass can override superclass' cloneable property", {
   Creature <- R6Class("Creature", cloneable = TRUE)
 
   Sheep <- R6Class("Sheep", inherit = Creature, cloneable = TRUE)
-  sheep <- Sheep$new()
+  expect_message(sheep <- Sheep$new(), NA)
   expect_s3_class(sheep$clone(), "Sheep")
 
   Human <- R6Class("Human", inherit = Creature, cloneable = FALSE)
@@ -22,6 +22,6 @@ test_that("Subclass can override superclass' cloneable property", {
   expect_s3_class(sheep$clone(), "Sheep")
 
   Human <- R6Class("Human", inherit = Creature, cloneable = FALSE)
-  human <- Human$new()
+  expect_message(human <- Human$new(), NA)
   expect_error(human$clone(), "attempt to apply non-function")
 })
