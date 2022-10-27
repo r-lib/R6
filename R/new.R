@@ -13,13 +13,22 @@ generator_funs$new <- function(...) {
     if (!identical(portable, inherit$portable))
       stop("Sub and superclass must both be portable or non-portable.")
 
+    # If `cloneable` property differs between sub and superclass
+    # - super will override sub if super doesn't allow cloning
+    # - sub will override super if super allows cloning
     if (!identical(cloneable, inherit$cloneable)) {
-      message(c(
-        "Sub and superclass have different cloneable properties. ",
-        "Subclass property will override superclass property."
-      ))
+      if (inherit$cloneable) {
+        inherit[["public_methods"]][["clone"]] <- NULL
+      }
 
-      inherit[["public_methods"]][["clone"]] <- NULL
+      if (!inherit$cloneable) {
+        message(c(
+          "Subclass wants to allow cloning, but superclass has turned it off. ",
+          "Therefore, cloning will also be turned off for subclass."
+        ))
+
+        public_methods[["clone"]] <- NULL
+      }
     }
 
     # Merge fields over superclass fields, recursively --------------
