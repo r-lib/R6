@@ -449,16 +449,16 @@ the median time, in microseconds:</p>
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                    name median</span></span>
-<span><span class="co">#&gt; 1              RC$new() 235.00</span></span>
-<span><span class="co">#&gt; 2              R6$new()  38.10</span></span>
-<span><span class="co">#&gt; 3       R6NoClass$new()  40.35</span></span>
-<span><span class="co">#&gt; 4   R6NonPortable$new()  41.20</span></span>
-<span><span class="co">#&gt; 5  R6NonCloneable$new()  40.65</span></span>
-<span><span class="co">#&gt; 6          R6Bare$new()  36.15</span></span>
-<span><span class="co">#&gt; 7       R6Private$new()  56.35</span></span>
-<span><span class="co">#&gt; 8   R6PrivateBare$new()  50.00</span></span>
-<span><span class="co">#&gt; 9    FunctionEnvClass()   1.80</span></span>
-<span><span class="co">#&gt; 10 FunctionEnvNoClass()   1.00</span></span></code></pre></div>
+<span><span class="co">#&gt; 1              RC$new() 311.10</span></span>
+<span><span class="co">#&gt; 2              R6$new()  46.80</span></span>
+<span><span class="co">#&gt; 3       R6NoClass$new()  44.65</span></span>
+<span><span class="co">#&gt; 4   R6NonPortable$new()  46.45</span></span>
+<span><span class="co">#&gt; 5  R6NonCloneable$new()  45.25</span></span>
+<span><span class="co">#&gt; 6          R6Bare$new()  41.15</span></span>
+<span><span class="co">#&gt; 7       R6Private$new()  63.45</span></span>
+<span><span class="co">#&gt; 8   R6PrivateBare$new()  56.55</span></span>
+<span><span class="co">#&gt; 9    FunctionEnvClass()   2.70</span></span>
+<span><span class="co">#&gt; 10 FunctionEnvNoClass()   1.40</span></span></code></pre></div>
 <p>The plot below shows the median instantiation time.</p>
 <p><img src="Performance_files/figure-html/unnamed-chunk-25-1.png" width="768"></p>
 <p>Reference classes are much slower to instantiate than the other types
@@ -499,7 +499,7 @@ we’ll make some objects:</p>
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;             name median</span></span>
-<span><span class="co">#&gt; 1           rc$x    7.0</span></span>
+<span><span class="co">#&gt; 1           rc$x    7.2</span></span>
 <span><span class="co">#&gt; 2           r6$x    0.8</span></span>
 <span><span class="co">#&gt; 3    r6noclass$x    0.2</span></span>
 <span><span class="co">#&gt; 4     r6noport$x    0.8</span></span>
@@ -540,13 +540,13 @@ object?</p>
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                name median</span></span>
-<span><span class="co">#&gt; 1         rc$x &lt;- 4   35.5</span></span>
+<span><span class="co">#&gt; 1         rc$x &lt;- 4   39.3</span></span>
 <span><span class="co">#&gt; 2         r6$x &lt;- 4    1.5</span></span>
-<span><span class="co">#&gt; 3  r6noclass$x &lt;- 4    0.8</span></span>
-<span><span class="co">#&gt; 4   r6noport$x &lt;- 4    1.5</span></span>
+<span><span class="co">#&gt; 3  r6noclass$x &lt;- 4    0.9</span></span>
+<span><span class="co">#&gt; 4   r6noport$x &lt;- 4    1.6</span></span>
 <span><span class="co">#&gt; 5  r6noclone$x &lt;- 4    1.6</span></span>
 <span><span class="co">#&gt; 6     r6bare$x &lt;- 4    0.8</span></span>
-<span><span class="co">#&gt; 7    fun_env$x &lt;- 4    1.4</span></span>
+<span><span class="co">#&gt; 7    fun_env$x &lt;- 4    1.5</span></span>
 <span><span class="co">#&gt; 8 fun_env_nc$x &lt;- 4    0.8</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-30-1.png" width="768"></p>
 <p>Reference classes are significantly slower than the others, again. In
@@ -581,10 +581,10 @@ and in others, it just uses <code>x</code> (when
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                  name median</span></span>
-<span><span class="co">#&gt; 1           rc$getx()    7.0</span></span>
-<span><span class="co">#&gt; 2           r6$getx()    2.0</span></span>
-<span><span class="co">#&gt; 3    r6noclass$getx()    0.6</span></span>
-<span><span class="co">#&gt; 4     r6noport$getx()    1.1</span></span>
+<span><span class="co">#&gt; 1           rc$getx()    7.3</span></span>
+<span><span class="co">#&gt; 2           r6$getx()    1.9</span></span>
+<span><span class="co">#&gt; 3    r6noclass$getx()    0.5</span></span>
+<span><span class="co">#&gt; 4     r6noport$getx()    1.0</span></span>
 <span><span class="co">#&gt; 5    r6noclone$getx()    2.1</span></span>
 <span><span class="co">#&gt; 6       r6bare$getx()    0.4</span></span>
 <span><span class="co">#&gt; 7       r6priv$getx()    1.2</span></span>
@@ -663,10 +663,10 @@ two classes:</p>
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;               name median</span></span>
-<span><span class="co">#&gt; 1   rc_self$setx()  42.40</span></span>
-<span><span class="co">#&gt; 2 rc_noself$setx()  23.50</span></span>
-<span><span class="co">#&gt; 3   r6_self$setx()   3.80</span></span>
-<span><span class="co">#&gt; 4 r6_noself$setx()   1.45</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   rc_self$setx()   59.4</span></span>
+<span><span class="co">#&gt; 2 rc_noself$setx()   33.6</span></span>
+<span><span class="co">#&gt; 3   r6_self$setx()    5.0</span></span>
+<span><span class="co">#&gt; 4 r6_noself$setx()    2.1</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-36-1.png" width="768"></p>
 <p>For both reference and non-portable R6 classes, assignment using
 <code>.self$x &lt;-</code> is somewhat slower than using
@@ -719,8 +719,8 @@ function does nothing — it simply returns <code>NULL</code>.</p>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;   name median</span></span>
 <span><span class="co">#&gt; 1 e1$x    0.2</span></span>
-<span><span class="co">#&gt; 2 e2$x    0.7</span></span>
-<span><span class="co">#&gt; 3 e3$x    1.0</span></span></code></pre></div>
+<span><span class="co">#&gt; 2 e2$x    0.6</span></span>
+<span><span class="co">#&gt; 3 e3$x    0.9</span></span></code></pre></div>
 <p>Using <code>$</code> on <code>e2</code> and <code>e3</code> is much
 slower than on <code>e1</code>. This is because <code>e2</code> and
 <code>e3</code> have a class attribute. Even though there’s no
