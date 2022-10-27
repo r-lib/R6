@@ -81,7 +81,8 @@
 
 
 
-<script src="Performance_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>R6 and Reference Class performance tests</h1>
             
@@ -92,8 +93,13 @@
 
     
     
-<p>This document compares the memory costs and speed of R’s reference classes against R6 classes and simple environments. For most uses, R6 and reference classes have comparable features, but as we’ll see, R6 classes are faster and more lightweight.</p>
-<p>This document tests reference classes against R6 classes (in many variations), as well as against very simple reference objects: environments created by function calls.</p>
+<p>This document compares the memory costs and speed of R’s reference
+classes against R6 classes and simple environments. For most uses, R6
+and reference classes have comparable features, but as we’ll see, R6
+classes are faster and more lightweight.</p>
+<p>This document tests reference classes against R6 classes (in many
+variations), as well as against very simple reference objects:
+environments created by function calls.</p>
 <hr>
 <p>First we’ll load some packages which will be used below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -105,15 +111,25 @@
 <div class="section level2">
 <h2 id="class-definitions">Class definitions<a class="anchor" aria-label="anchor" href="#class-definitions"></a>
 </h2>
-<p>We’ll start by defining a number of classes or class-like entities, using reference classes, R6 classes, and simple environments that are created directly by functions. There are a number of options for R6 that can affect the size of the resulting objects, so we will use a number of variants. These classes will be used for the speed and memory tests that follow. This is a lot of boring code, so you may want to skip ahead to the results.</p>
+<p>We’ll start by defining a number of classes or class-like entities,
+using reference classes, R6 classes, and simple environments that are
+created directly by functions. There are a number of options for R6 that
+can affect the size of the resulting objects, so we will use a number of
+variants. These classes will be used for the speed and memory tests that
+follow. This is a lot of boring code, so you may want to skip ahead to
+the results.</p>
 <p>All of these classes have the same basic characteristics:</p>
 <ul>
 <li>A field named <code>x</code> that contains a number.</li>
 <li>An way of initializing the value of <code>x</code>.</li>
-<li>A method named <code>getx</code> for retrieving the value of <code>x</code>.</li>
-<li>A method named <code>inc</code> for incrementing the value of <code>x</code>.</li>
+<li>A method named <code>getx</code> for retrieving the value of
+<code>x</code>.</li>
+<li>A method named <code>inc</code> for incrementing the value of
+<code>x</code>.</li>
 </ul>
-<p>The fields and methods are accessed with the <code>$</code> operator, so if we have an object named <code>obj</code>, we could use <code>obj$x</code> or <code>obj$getx()</code>.</p>
+<p>The fields and methods are accessed with the <code>$</code> operator,
+so if we have an object named <code>obj</code>, we could use
+<code>obj$x</code> or <code>obj$getx()</code>.</p>
 <div class="section level3">
 <h3 id="r-reference-class">R reference class<a class="anchor" aria-label="anchor" href="#r-reference-class"></a>
 </h3>
@@ -126,8 +142,12 @@
 <span>    inc <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">x</span> <span class="op">&lt;&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>In reference classes, the binding that points back to the object is named <code>.self</code>. Within a method, assignment can be done by using <code>.self</code>, as in <code>.self$x &lt;- 10</code>, or by using <code>&lt;&lt;-</code>, as in <code>x &lt;&lt;- 10</code>.</p>
-<p>To create an object, simply call <code>$new()</code> on the class:</p>
+<p>In reference classes, the binding that points back to the object is
+named <code>.self</code>. Within a method, assignment can be done by
+using <code>.self</code>, as in <code>.self$x &lt;- 10</code>, or by
+using <code>&lt;&lt;-</code>, as in <code>x &lt;&lt;- 10</code>.</p>
+<p>To create an object, simply call <code>$new()</code> on the
+class:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RC</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reference class object of class "RC"</span></span>
@@ -137,7 +157,9 @@
 <div class="section level3">
 <h3 id="r6-class">R6 class<a class="anchor" aria-label="anchor" href="#r6-class"></a>
 </h3>
-<p>Creating an R6 class is similar to the reference class, except that there’s no need to separate the fields and methods, and you can’t specify the types of the fields.</p>
+<p>Creating an R6 class is similar to the reference class, except that
+there’s no need to separate the fields and methods, and you can’t
+specify the types of the fields.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6"</span>,</span>
 <span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -147,7 +169,9 @@
 <span>    inc <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">self</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Whereas reference classes use <code>.self</code>, R6 classes use <code>self</code> (without the leading period). As with reference classes, objects are instantiated by calling <code>$new()</code>:</p>
+<p>Whereas reference classes use <code>.self</code>, R6 classes use
+<code>self</code> (without the leading period). As with reference
+classes, objects are instantiated by calling <code>$new()</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va"><a href="../reference/R6Class.html">R6</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;R6&gt;</span></span>
@@ -157,13 +181,22 @@
 <span><span class="co">#&gt;     inc: function (n = 1) </span></span>
 <span><span class="co">#&gt;     initialize: function (x = 1) </span></span>
 <span><span class="co">#&gt;     x: 1</span></span></code></pre></div>
-<p>An R6 object essentially just a set of environments structured in a particular way. The fields and methods for an R6 object have bindings (that is, they have names) in the <em>public environment</em>. There is also have a separate environment which is the <em>enclosing environment</em> for methods (they “run in” an environment that contains a binding named <code>self</code>, which is simply a reference to the public environment).</p>
+<p>An R6 object essentially just a set of environments structured in a
+particular way. The fields and methods for an R6 object have bindings
+(that is, they have names) in the <em>public environment</em>. There is
+also have a separate environment which is the <em>enclosing
+environment</em> for methods (they “run in” an environment that contains
+a binding named <code>self</code>, which is simply a reference to the
+public environment).</p>
 </div>
 <div class="section level3">
 <h3 id="r6-class-without-class-attribute">R6 class, without class attribute<a class="anchor" aria-label="anchor" href="#r6-class-without-class-attribute"></a>
 </h3>
-<p>By default, a class attribute is added to R6 objects. This attribute adds a slight performance penalty because R will attempt to use S3 dispatch when using <code>$</code> on the object.</p>
-<p>It’s possible generate objects without the class attribute, by using <code>class=FALSE</code>:</p>
+<p>By default, a class attribute is added to R6 objects. This attribute
+adds a slight performance penalty because R will attempt to use S3
+dispatch when using <code>$</code> on the object.</p>
+<p>It’s possible generate objects without the class attribute, by using
+<code>class=FALSE</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6NoClass</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6NoClass"</span>,</span>
 <span>  class <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -174,13 +207,19 @@
 <span>    inc <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">self</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">self</span><span class="op">$</span><span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Note that without the class attribute, S3 method dispatch on the objects is not possible.</p>
+<p>Note that without the class attribute, S3 method dispatch on the
+objects is not possible.</p>
 </div>
 <div class="section level3">
 <h3 id="r6-class-non-portable">R6 class, non-portable<a class="anchor" aria-label="anchor" href="#r6-class-non-portable"></a>
 </h3>
-<p>By default, R6 objects are <em>portable</em>. This means that inheritance can be in classes that are in different packages. However, it also requires the use of <code>self$</code> and <code>private$</code> to access members, and this incurs a small performance penalty.</p>
-<p>If <code>portable=FALSE</code> is used, members can be accessed without using <code>self$</code>, and assignment can be done with <code>&lt;&lt;-</code>:</p>
+<p>By default, R6 objects are <em>portable</em>. This means that
+inheritance can be in classes that are in different packages. However,
+it also requires the use of <code>self$</code> and <code>private$</code>
+to access members, and this incurs a small performance penalty.</p>
+<p>If <code>portable=FALSE</code> is used, members can be accessed
+without using <code>self$</code>, and assignment can be done with
+<code>&lt;&lt;-</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6NonPortable</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6NonPortable"</span>,</span>
 <span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -195,7 +234,9 @@
 <div class="section level3">
 <h3 id="r6-class-with-cloneablefalse">R6 class, with <code>cloneable=FALSE</code><a class="anchor" aria-label="anchor" href="#r6-class-with-cloneablefalse"></a>
 </h3>
-<p>By default, R6 objects have a <code>clone()</code> method, which is a fairly large function. If you do not need this feature, you can save some memory by using <code>cloneable=FALSE</code>.</p>
+<p>By default, R6 objects have a <code>clone()</code> method, which is a
+fairly large function. If you do not need this feature, you can save
+some memory by using <code>cloneable=FALSE</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6NonCloneable</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6NonCloneable"</span>,</span>
 <span>  cloneable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -208,9 +249,12 @@
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="r6-class-without-class-attribute-non-portable-and-non-cloneable">R6 class, without class attribute, non-portable, and non-cloneable<a class="anchor" aria-label="anchor" href="#r6-class-without-class-attribute-non-portable-and-non-cloneable"></a>
+<h3 id="r6-class-without-class-attribute-non-portable-and-non-cloneable">R6 class, without class attribute, non-portable, and
+non-cloneable<a class="anchor" aria-label="anchor" href="#r6-class-without-class-attribute-non-portable-and-non-cloneable"></a>
 </h3>
-<p>For comparison, we’ll use a an R6 class that is without a class attribute, non-portable, and non-cloneable. This is the most stripped-down we can make an R6 object.</p>
+<p>For comparison, we’ll use a an R6 class that is without a class
+attribute, non-portable, and non-cloneable. This is the most
+stripped-down we can make an R6 object.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6Bare</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6Bare"</span>,</span>
 <span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -237,7 +281,9 @@
 <span>    inc <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">private</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">private</span><span class="op">$</span><span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Instead of a single <code>self</code> object which refers to all items in an object, these objects have <code>self</code> (which refers to the public items) and <code>private</code>.</p>
+<p>Instead of a single <code>self</code> object which refers to all
+items in an object, these objects have <code>self</code> (which refers
+to the public items) and <code>private</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6Private</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;R6Private&gt;</span></span>
@@ -250,9 +296,11 @@
 <span><span class="co">#&gt;     x: 1</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="r6-class-with-public-and-private-no-class-attribute-non-portable-and-non-cloneable">R6 class, with public and private, no class attribute, non-portable, and non-cloneable<a class="anchor" aria-label="anchor" href="#r6-class-with-public-and-private-no-class-attribute-non-portable-and-non-cloneable"></a>
+<h3 id="r6-class-with-public-and-private-no-class-attribute-non-portable-and-non-cloneable">R6 class, with public and private, no class attribute, non-portable,
+and non-cloneable<a class="anchor" aria-label="anchor" href="#r6-class-with-public-and-private-no-class-attribute-non-portable-and-non-cloneable"></a>
 </h3>
-<p>For comparison, we’ll add a version that is without a class attribute, non-portable, and non-cloneable.</p>
+<p>For comparison, we’ll add a version that is without a class
+attribute, non-portable, and non-cloneable.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6PrivateBare</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6PrivateBare"</span>,</span>
 <span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -269,7 +317,10 @@
 <div class="section level3">
 <h3 id="environment-created-by-a-function-call-with-class-attribute">Environment created by a function call, with class attribute<a class="anchor" aria-label="anchor" href="#environment-created-by-a-function-call-with-class-attribute"></a>
 </h3>
-<p>In R, environments are passed by reference. A simple way to create an object that’s passed by reference is to use the environment created by the invocation of a function. The function below captures that environment, attaches a class to it, and returns it:</p>
+<p>In R, environments are passed by reference. A simple way to create an
+object that’s passed by reference is to use the environment created by
+the invocation of a function. The function below captures that
+environment, attaches a class to it, and returns it:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FunctionEnvClass</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">inc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">x</span> <span class="op">&lt;&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
@@ -278,16 +329,20 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">self</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"FunctionEnvClass"</span></span>
 <span>  <span class="va">self</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Even though <code>x</code> isn’t declared in the function body, it gets captured because it’s an argument to the function.</p>
+<p>Even though <code>x</code> isn’t declared in the function body, it
+gets captured because it’s an argument to the function.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="fu">FunctionEnvClass</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "getx" "inc"  "self" "x"</span></span></code></pre></div>
-<p>Objects created this way are very similar to those created by <code>R6</code> generator we created above.</p>
+<p>Objects created this way are very similar to those created by
+<code>R6</code> generator we created above.</p>
 </div>
 <div class="section level3">
 <h3 id="environment-created-by-a-function-call-without-class-attribute">Environment created by a function call, without class attribute<a class="anchor" aria-label="anchor" href="#environment-created-by-a-function-call-without-class-attribute"></a>
 </h3>
-<p>We can make an even simpler type of reference object to the previous one, by not having a a class attribute, and not having <code>self</code> object:</p>
+<p>We can make an even simpler type of reference object to the previous
+one, by not having a a class attribute, and not having <code>self</code>
+object:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FunctionEnvNoClass</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">inc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="va">x</span> <span class="op">&lt;&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">n</span></span>
@@ -304,11 +359,16 @@
 <div class="section level2">
 <h2 id="tests">Tests<a class="anchor" aria-label="anchor" href="#tests"></a>
 </h2>
-<p>For all the timings using <code><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark()</a></code>, the results are reported in microseconds, and the most useful value is probably the median column.</p>
+<p>For all the timings using <code><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark()</a></code>, the results
+are reported in microseconds, and the most useful value is probably the
+median column.</p>
 <div class="section level3">
 <h3 id="memory-footprint">Memory footprint<a class="anchor" aria-label="anchor" href="#memory-footprint"></a>
 </h3>
-<p>How much memory does a single instance of each object take, and how much memory does each additional object take? We’ll use the functions <code>obj_size</code> and <code>obj_sizes</code> (shown at the bottom of this document) to calculate the sizes.</p>
+<p>How much memory does a single instance of each object take, and how
+much memory does each additional object take? We’ll use the functions
+<code>obj_size</code> and <code>obj_sizes</code> (shown at the bottom of
+this document) to calculate the sizes.</p>
 <p>Sizes of each type of object, in bytes:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sizes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://lobstr.r-lib.org/reference/obj_size.html" class="external-link">obj_sizes</a></span><span class="op">(</span></span>
@@ -335,11 +395,20 @@
 <span><span class="co">#&gt; R6PrivateBare$new()    14512         840</span></span>
 <span><span class="co">#&gt; FunctionEnvClass()     13424         616</span></span>
 <span><span class="co">#&gt; FunctionEnvNoClass()   11944         504</span></span></code></pre></div>
-<p>The results are plotted below. Note that the plots have very different x scales.</p>
+<p>The results are plotted below. Note that the plots have very
+different x scales.</p>
 <p><img src="Performance_files/figure-html/unnamed-chunk-22-1.png" width="374.4"><img src="Performance_files/figure-html/unnamed-chunk-22-2.png" width="374.4"></p>
-<p>Some preliminary observations about the first instance of various classes: Using a reference class consumes a large amount of memory. For R6 objects, the option with the largest impact is <code>cloneable</code>: not having the <code>clone()</code> method saves around 40 kB of memory.</p>
-<p>For subsequent instances of these classes, there isn’t nearly as much difference between the different kinds.</p>
-<p>It appeared that using a reference class takes up a huge amount of memory, but much of that is shared between reference classes. Adding an object from a different reference class doesn’t require much more memory — around 38KB:</p>
+<p>Some preliminary observations about the first instance of various
+classes: Using a reference class consumes a large amount of memory. For
+R6 objects, the option with the largest impact is
+<code>cloneable</code>: not having the <code>clone()</code> method saves
+around 40 kB of memory.</p>
+<p>For subsequent instances of these classes, there isn’t nearly as much
+difference between the different kinds.</p>
+<p>It appeared that using a reference class takes up a huge amount of
+memory, but much of that is shared between reference classes. Adding an
+object from a different reference class doesn’t require much more memory
+— around 38KB:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RC2</span> <span class="op">&lt;-</span> <span class="kw">setRefClass</span><span class="op">(</span><span class="st">"RC2"</span>,</span>
 <span>  fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span>,</span>
@@ -356,7 +425,8 @@
 <div class="section level3">
 <h3 id="object-instantiation-speed">Object instantiation speed<a class="anchor" aria-label="anchor" href="#object-instantiation-speed"></a>
 </h3>
-<p>How much time does it take to create one of these objects? This shows the median time, in microseconds:</p>
+<p>How much time does it take to create one of these objects? This shows
+the median time, in microseconds:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function to extract the medians from microbenchmark results</span></span>
 <span><span class="va">mb_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
@@ -379,24 +449,28 @@
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                    name median</span></span>
-<span><span class="co">#&gt; 1              RC$new() 312.80</span></span>
-<span><span class="co">#&gt; 2              R6$new()  45.55</span></span>
-<span><span class="co">#&gt; 3       R6NoClass$new()  44.80</span></span>
-<span><span class="co">#&gt; 4   R6NonPortable$new()  44.90</span></span>
-<span><span class="co">#&gt; 5  R6NonCloneable$new()  46.80</span></span>
-<span><span class="co">#&gt; 6          R6Bare$new()  39.45</span></span>
-<span><span class="co">#&gt; 7       R6Private$new()  64.70</span></span>
-<span><span class="co">#&gt; 8   R6PrivateBare$new()  58.60</span></span>
-<span><span class="co">#&gt; 9    FunctionEnvClass()   2.80</span></span>
-<span><span class="co">#&gt; 10 FunctionEnvNoClass()   1.60</span></span></code></pre></div>
+<span><span class="co">#&gt; 1              RC$new() 235.00</span></span>
+<span><span class="co">#&gt; 2              R6$new()  38.10</span></span>
+<span><span class="co">#&gt; 3       R6NoClass$new()  40.35</span></span>
+<span><span class="co">#&gt; 4   R6NonPortable$new()  41.20</span></span>
+<span><span class="co">#&gt; 5  R6NonCloneable$new()  40.65</span></span>
+<span><span class="co">#&gt; 6          R6Bare$new()  36.15</span></span>
+<span><span class="co">#&gt; 7       R6Private$new()  56.35</span></span>
+<span><span class="co">#&gt; 8   R6PrivateBare$new()  50.00</span></span>
+<span><span class="co">#&gt; 9    FunctionEnvClass()   1.80</span></span>
+<span><span class="co">#&gt; 10 FunctionEnvNoClass()   1.00</span></span></code></pre></div>
 <p>The plot below shows the median instantiation time.</p>
 <p><img src="Performance_files/figure-html/unnamed-chunk-25-1.png" width="768"></p>
-<p>Reference classes are much slower to instantiate than the other types of classes. Instantiating R6 objects is roughly 5 times faster. Creating an environment with a simple function call is another 20-30 times faster.</p>
+<p>Reference classes are much slower to instantiate than the other types
+of classes. Instantiating R6 objects is roughly 5 times faster. Creating
+an environment with a simple function call is another 20-30 times
+faster.</p>
 </div>
 <div class="section level3">
 <h3 id="field-access-speed">Field access speed<a class="anchor" aria-label="anchor" href="#field-access-speed"></a>
 </h3>
-<p>How much time does it take to access a field in an object? First we’ll make some objects:</p>
+<p>How much time does it take to access a field in an object? First
+we’ll make some objects:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rc</span>           <span class="op">&lt;-</span> <span class="va">RC</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">r6</span>           <span class="op">&lt;-</span> <span class="va"><a href="../reference/R6Class.html">R6</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
@@ -425,7 +499,7 @@
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;             name median</span></span>
-<span><span class="co">#&gt; 1           rc$x    7.2</span></span>
+<span><span class="co">#&gt; 1           rc$x    7.0</span></span>
 <span><span class="co">#&gt; 2           r6$x    0.8</span></span>
 <span><span class="co">#&gt; 3    r6noclass$x    0.2</span></span>
 <span><span class="co">#&gt; 4     r6noport$x    0.8</span></span>
@@ -436,13 +510,20 @@
 <span><span class="co">#&gt; 9      fun_env$x    0.7</span></span>
 <span><span class="co">#&gt; 10  fun_env_nc$x    0.2</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-28-1.png" width="768"></p>
-<p>Accessing the field of a reference class is much slower than the other methods.</p>
-<p>There’s also an obvious pattern where accessing the field of an environment (created by R6 or a function call) is slower when there is a class attribute. This is because, for the objects that have a class attribute, R attempts to look up an S3 method for <code>$</code>, and this lookup has a performance penalty. We’ll see more about this below.</p>
+<p>Accessing the field of a reference class is much slower than the
+other methods.</p>
+<p>There’s also an obvious pattern where accessing the field of an
+environment (created by R6 or a function call) is slower when there is a
+class attribute. This is because, for the objects that have a class
+attribute, R attempts to look up an S3 method for <code>$</code>, and
+this lookup has a performance penalty. We’ll see more about this
+below.</p>
 </div>
 <div class="section level3">
 <h3 id="field-setting-speed">Field setting speed<a class="anchor" aria-label="anchor" href="#field-setting-speed"></a>
 </h3>
-<p>How much time does it take to set the value of a field in an object?</p>
+<p>How much time does it take to set the value of a field in an
+object?</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
 <span>  <span class="va">rc</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">4</span>,</span>
@@ -459,7 +540,7 @@
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                name median</span></span>
-<span><span class="co">#&gt; 1         rc$x &lt;- 4   36.6</span></span>
+<span><span class="co">#&gt; 1         rc$x &lt;- 4   35.5</span></span>
 <span><span class="co">#&gt; 2         r6$x &lt;- 4    1.5</span></span>
 <span><span class="co">#&gt; 3  r6noclass$x &lt;- 4    0.8</span></span>
 <span><span class="co">#&gt; 4   r6noport$x &lt;- 4    1.5</span></span>
@@ -468,13 +549,22 @@
 <span><span class="co">#&gt; 7    fun_env$x &lt;- 4    1.4</span></span>
 <span><span class="co">#&gt; 8 fun_env_nc$x &lt;- 4    0.8</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-30-1.png" width="768"></p>
-<p>Reference classes are significantly slower than the others, again. In this case, there’s additional overhead due to type-checking the value.</p>
-<p>Once more, the no-class objects are significantly faster than the others, again probably due to attempted S3 dispatch on the <code>`$&lt;-`</code> function.</p>
+<p>Reference classes are significantly slower than the others, again. In
+this case, there’s additional overhead due to type-checking the
+value.</p>
+<p>Once more, the no-class objects are significantly faster than the
+others, again probably due to attempted S3 dispatch on the
+<code>`$&lt;-`</code> function.</p>
 </div>
 <div class="section level3">
 <h3 id="speed-of-method-call-that-accesses-a-field">Speed of method call that accesses a field<a class="anchor" aria-label="anchor" href="#speed-of-method-call-that-accesses-a-field"></a>
 </h3>
-<p>How much overhead is there when calling a method from one of these objects? All of these <code>getx()</code> methods simply return the value of <code>x</code> in the object. When necessary, this method uses <code>self$x</code> (for R6 classes, when <code>portable=TRUE</code>), and in others, it just uses <code>x</code> (when <code>portable=FALSE</code>, and in reference classes).</p>
+<p>How much overhead is there when calling a method from one of these
+objects? All of these <code>getx()</code> methods simply return the
+value of <code>x</code> in the object. When necessary, this method uses
+<code>self$x</code> (for R6 classes, when <code>portable=TRUE</code>),
+and in others, it just uses <code>x</code> (when
+<code>portable=FALSE</code>, and in reference classes).</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
 <span>  <span class="va">rc</span><span class="op">$</span><span class="fu">getx</span><span class="op">(</span><span class="op">)</span>,</span>
@@ -491,26 +581,39 @@
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;                  name median</span></span>
-<span><span class="co">#&gt; 1           rc$getx()    7.3</span></span>
+<span><span class="co">#&gt; 1           rc$getx()    7.0</span></span>
 <span><span class="co">#&gt; 2           r6$getx()    2.0</span></span>
 <span><span class="co">#&gt; 3    r6noclass$getx()    0.6</span></span>
 <span><span class="co">#&gt; 4     r6noport$getx()    1.1</span></span>
 <span><span class="co">#&gt; 5    r6noclone$getx()    2.1</span></span>
 <span><span class="co">#&gt; 6       r6bare$getx()    0.4</span></span>
-<span><span class="co">#&gt; 7       r6priv$getx()    1.3</span></span>
+<span><span class="co">#&gt; 7       r6priv$getx()    1.2</span></span>
 <span><span class="co">#&gt; 8  r6priv_bare$getx()    0.4</span></span>
 <span><span class="co">#&gt; 9      fun_env$getx()    1.0</span></span>
 <span><span class="co">#&gt; 10  fun_env_nc$getx()    0.4</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-32-1.png" width="768"></p>
 <p>The reference class is the slowest.</p>
-<p><code>r6</code> is also somewhat slower than the others. There are two reasons for this: first, it uses <code>self$x</code> which adds some time, and second, it has a class attribute, which slows down the access of both <code>r6$getx</code> and <code>self$x</code>.</p>
-<p>One might expect <code>r6priv</code> to be the same speed as <code>r6</code>, but it is faster. Although accessing <code>r6priv$getx</code> is slow because <code>r6priv</code> has a class attribute, accessing <code>private$x</code> is faster because it does not have a class attribute.</p>
-<p>The objects which can access <code>x</code> directly (without <code>self</code> or <code>private</code>) and which lack a class attribute are the fastest.</p>
+<p><code>r6</code> is also somewhat slower than the others. There are
+two reasons for this: first, it uses <code>self$x</code> which adds some
+time, and second, it has a class attribute, which slows down the access
+of both <code>r6$getx</code> and <code>self$x</code>.</p>
+<p>One might expect <code>r6priv</code> to be the same speed as
+<code>r6</code>, but it is faster. Although accessing
+<code>r6priv$getx</code> is slow because <code>r6priv</code> has a class
+attribute, accessing <code>private$x</code> is faster because it does
+not have a class attribute.</p>
+<p>The objects which can access <code>x</code> directly (without
+<code>self</code> or <code>private</code>) and which lack a class
+attribute are the fastest.</p>
 </div>
 <div class="section level3">
-<h3 id="assignment-using-selfx---vs--x--">Assignment using <code>self$x &lt;-</code> vs. <code>x &lt;&lt;-</code><a class="anchor" aria-label="anchor" href="#assignment-using-selfx---vs--x--"></a>
+<h3 id="assignment-using-selfx---vs--x--">Assignment using <code>self$x &lt;-</code>
+vs. <code>x &lt;&lt;-</code><a class="anchor" aria-label="anchor" href="#assignment-using-selfx---vs--x--"></a>
 </h3>
-<p>With reference classes, you can modify fields using the <code>&lt;&lt;-</code> operator, or by using the <code>.self</code> object. For example, compare the <code>setx()</code> methods of these two classes:</p>
+<p>With reference classes, you can modify fields using the
+<code>&lt;&lt;-</code> operator, or by using the <code>.self</code>
+object. For example, compare the <code>setx()</code> methods of these
+two classes:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RCself</span> <span class="op">&lt;-</span> <span class="kw">setRefClass</span><span class="op">(</span><span class="st">"RCself"</span>,</span>
 <span>  fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span>,</span>
@@ -527,7 +630,8 @@
 <span>    setx <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="va">x</span> <span class="op">&lt;&lt;-</span> <span class="va">n</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Non-portable R6 classes are similar, except they use <code>self</code> instead of <code>.self</code>.</p>
+<p>Non-portable R6 classes are similar, except they use
+<code>self</code> instead of <code>.self</code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">R6self</span> <span class="op">&lt;-</span> <span class="kw"><a href="../reference/R6Class.html">R6Class</a></span><span class="op">(</span><span class="st">"R6self"</span>,</span>
 <span>  portable <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -559,24 +663,33 @@
 <span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu">mb_summary</span><span class="op">(</span><span class="va">speed</span><span class="op">)</span></span>
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;               name median</span></span>
-<span><span class="co">#&gt; 1   rc_self$setx()   43.7</span></span>
-<span><span class="co">#&gt; 2 rc_noself$setx()   24.6</span></span>
-<span><span class="co">#&gt; 3   r6_self$setx()    3.8</span></span>
-<span><span class="co">#&gt; 4 r6_noself$setx()    1.5</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   rc_self$setx()  42.40</span></span>
+<span><span class="co">#&gt; 2 rc_noself$setx()  23.50</span></span>
+<span><span class="co">#&gt; 3   r6_self$setx()   3.80</span></span>
+<span><span class="co">#&gt; 4 r6_noself$setx()   1.45</span></span></code></pre></div>
 <p><img src="Performance_files/figure-html/unnamed-chunk-36-1.png" width="768"></p>
-<p>For both reference and non-portable R6 classes, assignment using <code>.self$x &lt;-</code> is somewhat slower than using <code>x &lt;&lt;-</code>.</p>
-<p>Bear in mind that, by default, R6 classes are portable, and can’t use assignment with <code>x &lt;&lt;-</code>.</p>
+<p>For both reference and non-portable R6 classes, assignment using
+<code>.self$x &lt;-</code> is somewhat slower than using
+<code>x &lt;&lt;-</code>.</p>
+<p>Bear in mind that, by default, R6 classes are portable, and can’t use
+assignment with <code>x &lt;&lt;-</code>.</p>
 </div>
 <div class="section level3">
-<h3 id="overhead-from-using-on-objects-with-a-class-attribute">Overhead from using <code>$</code> on objects with a class attribute<a class="anchor" aria-label="anchor" href="#overhead-from-using-on-objects-with-a-class-attribute"></a>
+<h3 id="overhead-from-using-on-objects-with-a-class-attribute">Overhead from using <code>$</code> on objects with a class
+attribute<a class="anchor" aria-label="anchor" href="#overhead-from-using-on-objects-with-a-class-attribute"></a>
 </h3>
-<p>There is some overhead when using <code>$</code> on an object that has a class attribute. In the test below, we’ll create three different kinds of objects:</p>
+<p>There is some overhead when using <code>$</code> on an object that
+has a class attribute. In the test below, we’ll create three different
+kinds of objects:</p>
 <ol style="list-style-type: decimal">
 <li>An environment with no class attribute.</li>
-<li>An environment with a class <code>"e2"</code>, but without a <code>$.e2</code> S3 method.</li>
-<li>An environment with a class <code>"e3"</code>, which has a <code>$.e3</code> S3 method that simply returns <code>NULL</code>.</li>
+<li>An environment with a class <code>"e2"</code>, but without a
+<code>$.e2</code> S3 method.</li>
+<li>An environment with a class <code>"e3"</code>, which has a
+<code>$.e3</code> S3 method that simply returns <code>NULL</code>.</li>
 </ol>
-<p>Each one of these environments will contain an object <code>x</code>.</p>
+<p>Each one of these environments will contain an object
+<code>x</code>.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">e1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span>hash <span class="op">=</span> <span class="cn">FALSE</span>, parent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">emptyenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">e2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span>hash <span class="op">=</span> <span class="cn">FALSE</span>, parent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">emptyenv</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -593,7 +706,9 @@
 <span><span class="va">`$.e3`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="cn">NULL</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Now we can run timing tests for calling <code>$</code> on each type of object. Note that for the <code>e3</code> object, the <code>$</code> function does nothing — it simply returns <code>NULL</code>.</p>
+<p>Now we can run timing tests for calling <code>$</code> on each type
+of object. Note that for the <code>e3</code> object, the <code>$</code>
+function does nothing — it simply returns <code>NULL</code>.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">speed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
 <span>  <span class="va">e1</span><span class="op">$</span><span class="va">x</span>,</span>
@@ -604,16 +719,28 @@
 <span><span class="va">speed</span></span>
 <span><span class="co">#&gt;   name median</span></span>
 <span><span class="co">#&gt; 1 e1$x    0.2</span></span>
-<span><span class="co">#&gt; 2 e2$x    0.6</span></span>
-<span><span class="co">#&gt; 3 e3$x    0.9</span></span></code></pre></div>
-<p>Using <code>$</code> on <code>e2</code> and <code>e3</code> is much slower than on <code>e1</code>. This is because <code>e2</code> and <code>e3</code> have a class attribute. Even though there’s no <code>$</code> method defined for <code>e2</code>, doing <code>e2$x</code> still about 6 times slower than <code>e1$x</code>, simply because R looks for an appropriate S3 method.</p>
-<p><code>e3$x</code> is slightly faster than <code>e2$x</code>; this is probably because the <code>$.e3</code> function doesn’t actually do anything other than return NULL.</p>
-<p>If an object has a class attribute, R will attempt to look for a method every time <code>$</code> is called. This can slow things down considerably, if <code>$</code> is used often.</p>
+<span><span class="co">#&gt; 2 e2$x    0.7</span></span>
+<span><span class="co">#&gt; 3 e3$x    1.0</span></span></code></pre></div>
+<p>Using <code>$</code> on <code>e2</code> and <code>e3</code> is much
+slower than on <code>e1</code>. This is because <code>e2</code> and
+<code>e3</code> have a class attribute. Even though there’s no
+<code>$</code> method defined for <code>e2</code>, doing
+<code>e2$x</code> still about 6 times slower than <code>e1$x</code>,
+simply because R looks for an appropriate S3 method.</p>
+<p><code>e3$x</code> is slightly faster than <code>e2$x</code>; this is
+probably because the <code>$.e3</code> function doesn’t actually do
+anything other than return NULL.</p>
+<p>If an object has a class attribute, R will attempt to look for a
+method every time <code>$</code> is called. This can slow things down
+considerably, if <code>$</code> is used often.</p>
 </div>
 <div class="section level3">
 <h3 id="lists-vs--environments-and-vs-">Lists vs. environments, and <code>$</code> vs. <code>[[</code><a class="anchor" aria-label="anchor" href="#lists-vs--environments-and-vs-"></a>
 </h3>
-<p>Lists could also be used for creating classes (albeit not with reference semantics). How much time does it take to access items using <code>$</code> for lists vs. environments? We’ll also compare using <code>obj$x</code> to <code>obj[['x']]</code>.</p>
+<p>Lists could also be used for creating classes (albeit not with
+reference semantics). How much time does it take to access items using
+<code>$</code> for lists vs. environments? We’ll also compare using
+<code>obj$x</code> to <code>obj[['x']]</code>.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">env</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -631,15 +758,25 @@
 <span><span class="co">#&gt; 3 lst[["x"]]    0.1</span></span>
 <span><span class="co">#&gt; 4 env[["x"]]    0.1</span></span></code></pre></div>
 <p>Performance is comparable across environments and lists.</p>
-<p>The <code>[[</code> operator is slightly faster than <code>$</code>, probably because it doesn’t need to convert the unevaluated symbol to a string.</p>
+<p>The <code>[[</code> operator is slightly faster than <code>$</code>,
+probably because it doesn’t need to convert the unevaluated symbol to a
+string.</p>
 <hr>
 </div>
 </div>
 <div class="section level2">
 <h2 id="wrap-up">Wrap-up<a class="anchor" aria-label="anchor" href="#wrap-up"></a>
 </h2>
-<p>R6 objects take less memory and are significantly faster than R’s reference class objects, and they also have some options that provide for even more speed.</p>
-<p>In these tests, the biggest speedup for R6 classes comes from not using a class attribute; this speeds up the use of <code>$</code>. Non-portable R6 classes can also access fields without <code>$</code> at all, which provides another modest speed boost. In most cases, these speed increases are negligible – they are on the order of microseconds and will be noticeable only when tens or even hundreds of thousands of class member accesses are performed.</p>
+<p>R6 objects take less memory and are significantly faster than R’s
+reference class objects, and they also have some options that provide
+for even more speed.</p>
+<p>In these tests, the biggest speedup for R6 classes comes from not
+using a class attribute; this speeds up the use of <code>$</code>.
+Non-portable R6 classes can also access fields without <code>$</code> at
+all, which provides another modest speed boost. In most cases, these
+speed increases are negligible – they are on the order of microseconds
+and will be noticeable only when tens or even hundreds of thousands of
+class member accesses are performed.</p>
 <hr>
 </div>
 <div class="section level2">
