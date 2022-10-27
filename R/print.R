@@ -7,7 +7,7 @@ format.R6 <- function(x, ...) {
 
     # If there's another class besides first class and R6
     classes <- setdiff(class(x), "R6")
-    if (length(classes) >= 2) {
+    if (length(classes) >= 2L) {
       ret <- c(ret, paste0("  Inherits from: <", classes[2], ">"))
     }
 
@@ -122,7 +122,7 @@ object_summaries <- function(x, exclude = NULL) {
     }
   }, FUN.VALUE = character(1))
 
-  paste0(obj_names, ": ", values, sep = "")
+  paste0(obj_names, ": ", values)
 }
 
 # Given a string, indent every line by some number of spaces.
@@ -137,7 +137,7 @@ indent <- function(str, indent = 0) {
 
 # Trim a string to n characters; if it's longer than n, add " ..." to the end
 trim <- function(str, n = 60) {
-  if (nchar(str) > n) paste(substr(str, 1, n-4), "...")
+  if (nchar(str) > n) paste(substr(str, 1, n - 4), "...")
   else str
 }
 
@@ -147,6 +147,6 @@ plot.R6 <- function(x, ...) {
   if (is.function(x$plot)) {
     x$plot(...)
   } else {
-    stop(paste0("No plot method defined for R6 class ", class(x)[1]))
+    stop("No plot method defined for R6 class ", class(x)[1])
   }
 }

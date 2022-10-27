@@ -4,8 +4,8 @@ encapsulate({
   # same name as elements in a, the element in a is dropped. Also, if there are
   # any duplicated names in a or b, only the last one with that name is kept.
   merge_vectors <- function(a, b) {
-    if ((!is.null(a) && length(a) > 1 && is.null(names(a))) ||
-        (!is.null(b) && length(b) > 1 && is.null(names(b)))) {
+    if ((!is.null(a) && length(a) > 1L && is.null(names(a))) ||
+        (!is.null(b) && length(b) > 1L && is.null(names(b)))) {
       stop("merge_vectors: vectors must be either NULL or named vectors")
     }
 
@@ -26,7 +26,7 @@ encapsulate({
   # Return all the functions in a list.
   get_functions <- function(x) {
     funcs <- vapply(x, is.function, logical(1))
-    if (all(!funcs)) return(NULL)
+    if (!any(funcs)) return(NULL)
     x[funcs]
   }
 

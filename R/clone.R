@@ -33,7 +33,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
     if (is.null(envir)) {
       envir <- new.env(hash = hash, parent = parent, size = size)
     }
-    if (length(x) == 0) {
+    if (length(x) == 0L) {
       if (empty_to_null)
         return(NULL)
       else
@@ -71,7 +71,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
       break
     }
 
-    old[[i+1]] <- list(
+    old[[i + 1]] <- list(
       binding   = old[[i]]$enclosing$super,
       enclosing = old[[i]]$enclosing$super$.__enclos_env__
     )
@@ -185,7 +185,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
   new_1_enclosing <- new[[1]]$enclosing
 
   # Mirror the super environments from the old object
-  if (length(old) > 1) {
+  if (length(old) > 1L) {
     for (i in seq.int(2, length(old))) {
       if (portable) {
         enclosing_parent <- parent.env(old[[i]]$enclosing)
@@ -202,8 +202,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
     }
 
     # A second pass to add in the `super` to each enclosing environment.
-    for (i in seq.int(1, length(old)-1)) {
-      new[[i]]$enclosing$super <- new[[i+1]]$binding
+    for (i in seq.int(1, length(old) - 1)) {
+      new[[i]]$enclosing$super <- new[[i + 1]]$binding
     }
   }
 

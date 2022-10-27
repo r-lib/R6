@@ -22,13 +22,13 @@ encapsulate({
   # @param empty_to_null Controls what to do when x is NULL or empty list.
   #   If TRUE, return NULL. If FALSE, return an empty list.
   list2env2 <- function(x, envir = NULL, parent = emptyenv(),
-                        hash = (length(x) >  100),
+                        hash = (length(x) >  100L),
                         size = max(29L, length(x)),
                         empty_to_null = TRUE) {
     if (is.null(envir)) {
       envir <- new.env(hash = hash, parent = parent, size = size)
     }
-    if (length(x) == 0) {
+    if (length(x) == 0L) {
       if (empty_to_null)
         return(NULL)
       else

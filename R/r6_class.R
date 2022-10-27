@@ -475,7 +475,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
     stop("All elements of public, private, and active must be named.")
 
   allnames <- c(names(public), names(private), names(active))
-  if (any(duplicated(allnames)))
+  if (anyDuplicated(allnames) > 0L)
     stop("All items in public, private, and active must have unique names.")
 
   if ("clone" %in% allnames)
@@ -488,7 +488,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if ("initialize" %in% c(names(private), names(active)))
     stop("'initialize' is not allowed in private or active.")
 
-  if (length(get_nonfunctions(active)) != 0)
+  if (length(get_nonfunctions(active)) != 0L)
     stop("All items in active must be functions.")
 
   # Create the generator object, which is an environment
