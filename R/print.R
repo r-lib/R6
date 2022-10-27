@@ -92,7 +92,7 @@ print.R6ClassGenerator <- function(x, ...) {
 # Return a summary string of the items of a list or environment
 # x must be a list or environment
 object_summaries <- function(x, exclude = NULL) {
-  if (length(x) == 0)
+  if (length(x) == 0L)
     return(NULL)
 
   if (is.list(x))
