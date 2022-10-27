@@ -19,13 +19,11 @@ generator_funs$new <- function(...) {
     if (!identical(cloneable, inherit$cloneable)) {
       if (inherit$cloneable) {
         inherit[["public_methods"]][["clone"]] <- NULL
-      }
-
-      if (!inherit$cloneable) {
-        message(c(
-          "Subclass wants to allow cloning, but superclass has turned it off. ",
-          "Therefore, cloning will also be turned off for subclass."
-        ))
+      } else {
+        message(
+          "Superclass ", get_superclassnames(inherit), " has cloneable=FALSE, but subclass ", classname, " has cloneable=TRUE. ",
+          "A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ", classname, "."
+        )
 
         public_methods[["clone"]] <- NULL
       }
