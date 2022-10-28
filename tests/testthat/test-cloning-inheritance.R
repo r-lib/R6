@@ -20,6 +20,7 @@ test_that("Subclass can override superclass' cloneable property", {
   Sheep <- R6Class("Sheep", inherit = Creature, cloneable = TRUE)
   expect_message(sheep <- Sheep$new(), "Superclass Creature has cloneable=FALSE, but subclass Sheep has cloneable=TRUE.")
   expect_error(sheep$clone(), "attempt to apply non-function")
+  # Make sure that the superclass wasn't inadvertantly modified.
   expect_false("clone" %in% names(Creature$public_methods))
 
   Human <- R6Class("Human", inherit = Creature, cloneable = FALSE)
