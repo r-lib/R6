@@ -80,7 +80,7 @@ generator_funs$new <- function(...) {
     active <- assign_func_envs(active, enclos_env)
 
   # Enable debugging ------------------------------------------------
-  if (length(debug_names) > 0) {
+  if (length(debug_names) > 0L) {
     lapply(public_methods[names(public_methods) %in% debug_names], base::debug)
     lapply(private_methods[names(private_methods) %in% debug_names], base::debug)
     lapply(active[names(active) %in% debug_names], base::debug)
@@ -166,7 +166,7 @@ generator_funs$new <- function(...) {
   initialize <- .subset2(public_bind_env, "initialize")
   if (is.function(initialize)) {
     initialize(...)
-  } else if (length(list(...)) != 0 ) {
+  } else if (length(list(...)) != 0L) {
     stop("Called new() with arguments, but there is no initialize method.")
   }
 
