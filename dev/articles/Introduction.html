@@ -586,8 +586,8 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Finalizer has been called!"</span></span>
 <span><span class="co">#&gt;           used (Mb) gc trigger (Mb) max used (Mb)</span></span>
-<span><span class="co">#&gt; Ncells  676815 36.2    1298108 69.4  1298108 69.4</span></span>
-<span><span class="co">#&gt; Vcells 1263083  9.7    8388608 64.0  3422554 26.2</span></span></code></pre></div>
+<span><span class="co">#&gt; Ncells  677158 36.2    1298108 69.4  1298108 69.4</span></span>
+<span><span class="co">#&gt; Vcells 1263913  9.7    8388608 64.0  3422554 26.2</span></span></code></pre></div>
 <p><strong>NOTE:</strong> In R6 version 2.3.0 (released 2018-10-04) and below, the <code>$finalize()</code> method could only be public. As of version 2.4.0, it can be public or private. Private is preferable because there’s no reason a finalizer needs to be publicly accessible. If you use a private finalizer in an R package, you should set your R6 version dependency to <code>R6 (&gt;= 2.4.0)</code>. In 2.6.0, R6 prints a message if a finalizer is public. In a future version, it will emit warnings, and finally, it will no longer support public finalizers.</p>
 <p>Finalizers are implemented using the <code><a href="https://rdrr.io/r/base/reg.finalizer.html" class="external-link">reg.finalizer()</a></code> function, and they set <code>onexit=TRUE</code>, so that the finalizer will also be called when R exits. This is useful in some cases, like database connections.</p>
 </div>
