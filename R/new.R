@@ -13,22 +13,6 @@ generator_funs$new <- function(...) {
     if (!identical(portable, inherit$portable))
       stop("Sub and superclass must both be portable or non-portable.")
 
-    # If `cloneable` property differs between sub and superclass
-    # - super will override sub if super doesn't allow cloning
-    # - sub will override super if super allows cloning
-    if (!identical(cloneable, inherit$cloneable)) {
-      if (inherit$cloneable) {
-        inherit[["public_methods"]][["clone"]] <- NULL
-      } else {
-        message(
-          "Superclass ", get_superclassnames(inherit), " has cloneable=FALSE, but subclass ", classname, " has cloneable=TRUE. ",
-          "A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ", classname, "."
-        )
-
-        public_methods[["clone"]] <- NULL
-      }
-    }
-
     # Merge fields over superclass fields, recursively --------------
     recursive_merge <- function(obj, which) {
       if (is.null(obj)) return(NULL)
@@ -119,6 +103,20 @@ generator_funs$new <- function(...) {
     public_methods  <- merge_vectors(super_struct$public_methods, public_methods)
     private_methods <- merge_vectors(super_struct$private_methods, private_methods)
     active          <- merge_vectors(super_struct$active, active)
+
+    # If `cloneable` property differs between sub and superclass
+    # - super will override sub if super doesn't allow cloning
+    # - sub will override super if super allows cloning
+    if (!identical(cloneable, inherit$cloneable)) {
+      public_methods[["clone"]] <- NULL
+
+      if (!inherit$cloneable) {
+        message(
+          "Superclass ", get_superclassnames(inherit), " has cloneable=FALSE, but subclass ", classname, " has cloneable=TRUE. ",
+          "A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ", classname, "."
+        )
+      }
+    }
   }
 
   # Copy objects to public bind environment -------------------------
