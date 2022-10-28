@@ -112,7 +112,7 @@ generator_funs$new <- function(...) {
 
       if (!inherit$cloneable) {
         message(
-          "Superclass ", get_superclassnames(inherit), " has cloneable=FALSE, but subclass ", classname, " has cloneable=TRUE. ",
+          "Superclass ", inherit$classname, " has cloneable=FALSE, but subclass ", classname, " has cloneable=TRUE. ",
           "A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ", classname, "."
         )
       }
