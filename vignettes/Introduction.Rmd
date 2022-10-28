@@ -420,6 +420,8 @@ first_clone_method_bytes_str <- format(first_clone_method_bytes, big.mark = ",",
 
 If you don't want a `clone` method to be added, you can use `cloneable=FALSE` when creating the class. If any loaded R6 object has a `clone` method, that function uses `r first_clone_method_bytes_str` bytes, but for each additional object, the `clone` method costs a trivial amount of space (`r additional_clone_method_bytes_str` bytes).
 
+Note about `cloneable` and inheritance: if a superclass has `cloneable=FALSE`, then subclasses will not be cloneable. (If a subclass sets `cloneable=TRUE`, then a message will be printed when objects are instantiated and the objects will not be cloneable.)
+
 
 #### Deep cloning
 
