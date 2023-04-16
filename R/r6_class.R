@@ -478,8 +478,11 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (any(duplicated(allnames)))
     stop("All items in public, private, and active must have unique names.")
 
-  if ("clone" %in% allnames)
-    stop("Cannot add a member with reserved name 'clone'.")
+  if ("clone" %in% c(names(private), names(active)))
+    stop("Cannot add a private or active member with reserved name 'clone'.")
+
+  if (".clone" %in% allnames)
+    stop("Cannot add a member with reserved name '.clone'.")
 
   if (any(c("self", "private", "super") %in%
       c(names(public), names(private), names(active))))
@@ -516,8 +519,12 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator$public_methods  <- get_functions(public)
   generator$private_methods <- get_functions(private)
 
-  if (cloneable)
-    generator$public_methods$clone <- generator_funs$clone_method
+  if (cloneable) {
+    generator$public_methods$.clone <- generator_funs$.clone_method
+    if (!"clone" %in% names(generator$public_methods)) {
+      generator$public_methods$clone <- generator_funs$clone
+    }
+  }
 
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.

@@ -20,7 +20,7 @@ test_that("list of public members is generated as expected by as.list.R6 method"
   expect_type(annList, "list")
   expect_equal(
     names(annList),
-    c(".__enclos_env__", "hair", "name", "clone", "set_hair", "initialize")
+    c(".__enclos_env__", "hair", "name", "clone", ".clone", "set_hair", "initialize")
   )
 
   expect_equal(annList$hair, ann$hair)

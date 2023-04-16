@@ -1,7 +1,12 @@
-test_that("Can't use reserved name 'clone'", {
-  expect_error(R6Class("AC", public = list(clone = function() NULL)))
+test_that("Can't use reserved name 'clone' in private or active bindings", {
   expect_error(R6Class("AC", private = list(clone = function() NULL)))
   expect_error(R6Class("AC", active = list(clone = function() NULL)))
+})
+
+test_that("Can't use reserved name '.clone'", {
+  expect_error(R6Class("AC", public = list(.clone = function() NULL)))
+  expect_error(R6Class("AC", private = list(.clone = function() NULL)))
+  expect_error(R6Class("AC", active = list(.clone = function() NULL)))
 })
 
 
@@ -11,6 +16,34 @@ test_that("Can disable cloning", {
   expect_null(a$clone)
 })
 
+test_that("Can override cloning", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      clone = function(deep = FALSE) 42
+    )
+  )
+  a <- AC$new()
+  expect_equal(a$clone(), 42)
+})
+
+test_that("Custom clone() can call .clone() and modify the original", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      clone = function(deep = FALSE) {
+        new <- self$.clone()
+        self$x <- 42
+        new
+      }
+    )
+  )
+  a <- AC$new()
+  expect_equal(a$x, 1)
+  b <- a$clone()
+  expect_equal(a$x, 42)
+  expect_equal(b$x, 1)
+})
 
 test_that("Cloning portable objects with public only", {
   parenv <- new.env()

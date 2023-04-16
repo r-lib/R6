@@ -1,6 +1,6 @@
-# This function will be added as a method to R6 objects, with the name 'clone',
+# This function will be added as a method to R6 objects, with the name '.clone',
 # and with the environment changed.
-generator_funs$clone_method <- function(deep = FALSE) {
+generator_funs$.clone_method <- function(deep = FALSE) {
   # Need to embed these utility functions inside this closure because the
   # environment of this function will change.
 
@@ -368,4 +368,10 @@ generator_funs$clone_method <- function(deep = FALSE) {
   class(new_1_binding) <- class(old_1_binding)
 
   new_1_binding
+}
+
+# This is the public default clone() method, that may be overriden:
+generator_funs$clone <- function(deep = FALSE) {
+  dot_clone <- get(".clone", envir = self)
+  dot_clone(deep = deep)
 }
