@@ -112,6 +112,65 @@ test_that("post_clone() accepts custom arguments", {
   expect_equal(b$get_counter(), 0)
 })
 
+test_that("deep_clone accepts extra arguments", {
+  Child <- R6Class("Child",
+   public = list(
+     clone = function(deep = FALSE, x) {
+       self$.clone(post_clone_args = list(x = x))
+     },
+     getx = function() {
+       private$x
+     }
+   ),
+   private = list(
+     x = 0,
+     post_clone = function(x) {
+       private$x <- x
+     }
+   )
+  )
+
+  ChildContainer <- R6Class("ChildContainer",
+    public = list(
+      to_be_copied = 0,
+      clone = function(deep = TRUE, x, child_x) {
+        self$.clone(
+          deep = deep,
+          post_clone_args = list(x = x), # Applies to ChildContainer$post_clone()
+          deep_clone_args = list(child_x = child_x) # Applies to ChildContainer$deep_clone()
+        )
+      },
+      getx = function() {
+        private$x
+      },
+      getchildrenx = function() {
+        private$child$getx()
+      }
+    ),
+    private = list(
+      x = 0,
+      child = Child$new(),
+      post_clone = function(x) {
+        private$x <- x
+      },
+      deep_clone = function(name, value, child_x) {
+        if (name == "child") {
+          return(value$clone(x = child_x))
+        }
+        value
+      }
+    )
+  )
+
+  child_cont <- ChildContainer$new()
+  child_cont$to_be_copied <- 42
+  expect_equal(child_cont$getchildrenx(), 0)
+  child_cont2 <- child_cont$clone(x = 20, child_x = 30)
+  expect_equal(child_cont2$to_be_copied, 42)
+  expect_equal(child_cont2$getx(), 20)
+  expect_equal(child_cont2$getchildrenx(), 30)
+})
+
 
 test_that("Cloning portable objects with public only", {
   parenv <- new.env()

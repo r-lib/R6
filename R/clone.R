@@ -1,6 +1,6 @@
 # This function will be added as a method to R6 objects, with the name '.clone',
 # and with the environment changed.
-generator_funs$.clone_method <- function(deep = FALSE, post_clone_args = list()) {
+generator_funs$.clone_method <- function(deep = FALSE, post_clone_args = list(), deep_clone_args = NULL) {
   # Need to embed these utility functions inside this closure because the
   # environment of this function will change.
 
@@ -237,7 +237,8 @@ generator_funs$.clone_method <- function(deep = FALSE, post_clone_args = list())
         deep_clone,
         names(binding_copies),
         binding_copies,
-        SIMPLIFY = FALSE
+        SIMPLIFY = FALSE,
+        MoreArgs = deep_clone_args
       )
     }
 
@@ -263,7 +264,8 @@ generator_funs$.clone_method <- function(deep = FALSE, post_clone_args = list())
           deep_clone,
           names(private_copies),
           private_copies,
-          SIMPLIFY = FALSE
+          SIMPLIFY = FALSE,
+          MoreArgs = deep_clone_args
         )
       }
       private_copies <- remap_func_envs(private_copies, old_new_enclosing_pairs)
