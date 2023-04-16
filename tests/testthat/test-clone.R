@@ -45,6 +45,74 @@ test_that("Custom clone() can call .clone() and modify the original", {
   expect_equal(b$x, 1)
 })
 
+test_that("post_clone() can change fields on new object", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      increment_counter = function() {
+        private$counter <- private$counter + 1
+      },
+      get_counter = function() {
+        private$counter
+      }
+    ),
+    private = list(
+      counter = 0,
+      post_clone = function() {
+        # reset the counter on clone()
+        private$counter <- 0
+      }
+    )
+  )
+
+  a <- AC$new()
+  a$increment_counter()
+  b <- a$clone()
+  # x is cloned:
+  expect_equal(a$x, 1)
+  expect_equal(b$x, 1)
+  # counter is reset:
+  expect_equal(a$get_counter(), 1)
+  expect_equal(b$get_counter(), 0)
+})
+
+test_that("post_clone() accepts custom arguments", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      increment_counter = function() {
+        private$counter <- private$counter + 1
+      },
+      get_counter = function() {
+        private$counter
+      },
+      clone = function(deep = FALSE, new_counter = 0) {
+        self$.clone(deep = deep, post_clone_args = list(counter = new_counter))
+      }
+    ),
+    private = list(
+      counter = 0,
+      post_clone = function(counter) {
+        # reset the counter on clone()
+        private$counter <- counter
+      }
+    )
+  )
+
+  a <- AC$new()
+  expect_equal(a$get_counter(), 0)
+  a$increment_counter()
+  expect_equal(a$get_counter(), 1)
+  b <- a$clone()
+  # x field was cloned:
+  expect_equal(a$x, 1)
+  expect_equal(b$x, 1)
+  # counter was reset on the copy, but not on the original:
+  expect_equal(a$get_counter(), 1)
+  expect_equal(b$get_counter(), 0)
+})
+
+
 test_that("Cloning portable objects with public only", {
   parenv <- new.env()
   AC <- R6Class("AC",
