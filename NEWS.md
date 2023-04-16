@@ -7,6 +7,10 @@ R6 2.5.1.9000
 
 * When a superclass is not cloneable, then subclasses cannot be cloneable (@IndrajeetPatil, #247).
 
+* `clone` can now be overriden. A new private `post_clone` method can be defined
+  to modify private fields after cloning an object. `clone` may now have arbitrary
+  arguments. `deep_clone` may accept additional extra arguments. (@zeehio, #273).
+
 R6 2.5.1
 ========
 
