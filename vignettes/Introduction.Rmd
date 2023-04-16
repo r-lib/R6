@@ -518,6 +518,76 @@ c2$v
 
 In the example `deep_clone` method above, we checked the name of each field to determine what to do with it, but we could also check the value, by using `inherits(value, "R6")`, or `is.environment()`, and so on.
 
+#### Customizing clone()
+
+Occasionally we may require to customize our `$clone()` method. When cloning we
+may have to make changes to the copy or the original, for instance due to managing
+unique files associated to objects or updating references to other objects.
+
+Let's use an example:
+
+We have an class representing a living organism. The organism has a name and
+will reproduce itself by cloning. We will keep track of the number of generations
+up to the first living organism, and the number of older siblings each living
+organism has, as well as the number of children.
+
+```{r}
+Organism <- R6Class("Organism",
+  public = list(
+    initialize = function(name) {
+      # This is the first organism
+      private$name <- name
+      private$generation <- 1L
+      private$num_older_siblings <- 0L
+      private$num_children <- 0L
+    },
+    print = function() {
+      cat(private$name,
+          ": generation ", private$generation,
+          ", older siblings ", private$num_older_siblings,
+          ", n_children ", private$num_children, "\n",
+          sep = ""
+      )
+    },
+    clone = function(deep = FALSE, child_name) {
+      post_clone_args <- list(
+        name = child_name,
+        num_older_siblings = private$num_children
+      )
+      # Create a clone. private$post_clone() will be called passing the post_clone_args:
+      child <- self$.clone(deep = deep, post_clone_args = post_clone_args)
+      # We can further modify the parent:
+      private$num_children <- private$num_children + 1L
+      # And finally return the child:
+      child
+    }
+  ),
+  private = list(
+    name = NA_character_,
+    generation = NA_integer_,
+    num_older_siblings = NA_integer_,
+    num_children = NA_integer_,
+    post_clone = function(name, num_older_siblings) {
+      private$name <- name
+      private$generation <- private$generation + 1L
+      private$num_older_siblings <- num_older_siblings
+      private$num_children <- 0L
+    }
+  )
+)
+
+alex <- Organism$new(name = "Alex")
+bart <- alex$clone(child_name = "Bart")
+beau <- alex$clone(child_name = "Beau")
+cleo <- bart$clone(child_name = "Cleo")
+print(alex)
+print(bart)
+print(beau)
+print(cleo)
+```
+
+
+
 ### Printing R6 objects to the screen
 
 R6 objects have a default `$print()` method that lists all members of the object.
