@@ -7,7 +7,8 @@ R6 2.5.1.9000
 
 * When a superclass is not cloneable, then subclasses cannot be cloneable (@IndrajeetPatil, #247).
 
-* Fix using `$.__enclos_env__` on arbitrary environments while deep cloning (@zeehio, #253)
+* Fix using `$.__enclos_env__` on arbitrary environments while deep cloning.
+  R6 now requires R >= 3.2. (@zeehio, #253)
 
 R6 2.5.1
 ========
