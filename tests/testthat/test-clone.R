@@ -1077,7 +1077,7 @@ test_that("Cloning inherited methods for non-portable classes", {
   expect_identical(a$x, 3)
 })
 
-test_that("Unknown environments are not copied nor $-inspected", {
+test_that("In deep_clone(), don't try to clone non-R6 objects", {
 
   `$.asdfasdf` <- function(x, value) {
     stop("error")
