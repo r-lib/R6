@@ -7,8 +7,7 @@ R6 2.5.1.9000
 
 * When a superclass is not cloneable, then subclasses cannot be cloneable (@IndrajeetPatil, #247).
 
-* Fix using `$.__enclos_env__` on arbitrary environments while deep cloning.
-  R6 now requires R >= 3.2. (@zeehio, #253)
+* Fixed #253: Errors could occur when deep cloning if a member object was an environment with a class that had a `$` method. Deep cloning now uses `get0()` instead of `$`. R6 now requires R >= 3.2. (@zeehio, #274)
 
 R6 2.5.1
 ========
