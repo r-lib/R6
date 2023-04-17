@@ -66,16 +66,83 @@
 #'
 #'   To make a deep copy, you can use \code{x$clone(deep=TRUE)}. With this
 #'   option, any fields that are R6 objects will also be cloned; however,
-#'   environments and reference class objects will not be.
+#'   environments and reference class objects will not be unless you customize
+#'   deep cloning.
 #'
-#'   If you want different deep copying behavior, you can supply your own
+#' @section Customizing cloning:
+#'
+#'   You can override the \code{clone} method to modify
+#'   the original object and/or the created one, as you need.
+#'
+#'   The default \code{clone} method is fairly simple:
+#'
+#'   \code{
+#'   clone = function(deep = FALSE) \{
+#'     self$.clone(deep = deep)
+#'   \}
+#'   }
+#'
+#'   This internal \code{.clone} method cannot be overriden. Taking care of
+#'   all the cloning becomes very hard when there is inheritance and active
+#'   bindings, so it is recommended that you customize your \code{clone} method
+#'   using \code{self$.clone()}.
+#'
+#'
+#'   \code{
+#'   clone = function(deep = FALSE) \{
+#'     # Modify self or private from the existing object if you have to
+#'     # ...
+#'     # Create the new object:
+#'     new <- self$.clone(deep = deep)
+#'     # Private access to new$ is not directly possible here... See post_clone below
+#'     # ...
+#'     # Do not forget to return the new object
+#'     new
+#'   \}
+#'   }
+#'
+#'   If you need private access to fields and methods from the new object, you
+#'   can define a private \code{post_clone} method. \code{self$.clone} will
+#'   call \code{post_clone} if it exists right after creating the cloned object.
+#'   \code{post_clone} runs from the new object, so its private members are
+#'   accessible. \code{post_clone} may have any arbitrary arguments. You will need
+#'   to pass values for those arguments to \code{self$.clone()} as a list using the
+#'   \code{post_clone_args} argument:
+#'
+#'   \code{new <- self$.clone(deep = deep, post_clone_args = list(arg1 = value1, arg2 = value2))}
+#'
+#'   \code{self$.clone} will expand \code{post_clone_args} and pass them to \code{post_clone}
+#'   that, for the example above, should have been defined as a private method
+#'   with signature:
+#'
+#'   \code{
+#'   post_clone = function(arg1, arg2) \{
+#'     # ...
+#'   \}
+#'   }
+#'
+#'
+#' @section Customizing deep cloning:
+#'
+#'   The default \code{clone} method (via \code{self$.clone()}) even if using
+#'   \code{deep=TRUE} will not copy environments and reference class objects by
+#'   default.
+#'
+#'   If you just want different deep copying behavior, you can supply your own
 #'   private method called \code{deep_clone}. This method will be called for
-#'   each field in the object, with two arguments: \code{name}, which is the
+#'   each field in the object, with two required arguments: \code{name}, which is the
 #'   name of the field, and \code{value}, which is the value. Whatever the
 #'   method returns will be used as the value for the field in the new clone
 #'   object. You can write a \code{deep_clone} method that makes copies of
 #'   specific fields, whether they are environments, R6 objects, or reference
 #'   class objects.
+#'
+#'   Your \code{deep_clone} method may define additional arguments besides \code{name}
+#'   and \code{value}. If that is your case, you will need to define a custom
+#'   \code{clone} method, and place the additional arguments that \code{deep_clone}
+#'   needs in a list, that you will pass to \code{self$.clone()} as
+#'   the \code{deep_clone_args} argument. \code{self$.clone()} will expand that
+#'   list and pass it to your \code{deep_clone} method.
 #'
 #' @section S3 details:
 #'
@@ -343,6 +410,64 @@
 #' b$remove()
 #' #> [1] 20
 #'
+#' # Custom cloning behaviour (clone and post_clone()) ---------------
+#' # We have an class representing a living organism. The organism has a name and
+#' # will reproduce itself by cloning. We will keep track of the number of generations
+#' # up to the first living organism, and the number of older siblings each living
+#' # organism has, as well as the number of children.
+#'
+#' Organism <- R6Class("Organism",
+#'   public = list(
+#'     initialize = function(name) {
+#'       # This is the first organism
+#'       private$name <- name
+#'       private$generation <- 1L
+#'       private$num_older_siblings <- 0L
+#'       private$num_children <- 0L
+#'     },
+#'     print = function() {
+#'       cat(private$name,
+#'           ": generation ", private$generation,
+#'           ", older siblings ", private$num_older_siblings,
+#'           ", n_children ", private$num_children, "\n",
+#'           sep = ""
+#'       )
+#'     },
+#'     clone = function(deep = FALSE, child_name) {
+#'       post_clone_args <- list(
+#'         name = child_name,
+#'         num_older_siblings = private$num_children
+#'       )
+#'       # Create a clone. private$post_clone() will be called passing the post_clone_args:
+#'       child <- self$.clone(deep = deep, post_clone_args = post_clone_args)
+#'       # We can further modify the parent:
+#'       private$num_children <- private$num_children + 1L
+#'       # And finally return the child:
+#'       child
+#'     }
+#'   ),
+#'   private = list(
+#'     name = NA_character_,
+#'     generation = NA_integer_,
+#'     num_older_siblings = NA_integer_,
+#'     num_children = NA_integer_,
+#'     post_clone = function(name, num_older_siblings) {
+#'       private$name <- name
+#'       private$generation <- private$generation + 1L
+#'       private$num_older_siblings <- num_older_siblings
+#'       private$num_children <- 0L
+#'     }
+#'   )
+#' )
+#'
+#' alex <- Organism$new(name = "Alex")
+#' bart <- alex$clone(child_name = "Bart")
+#' beau <- alex$clone(child_name = "Beau")
+#' cleo <- bart$clone(child_name = "Cleo")
+#' print(alex)
+#' print(bart)
+#' print(beau)
+#' print(cleo)
 #'
 #' # Deep clones -----------------------------------------------------
 #'
@@ -478,8 +603,11 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   if (any(duplicated(allnames)))
     stop("All items in public, private, and active must have unique names.")
 
-  if ("clone" %in% allnames)
-    stop("Cannot add a member with reserved name 'clone'.")
+  if ("clone" %in% c(names(private), names(active)))
+    stop("Cannot add a private or active member with reserved name 'clone'.")
+
+  if (".clone" %in% allnames)
+    stop("Cannot add a member with reserved name '.clone'.")
 
   if (any(c("self", "private", "super") %in%
       c(names(public), names(private), names(active))))
@@ -516,8 +644,12 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
   generator$public_methods  <- get_functions(public)
   generator$private_methods <- get_functions(private)
 
-  if (cloneable)
-    generator$public_methods$clone <- generator_funs$clone_method
+  if (cloneable) {
+    generator$public_methods$.clone <- generator_funs$.clone_method
+    if (!"clone" %in% names(generator$public_methods)) {
+      generator$public_methods$clone <- generator_funs$clone
+    }
+  }
 
   # Capture the unevaluated expression for the superclass; when evaluated in
   # the parent_env, it should return the superclass object.

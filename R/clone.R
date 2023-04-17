@@ -1,6 +1,6 @@
-# This function will be added as a method to R6 objects, with the name 'clone',
+# This function will be added as a method to R6 objects, with the name '.clone',
 # and with the environment changed.
-generator_funs$clone_method <- function(deep = FALSE) {
+generator_funs$.clone_method <- function(deep = FALSE, post_clone_args = list(), deep_clone_args = NULL) {
   # Need to embed these utility functions inside this closure because the
   # environment of this function will change.
 
@@ -237,7 +237,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
         deep_clone,
         names(binding_copies),
         binding_copies,
-        SIMPLIFY = FALSE
+        SIMPLIFY = FALSE,
+        MoreArgs = deep_clone_args
       )
     }
 
@@ -263,7 +264,8 @@ generator_funs$clone_method <- function(deep = FALSE) {
           deep_clone,
           names(private_copies),
           private_copies,
-          SIMPLIFY = FALSE
+          SIMPLIFY = FALSE,
+          MoreArgs = deep_clone_args
         )
       }
       private_copies <- remap_func_envs(private_copies, old_new_enclosing_pairs)
@@ -367,5 +369,15 @@ generator_funs$clone_method <- function(deep = FALSE) {
 
   class(new_1_binding) <- class(old_1_binding)
 
+  if (has_private && is.function(new[[1]]$private$post_clone)) {
+    do.call(new[[1]]$private$post_clone, post_clone_args)
+  }
+
   new_1_binding
+}
+
+# This is the public default clone() method, that may be overriden:
+generator_funs$clone <- function(deep = FALSE) {
+  dot_clone <- get(".clone", envir = self)
+  dot_clone(deep = deep)
 }

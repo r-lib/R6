@@ -1,7 +1,12 @@
-test_that("Can't use reserved name 'clone'", {
-  expect_error(R6Class("AC", public = list(clone = function() NULL)))
+test_that("Can't use reserved name 'clone' in private or active bindings", {
   expect_error(R6Class("AC", private = list(clone = function() NULL)))
   expect_error(R6Class("AC", active = list(clone = function() NULL)))
+})
+
+test_that("Can't use reserved name '.clone'", {
+  expect_error(R6Class("AC", public = list(.clone = function() NULL)))
+  expect_error(R6Class("AC", private = list(.clone = function() NULL)))
+  expect_error(R6Class("AC", active = list(.clone = function() NULL)))
 })
 
 
@@ -9,6 +14,161 @@ test_that("Can disable cloning", {
   AC <- R6Class("AC", public = list(x = 1), cloneable = FALSE)
   a <- AC$new()
   expect_null(a$clone)
+})
+
+test_that("Can override cloning", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      clone = function(deep = FALSE) 42
+    )
+  )
+  a <- AC$new()
+  expect_equal(a$clone(), 42)
+})
+
+test_that("Custom clone() can call .clone() and modify the original", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      clone = function(deep = FALSE) {
+        new <- self$.clone()
+        self$x <- 42
+        new
+      }
+    )
+  )
+  a <- AC$new()
+  expect_equal(a$x, 1)
+  b <- a$clone()
+  expect_equal(a$x, 42)
+  expect_equal(b$x, 1)
+})
+
+test_that("post_clone() can change fields on new object", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      increment_counter = function() {
+        private$counter <- private$counter + 1
+      },
+      get_counter = function() {
+        private$counter
+      }
+    ),
+    private = list(
+      counter = 0,
+      post_clone = function() {
+        # reset the counter on clone()
+        private$counter <- 0
+      }
+    )
+  )
+
+  a <- AC$new()
+  a$increment_counter()
+  b <- a$clone()
+  # x is cloned:
+  expect_equal(a$x, 1)
+  expect_equal(b$x, 1)
+  # counter is reset:
+  expect_equal(a$get_counter(), 1)
+  expect_equal(b$get_counter(), 0)
+})
+
+test_that("post_clone() accepts custom arguments", {
+  AC <- R6Class("AC",
+    public = list(
+      x = 1,
+      increment_counter = function() {
+        private$counter <- private$counter + 1
+      },
+      get_counter = function() {
+        private$counter
+      },
+      clone = function(deep = FALSE, new_counter = 0) {
+        self$.clone(deep = deep, post_clone_args = list(counter = new_counter))
+      }
+    ),
+    private = list(
+      counter = 0,
+      post_clone = function(counter) {
+        # reset the counter on clone()
+        private$counter <- counter
+      }
+    )
+  )
+
+  a <- AC$new()
+  expect_equal(a$get_counter(), 0)
+  a$increment_counter()
+  expect_equal(a$get_counter(), 1)
+  b <- a$clone()
+  # x field was cloned:
+  expect_equal(a$x, 1)
+  expect_equal(b$x, 1)
+  # counter was reset on the copy, but not on the original:
+  expect_equal(a$get_counter(), 1)
+  expect_equal(b$get_counter(), 0)
+})
+
+test_that("deep_clone accepts extra arguments", {
+  Child <- R6Class("Child",
+   public = list(
+     clone = function(deep = FALSE, x) {
+       self$.clone(post_clone_args = list(x = x))
+     },
+     getx = function() {
+       private$x
+     }
+   ),
+   private = list(
+     x = 0,
+     post_clone = function(x) {
+       private$x <- x
+     }
+   )
+  )
+
+  ChildContainer <- R6Class("ChildContainer",
+    public = list(
+      to_be_copied = 0,
+      clone = function(deep = TRUE, x, child_x) {
+        self$.clone(
+          deep = deep,
+          post_clone_args = list(x = x), # Applies to ChildContainer$post_clone()
+          deep_clone_args = list(child_x = child_x) # Applies to ChildContainer$deep_clone()
+        )
+      },
+      getx = function() {
+        private$x
+      },
+      getchildrenx = function() {
+        private$child$getx()
+      }
+    ),
+    private = list(
+      x = 0,
+      child = Child$new(),
+      post_clone = function(x) {
+        private$x <- x
+      },
+      deep_clone = function(name, value, child_x) {
+        if (name == "child") {
+          return(value$clone(x = child_x))
+        }
+        value
+      }
+    )
+  )
+
+  child_cont <- ChildContainer$new()
+  child_cont$to_be_copied <- 42
+  expect_equal(child_cont$getchildrenx(), 0)
+  child_cont2 <- child_cont$clone(x = 20, child_x = 30)
+  expect_equal(child_cont2$to_be_copied, 42)
+  expect_equal(child_cont2$getx(), 20)
+  expect_equal(child_cont2$getchildrenx(), 30)
 })
 
 
