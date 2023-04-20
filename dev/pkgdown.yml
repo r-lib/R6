@@ -1,4 +1,4 @@
-pandoc: 2.7.3
+pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
