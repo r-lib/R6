@@ -89,7 +89,9 @@ generator_funs$clone_method <- function(deep = FALSE) {
       # fields that are R6 objects.
       deep_clone <- function(name, value) {
         # Check if it's an R6 object.
-        if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+        is_r6_object <- is.environment(value) &&
+          !is.null(get0(".__enclos_env__", value, inherits = FALSE))
+        if (is_r6_object) {
           return(value$clone(deep = TRUE))
         }
         value
