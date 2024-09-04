@@ -1,7 +1,7 @@
 R6 2.5.1.9000
 ========
 
-* R6 methods no longer recommends `initialize` or `.__enclose_env__` in autocomplete.
+* R6 methods no longer recommends `initialize` or `.__enclos_env__` in autocomplete.
 
 * The deprecated `lock` parameter has been removed.
 
