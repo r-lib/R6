@@ -1,13 +1,12 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   Debugging: Debugging.html
   Introduction: Introduction.html
   Performance: Performance.html
   Portable: Portable.html
-last_built: 2023-12-05T17:04Z
+last_built: 2024-09-04T19:38Z
 urls:
   reference: https://r6.r-lib.org/reference
   article: https://r6.r-lib.org/articles
-
