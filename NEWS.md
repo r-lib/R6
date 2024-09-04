@@ -1,6 +1,8 @@
 R6 2.5.1.9000
 ========
 
+* R6 methods no longer recommends `initialize` or `.__enclos_env__` in autocomplete.
+
 * The deprecated `lock` parameter has been removed.
 
 * `R6Class()` now prints a message when a `finalize` method is public instead of private.

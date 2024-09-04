@@ -541,3 +541,9 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 
   generator
 })
+
+#' @export
+.DollarNames.R6 <- function(x, pattern) {
+  names <- NextMethod()
+  names <- setdiff(names, c(".__enclos_env__", "initialize"))
+}
