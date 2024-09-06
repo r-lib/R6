@@ -12,3 +12,4 @@
 ^vignettes$
 ^pkgdown$
 ^codecov\.yml$
+^LICENSE\.md$
