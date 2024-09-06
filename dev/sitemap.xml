@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://r6.r-lib.org/dev/LICENSE-text.html</loc></url>
+<url><loc>https://r6.r-lib.org/dev/LICENSE.html</loc></url>
 <url><loc>https://r6.r-lib.org/dev/articles/Debugging.html</loc></url>
 <url><loc>https://r6.r-lib.org/dev/articles/Introduction.html</loc></url>
 <url><loc>https://r6.r-lib.org/dev/articles/Performance.html</loc></url>
