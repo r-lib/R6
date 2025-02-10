@@ -13,7 +13,7 @@ Creates classes with reference semantics, similar to R's built-in reference clas
 Useful links:
 \itemize{
   \item \url{https://r6.r-lib.org}
-  \item \url{https://github.com/r-lib/R6/}
+  \item \url{https://github.com/r-lib/R6}
   \item Report bugs at \url{https://github.com/r-lib/R6/issues}
 }
 
