@@ -1,3 +1,9 @@
+R6 2.6.0.9000
+=============
+
+* Closed #298: In `.DollarNames.R6()`, avoid use of `NextMethod()`. This is to work around a compatibility issue with RStudio IDE. (#299)
+
+
 R6 2.6.0
 ========
 
