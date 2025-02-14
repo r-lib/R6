@@ -1,6 +1,4 @@
-# R6 2.6.0
-
-R6 2.5.1.9000
+R6 2.6.0
 ========
 
 * R6 methods no longer recommends `initialize` or `.__enclos_env__` in autocomplete.
