@@ -543,7 +543,7 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
 })
 
 #' @exportS3Method utils::.DollarNames
-.DollarNames.R6 <- function(x, pattern) {
+.DollarNames.R6 <- function(x, pattern = "") {
   names <- ls(x, all.names = TRUE)
   names <- names[grepl(pattern, names)]
   setdiff(names, c(".__enclos_env__", "initialize"))

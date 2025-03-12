@@ -1,6 +1,7 @@
 R6 2.6.1.9000
 ========
 
+* In `.DollarNames.R6()`, add a default value for `pattern = ""`.
 
 R6 2.6.1
 ========
