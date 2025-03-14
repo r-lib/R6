@@ -475,8 +475,13 @@ R6Class <- encapsulate(function(classname = NULL, public = list(),
     stop("All elements of public, private, and active must be named.")
 
   allnames <- c(names(public), names(private), names(active))
-  if (any(duplicated(allnames)))
-    stop("All items in public, private, and active must have unique names.")
+  if (anyDuplicated(allnames)) {
+    stop(
+      "All items in public, private, and active must have unique names. ",
+      "Non unique names: ",
+      paste(allnames[duplicated(allnames)], collapse = ", " )
+    )
+  }
 
   if ("clone" %in% allnames)
     stop("Cannot add a member with reserved name 'clone'.")
