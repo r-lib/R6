@@ -42,9 +42,11 @@ test_that("Cloning portable objects with public only", {
   expect_identical(parent.env(a_enclos_env), parenv)
   expect_identical(parent.env(b_enclos_env), parenv)
 
-  # Enclosing env only contains self
-  expect_identical(ls(a_enclos_env), "self")
-  expect_identical(ls(b_enclos_env), "self")
+  # Enclosing env only contains self, and private bound to NULL
+  expect_identical(ls(a_enclos_env), c("private", "self"))
+  expect_identical(ls(b_enclos_env), c("private", "self"))
+  expect_null(a_enclos_env$private)
+  expect_null(b_enclos_env$private)
 
   # Parent of binding env is emptyenv(), for portable classes
   expect_identical(parent.env(a), emptyenv())

@@ -148,9 +148,10 @@ generator_funs$clone_method <- function(deep = FALSE) {
       new_slice$enclosing <- new_slice$binding
     }
 
-    # Set up self, private, and .__enclos_env__
+    # Set up self, private, and .__enclos_env__. Portable classes bind
+    # `private` even when it is NULL, as `new()` does.
     new_slice$enclosing$self <- new_slice$binding
-    if (has_private) {
+    if (has_private || portable) {
       new_slice$enclosing$private <- new_slice$private
     }
     new_slice$binding$.__enclos_env__ <- new_slice$enclosing
@@ -165,7 +166,7 @@ generator_funs$clone_method <- function(deep = FALSE) {
     binding   <- new.env(emptyenv(), hash = FALSE)
 
     enclosing$self <- self
-    if (!is.null(private)) {
+    if (!is.null(private) || portable) {
       enclosing$private <- private
     }
 

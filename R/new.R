@@ -69,7 +69,13 @@ generator_funs$new <- function(...) {
 
   # Add self and private pointer ------------------------------------
   enclos_env$self <- public_bind_env
-  if (has_priv)
+  # Portable classes bind `private` even when it is NULL, so that a method's
+  # enclosing environment binds the same names in every object: a method
+  # inherited by a subclass with private members sees `private`. R's JIT shares
+  # one compiled copy of a method body between closures, and never compiles a
+  # closure whose environment binds a name the compiled one lacked
+  # (https://bugs.r-project.org/show_bug.cgi?id=19308).
+  if (has_priv || portable)
     enclos_env$private <- private_bind_env
 
   # Fix environment for methods -------------------------------------
@@ -130,7 +136,10 @@ generator_funs$new <- function(...) {
   }
 
   # Set up active bindings ------------------------------------------
-  if (!is.null(active)) {
+  # Merging with a superclass gives an empty list rather than NULL; store
+  # `.__active__` only when there are active bindings, as for the superclass's
+  # own objects, so the enclosing environments bind the same names.
+  if (length(active) > 0) {
     for (name in names(active)) {
       makeActiveBinding(name, active[[name]], public_bind_env)
     }
@@ -244,8 +253,8 @@ encapsulate({
     # Add self/private pointers -----------------------------------------
     if (portable) {
       super_enclos_env$self <- public_bind_env
-      if (!is.null(private_bind_env))
-        super_enclos_env$private <- private_bind_env
+      # Bind `private` even when it is NULL; see `new()`.
+      super_enclos_env$private <- private_bind_env
     }
 
     # Set up method environments ----------------------------------------
@@ -271,7 +280,8 @@ encapsulate({
     # Copy the methods into the binding environment ---------------------
     list2env2(public_methods, envir = super_bind_env)
     list2env2(private_methods, envir = super_bind_env)
-    if (!is.null(active)) {
+    # `assign_func_envs()` turns a NULL `active` into an empty list; see `new()`.
+    if (length(active) > 0) {
       for (name in names(active)) {
         makeActiveBinding(name, active[[name]], super_bind_env)
       }

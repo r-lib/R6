@@ -3,6 +3,8 @@ R6 2.6.1.9000
 
 * In `.DollarNames.R6()`, add a default value for `pattern = ""`.
 
+* Methods inherited from a superclass are now byte-compiled by R's JIT. Once an object of the superclass had compiled a method, R never compiled the copies in subclass objects, because their enclosing environments bound extra names (R bug [19308](https://bugs.r-project.org/show_bug.cgi?id=19308)); loops in those methods ran several times slower. The enclosing environment of a method now binds `.__active__` only when there are active bindings, and in portable classes always binds `private`, to `NULL` when there are no private members. (#304)
+
 R6 2.6.1
 ========
 
